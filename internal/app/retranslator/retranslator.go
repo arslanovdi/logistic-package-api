@@ -6,7 +6,7 @@ import (
 	"github.com/arslanovdi/logistic-package-api/internal/app/repo"
 	"github.com/arslanovdi/logistic-package-api/internal/app/sender"
 	"github.com/arslanovdi/logistic-package-api/internal/model"
-	"github.com/gammazero/workerpool"
+	"github.com/arslanovdi/logistic-package-api/internal/system/workerpool"
 	"time"
 )
 

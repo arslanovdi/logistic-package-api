@@ -3,7 +3,7 @@ package producer
 import (
 	"github.com/arslanovdi/logistic-package-api/internal/app/sender"
 	"github.com/arslanovdi/logistic-package-api/internal/model"
-	"github.com/gammazero/workerpool"
+	"github.com/arslanovdi/logistic-package-api/internal/system/workerpool"
 	"sync"
 	"time"
 )
@@ -56,11 +56,11 @@ func (p *producer) Start() {
 				case event := <-p.events:
 					if err := p.sender.Send(&event); err != nil {
 						p.workerPool.Submit(func() {
-							// TODO ...
+							// TODO send to kafka
 						})
 					} else {
 						p.workerPool.Submit(func() {
-							// TODO ...
+							// TODO send to kafka
 						})
 					}
 				case <-p.done:
