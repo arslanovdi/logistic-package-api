@@ -5,8 +5,8 @@ import (
 	"github.com/arslanovdi/logistic-package-api/internal/app/producer"
 	"github.com/arslanovdi/logistic-package-api/internal/app/repo"
 	"github.com/arslanovdi/logistic-package-api/internal/app/sender"
+	"github.com/arslanovdi/logistic-package-api/internal/app/workerpool"
 	"github.com/arslanovdi/logistic-package-api/internal/model"
-	"github.com/arslanovdi/logistic-package-api/internal/system/workerpool"
 	"time"
 )
 
@@ -24,7 +24,7 @@ type Config struct {
 	ConsumeTimeout time.Duration
 
 	ProducerCount uint64
-	WorkerCount   int
+	WorkerCount   uint64
 
 	Repo   repo.EventRepo
 	Sender sender.EventSender

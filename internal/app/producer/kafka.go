@@ -2,8 +2,8 @@ package producer
 
 import (
 	"github.com/arslanovdi/logistic-package-api/internal/app/sender"
+	"github.com/arslanovdi/logistic-package-api/internal/app/workerpool"
 	"github.com/arslanovdi/logistic-package-api/internal/model"
-	"github.com/arslanovdi/logistic-package-api/internal/system/workerpool"
 	"sync"
 	"time"
 )
