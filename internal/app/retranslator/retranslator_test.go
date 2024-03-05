@@ -1,19 +1,19 @@
 package retranslator
 
 import (
+	"github.com/arslanovdi/logistic-package-api/internal/model"
+	"github.com/arslanovdi/logistic-package-api/mocks"
+	"github.com/stretchr/testify/mock"
 	"testing"
+	"time"
 )
 
 func Test_retranslator(t *testing.T) {
 
-	// замокать интерфейсы repo и sender
-	// для тестирования retranslator
+	repo := mocks.NewEventRepo(t)
+	sender := mocks.NewEventSender(t)
 
-	/*ctrl := gomock.NewController(t)
-	repo := mocks.NewMockEventRepo(ctrl)
-	sender := mocks.NewMockEventSender(ctrl)
-
-	repo.EXPECT().Lock(gomock.Any()).AnyTimes()
+	repo.EXPECT().Lock(mock.AnythingOfType("uint64")).Return([]model.PackageEvent{}, nil) // проверяем, что метод Lock вызывался корректно
 
 	cfg := Config{
 		ChannelSize:    512,
@@ -28,5 +28,6 @@ func Test_retranslator(t *testing.T) {
 
 	retranslator := NewRetranslator(cfg)
 	retranslator.Start()
-	retranslator.Close()*/
+	time.Sleep(cfg.ConsumeTimeout + time.Second) // ждем пока тикнет консьюмер, на 1 секунду больше таймера консьюмера
+	retranslator.Close()
 }
