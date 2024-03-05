@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// Retranslator
 type Retranslator interface {
 	Start()
 	Close()
