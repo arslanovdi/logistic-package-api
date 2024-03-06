@@ -1,15 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"github.com/arslanovdi/logistic-package-api/internal/app/retranslator"
+	"github.com/arslanovdi/logistic-package-api/internal/logger"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 )
 
+const level = slog.LevelDebug // log level
+
 func main() {
+	logger.InitializeLogger(level)
 
 	cfg := retranslator.Config{
 		ChannelSize:    512,
@@ -24,14 +28,15 @@ func main() {
 
 	retranslator := retranslator.NewRetranslator(cfg)
 	retranslator.Start()
+	slog.Info("Retranslator started")
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
-
 	select {
 	case <-stop:
+		slog.Info("Graceful shutdown")
 		retranslator.Close()
-		fmt.Println("Graceful shutdown")
+		slog.Info("Application stopped")
 		return
 	}
 }

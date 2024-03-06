@@ -1,6 +1,9 @@
 package workerpool
 
-import "sync"
+import (
+	"log/slog"
+	"sync"
+)
 
 type WorkerPool struct {
 	workerCount uint64
@@ -38,7 +41,7 @@ func New(workerCount uint64) *WorkerPool {
 			}
 		}()
 	}
-
+	slog.Debug("WorkerPool created")
 	return pool
 }
 
@@ -51,4 +54,5 @@ func (p *WorkerPool) Submit(task func()) {
 func (p *WorkerPool) StopWait() {
 	close(p.stopSignal)
 	p.wg.Wait()
+	slog.Debug("WorkerPool stopped")
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/arslanovdi/logistic-package-api/internal/app/sender"
 	"github.com/arslanovdi/logistic-package-api/internal/app/workerpool"
 	"github.com/arslanovdi/logistic-package-api/internal/model"
+	"log/slog"
 	"time"
 )
 
@@ -51,8 +52,10 @@ func NewRetranslator(cfg Config) Retranslator {
 		cfg.ProducerCount,
 		cfg.Sender,
 		events,
+		cfg.Repo,
 		workerPool)
 
+	slog.Debug("Retranslator created")
 	return &retranslator{
 		events:     events,
 		consumer:   consumer,
@@ -70,4 +73,6 @@ func (r *retranslator) Close() {
 	r.consumer.Close()
 	r.producer.Close()
 	r.workerPool.StopWait()
+
+	slog.Debug("Retranslator stopped")
 }
