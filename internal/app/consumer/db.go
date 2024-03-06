@@ -3,6 +3,7 @@ package consumer
 import (
 	"github.com/arslanovdi/logistic-package-api/internal/app/repo"
 	"github.com/arslanovdi/logistic-package-api/internal/model"
+	"log/slog"
 	"sync"
 	"time"
 )
@@ -43,6 +44,7 @@ func NewDbConsumer(
 	wg := &sync.WaitGroup{}
 	done := make(chan bool)
 
+	slog.Debug("db consumer created")
 	return &consumer{
 		n:         n,
 		event:     events,
@@ -66,6 +68,7 @@ func (c *consumer) Start() {
 				case <-ticker.C: // если тикер сработал
 					events, err := c.repo.Lock(c.batchSize) // берем события из базы
 					if err != nil {
+						slog.Error("Error getting events from db", err)
 						continue
 					}
 					for _, event := range events { // передаем события в канал
@@ -82,4 +85,5 @@ func (c *consumer) Start() {
 func (c *consumer) Close() {
 	close(c.done)
 	c.wg.Wait()
+	slog.Debug("db consumer stopped")
 }

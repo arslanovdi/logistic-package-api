@@ -1,8 +1,12 @@
 package model
 
+import "time"
+
 // Package сущность пакета
 type Package struct {
-	ID uint64
+	ID        uint64
+	Title     string
+	CreatedAt time.Time
 }
 
 type EventType uint8
