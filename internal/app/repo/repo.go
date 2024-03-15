@@ -1,12 +1,9 @@
 package repo
 
-<<<<<<< HEAD
 import (
 	"context"
-
+	"github.com/arslanovdi/logistic-package-api/internal/model"
 	"github.com/jmoiron/sqlx"
-
-	"github.com/ozonmp/omp-template-api/internal/model"
 )
 
 // Repo is DAO for Template
@@ -26,8 +23,7 @@ func NewRepo(db *sqlx.DB, batchSize uint) Repo {
 
 func (r *repo) DescribeTemplate(ctx context.Context, templateID uint64) (*model.Template, error) {
 	return nil, nil
-=======
-import "github.com/arslanovdi/logistic-package-api/internal/model"
+}
 
 type EventRepo interface {
 	// Lock заблокировать в БД n записей
@@ -39,5 +35,4 @@ type EventRepo interface {
 	Add(event []model.PackageEvent) error
 	// Remove удалить из БД n записей
 	Remove(eventIDs []uint64) error
->>>>>>> 7177f39 (Initial commit)
 }

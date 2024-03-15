@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ozonmp/omp-template-api/internal/config"
+	"github.com/arslanovdi/logistic-package-api/internal/config"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 

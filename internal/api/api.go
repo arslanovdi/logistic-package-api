@@ -10,9 +10,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/ozonmp/omp-template-api/internal/repo"
+	"github.com/arslanovdi/logistic-package-api/internal/app/repo"
 
-	pb "github.com/ozonmp/omp-template-api/pkg/omp-template-api"
+	pb "github.com/arslanovdi/logistic-package-api/pkg/omp-template-api"
 )
 
 var (
