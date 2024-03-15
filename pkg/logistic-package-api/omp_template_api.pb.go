@@ -4,7 +4,7 @@
 // 	protoc        v3.18.1
 // source: ozonmp/omp_template_api/v1/omp_template_api.proto
 
-package omp_template_api
+package logistic_package_api
 
 import (
 	_ "github.com/envoyproxy/protoc-gen-validate/validate"

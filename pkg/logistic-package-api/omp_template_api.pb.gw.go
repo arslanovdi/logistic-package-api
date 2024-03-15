@@ -6,7 +6,7 @@ Package omp_template_api is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package omp_template_api
+package logistic_package_api
 
 import (
 	"context"

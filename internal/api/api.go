@@ -12,7 +12,7 @@ import (
 
 	"github.com/arslanovdi/logistic-package-api/internal/app/repo"
 
-	pb "github.com/arslanovdi/logistic-package-api/pkg/omp-template-api"
+	pb "github.com/arslanovdi/logistic-package-api/pkg/logistic-package-api"
 )
 
 var (

@@ -3,18 +3,18 @@ package server
 import (
 	"context"
 	"errors"
+	"github.com/opentracing/opentracing-go"
 	"net/http"
 
 	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 
-	pb "github.com/arslanovdi/logistic-package-api/pkg/omp-template-api"
+	pb "github.com/arslanovdi/logistic-package-api/pkg/logistic-package-api"
 )
 
 var (

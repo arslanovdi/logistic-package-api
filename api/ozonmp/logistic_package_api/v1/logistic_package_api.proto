@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+package arslanovdi.logistic_package_api.v1;
+
+import "validate/validate.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/arslanovdi/logistic-package-api/pkg/logistic-package-api;logistic_package_api";
+
+service LogisticPackageApiService {
+  rpc CreatePackageV1(CreatePackageRequestV1) returns (CreatePackageResponseV1) {
+    option (google.api.http) = {
+      post: "/v1/packages"
+      body: "*"
+    };
+  }
+
+  rpc DescribePackageV1(DescribePackageV1Request) returns (DescribePackageV1Response) {
+    option (google.api.http) = {
+      get: "/v1/packages/{package_id}"
+    };
+  }
+
+  rpc ListPackagesV1(ListPackagesV1Request) returns (ListPackagesV1Response) {
+    option (google.api.http) = {
+      get: "/v1/packages"
+    };
+  }
+
+  rpc RemovePackageV1(RemovePackageV1Request) returns (RemovePackageV1Response) {
+    option (google.api.http) = {
+      delete: "/v1/packages/{package_id}"
+    };
+  }
+
+}
+
+message Package {
+  uint64 id  = 1;
+  string title = 2;
+  google.protobuf.Timestamp created = 3;
+}
+
+message CreatePackageRequestV1 {
+  Package value = 1;
+}
+
+message CreatePackageResponseV1 {
+  uint64 package_id  = 1;
+}
+
+message DescribePackageV1Request {
+  uint64 package_id = 1 [(validate.rules).uint64.gt = 0];
+}
+
+message DescribePackageV1Response {
+  Package value = 1;
+}
+
+message ListPackagesV1Request {
+  uint64 offset = 1 [(validate.rules).uint64.gt = 0];
+  uint64 limit = 2 [(validate.rules).uint64.gt = 0];
+}
+
+message ListPackagesV1Response {
+  repeated Package packages = 1;
+}
+
+message RemovePackageV1Request {
+  uint64 package_id = 1 [(validate.rules).uint64.gt = 0];
+}
+
+message RemovePackageV1Response {
+  bool removed = 1;
+}

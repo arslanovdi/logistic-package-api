@@ -27,7 +27,7 @@ import (
 	"github.com/arslanovdi/logistic-package-api/internal/api"
 	"github.com/arslanovdi/logistic-package-api/internal/app/repo"
 	"github.com/arslanovdi/logistic-package-api/internal/config"
-	pb "github.com/arslanovdi/logistic-package-api/pkg/omp-template-api"
+	pb "github.com/arslanovdi/logistic-package-api/pkg/logistic-package-api"
 )
 
 // GrpcServer is gRPC server
