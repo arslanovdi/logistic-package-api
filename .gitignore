@@ -1,0 +1,6 @@
+.idea/
+.cache
+.venv
+bin/
+data/
+main

@@ -1,6 +1,8 @@
 package repo
 
-import "github.com/arslanovdi/logistic-package-api/internal/model"
+import (
+	"github.com/arslanovdi/logistic-package-api/internal/model"
+)
 
 type EventRepo interface {
 	// Lock заблокировать в БД n записей
