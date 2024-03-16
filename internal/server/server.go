@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/arslanovdi/logistic-package-api/internal/app/repo"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
@@ -20,7 +21,6 @@ import (
 	"time"
 
 	"github.com/arslanovdi/logistic-package-api/internal/api"
-	"github.com/arslanovdi/logistic-package-api/internal/app/repo"
 	"github.com/arslanovdi/logistic-package-api/internal/config"
 	pb "github.com/arslanovdi/logistic-package-api/pkg/logistic-package-api"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"

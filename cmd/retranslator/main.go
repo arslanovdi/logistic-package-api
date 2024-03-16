@@ -13,7 +13,7 @@ import (
 const level = slog.LevelDebug // log level
 
 func main() {
-	logger.InitializeLogger(level)
+	logger.SetLogLevel(level)
 
 	cfg := retranslator.Config{
 		ChannelSize:    512,

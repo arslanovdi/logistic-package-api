@@ -2,12 +2,11 @@ package api
 
 import (
 	"context"
+	"github.com/arslanovdi/logistic-package-api/internal/app/repo"
 	"github.com/arslanovdi/logistic-package-api/internal/model"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"log/slog"
-
-	"github.com/arslanovdi/logistic-package-api/internal/app/repo"
 
 	pb "github.com/arslanovdi/logistic-package-api/pkg/logistic-package-api"
 )

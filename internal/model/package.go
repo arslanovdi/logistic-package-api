@@ -1,12 +1,7 @@
 package model
 
 import (
-	"errors"
 	"time"
-)
-
-var (
-	ErrNotImplemented = errors.New("not implemented")
 )
 
 // Package сущность пакета
