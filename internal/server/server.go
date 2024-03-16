@@ -4,6 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
+	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
+	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
+	"google.golang.org/grpc/keepalive"
+	"google.golang.org/grpc/reflection"
+	"log/slog"
 	"net"
 	"net/http"
 	"os"
@@ -12,22 +19,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jmoiron/sqlx"
-	"github.com/rs/zerolog/log"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/keepalive"
-	"google.golang.org/grpc/reflection"
-
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
-	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
-	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
-	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
-	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-
 	"github.com/arslanovdi/logistic-package-api/internal/api"
 	"github.com/arslanovdi/logistic-package-api/internal/app/repo"
 	"github.com/arslanovdi/logistic-package-api/internal/config"
 	pb "github.com/arslanovdi/logistic-package-api/pkg/logistic-package-api"
+	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	"github.com/jmoiron/sqlx"
+	"google.golang.org/grpc"
 )
 
 // GrpcServer is gRPC server
@@ -46,6 +44,9 @@ func NewGrpcServer(db *sqlx.DB, batchSize uint) *GrpcServer {
 
 // Start method runs server
 func (s *GrpcServer) Start(cfg *config.Config) error {
+
+	log := slog.With("func", "server.Start")
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -56,9 +57,10 @@ func (s *GrpcServer) Start(cfg *config.Config) error {
 	gatewayServer := createGatewayServer(grpcAddr, gatewayAddr)
 
 	go func() {
-		log.Info().Msgf("Gateway server is running on %s", gatewayAddr)
+		log.Info("Gateway server is running", slog.String("address", gatewayAddr))
+		log.Info("Swagger server is running", slog.String("address", gatewayAddr+"/swagger-ui/"))
 		if err := gatewayServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Error().Err(err).Msg("Failed running gateway server")
+			log.Error("Failed running gateway server", slog.Any("error", err))
 			cancel()
 		}
 	}()
@@ -66,9 +68,9 @@ func (s *GrpcServer) Start(cfg *config.Config) error {
 	metricsServer := createMetricsServer(cfg)
 
 	go func() {
-		log.Info().Msgf("Metrics server is running on %s", metricsAddr)
+		log.Info("Metrics server is running", slog.String("address", metricsAddr))
 		if err := metricsServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Error().Err(err).Msg("Failed running metrics server")
+			log.Error("Failed running metrics server", slog.Any("error", err))
 			cancel()
 		}
 	}()
@@ -80,17 +82,17 @@ func (s *GrpcServer) Start(cfg *config.Config) error {
 
 	go func() {
 		statusAdrr := fmt.Sprintf("%s:%v", cfg.Status.Host, cfg.Status.Port)
-		log.Info().Msgf("Status server is running on %s", statusAdrr)
+		log.Info("Status server is running", slog.String("address", statusAdrr))
 		if err := statusServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Error().Err(err).Msg("Failed running status server")
+			log.Error("Failed running status server", slog.Any("error", err))
 		}
 	}()
 
-	l, err := net.Listen("tcp", grpcAddr)
+	lis, err := net.Listen("tcp", grpcAddr)
 	if err != nil {
 		return fmt.Errorf("failed to listen: %w", err)
 	}
-	defer l.Close()
+	defer lis.Close()
 
 	grpcServer := grpc.NewServer(
 		grpc.KeepaliveParams(keepalive.ServerParameters{
@@ -99,7 +101,7 @@ func (s *GrpcServer) Start(cfg *config.Config) error {
 			MaxConnectionAge:  time.Duration(cfg.Grpc.MaxConnectionAge) * time.Minute,
 			Time:              time.Duration(cfg.Grpc.Timeout) * time.Minute,
 		}),
-		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer( // последовательное исполнение middleware, с общим контекстом
 			grpc_ctxtags.UnaryServerInterceptor(),
 			grpc_prometheus.UnaryServerInterceptor,
 			grpc_opentracing.UnaryServerInterceptor(),
@@ -109,25 +111,26 @@ func (s *GrpcServer) Start(cfg *config.Config) error {
 
 	r := repo.NewRepo(s.db, s.batchSize)
 
-	pb.RegisterOmpTemplateApiServiceServer(grpcServer, api.NewTemplateAPI(r))
+	pb.RegisterLogisticPackageApiServiceServer(grpcServer, api.NewPackageAPI(r)) // регистрируем имплементацию интерфейса в gRPC-сервере
 	grpc_prometheus.EnableHandlingTimeHistogram()
 	grpc_prometheus.Register(grpcServer)
 
 	go func() {
-		log.Info().Msgf("GRPC Server is listening on: %s", grpcAddr)
-		if err := grpcServer.Serve(l); err != nil {
-			log.Fatal().Err(err).Msg("Failed running gRPC server")
+		log.Info("GRPC Server is listening", slog.String("address", grpcAddr))
+		if err := grpcServer.Serve(lis); err != nil {
+			log.Error("Failed running gRPC server", slog.Any("error", err))
+			os.Exit(1)
 		}
 	}()
 
 	go func() {
 		time.Sleep(2 * time.Second)
 		isReady.Store(true)
-		log.Info().Msg("The service is ready to accept requests")
+		log.Info("The service is ready to accept requests")
 	}()
 
 	if cfg.Project.Debug {
-		reflection.Register(grpcServer)
+		reflection.Register(grpcServer) // в дебаге регестрируем отражение методов gRPC-сервера: предоставляет сведения о публично доступных методах
 	}
 
 	quit := make(chan os.Signal, 1)
@@ -135,33 +138,33 @@ func (s *GrpcServer) Start(cfg *config.Config) error {
 
 	select {
 	case v := <-quit:
-		log.Info().Msgf("signal.Notify: %v", v)
+		log.Info("Gracefully shutdown", slog.Any("signal.Notify", v))
 	case done := <-ctx.Done():
-		log.Info().Msgf("ctx.Done: %v", done)
+		log.Warn("ctx.Done", slog.Any("error", done))
 	}
 
 	isReady.Store(false)
 
 	if err := gatewayServer.Shutdown(ctx); err != nil {
-		log.Error().Err(err).Msg("gatewayServer.Shutdown")
+		log.Error("gatewayServer.Shutdown", slog.Any("error", err))
 	} else {
-		log.Info().Msg("gatewayServer shut down correctly")
+		log.Info("gatewayServer shut down correctly")
 	}
 
 	if err := statusServer.Shutdown(ctx); err != nil {
-		log.Error().Err(err).Msg("statusServer.Shutdown")
+		log.Error("statusServer.Shutdown", slog.Any("error", err))
 	} else {
-		log.Info().Msg("statusServer shut down correctly")
+		log.Info("statusServer shut down correctly")
 	}
 
 	if err := metricsServer.Shutdown(ctx); err != nil {
-		log.Error().Err(err).Msg("metricsServer.Shutdown")
+		log.Error("metricsServer.Shutdown", slog.Any("error", err))
 	} else {
-		log.Info().Msg("metricsServer shut down correctly")
+		log.Info("metricsServer shut down correctly")
 	}
 
 	grpcServer.GracefulStop()
-	log.Info().Msgf("grpcServer shut down correctly")
+	log.Info("grpcServer shut down correctly")
 
 	return nil
 }

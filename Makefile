@@ -6,10 +6,10 @@ endif
 export GO111MODULE=on
 
 SERVICE_NAME=logistic-package-api
-SERVICE_PATH=ozonmp/logistic-package-api
+SERVICE_PATH=arslanovdi/logistic-package-api
 
-PGV_VERSION:="v0.6.1"
-BUF_VERSION:="v1.16.0"
+PGV_VERSION:="v1.0.4"
+BUF_VERSION:="v1.30.0"
 
 OS_NAME=$(shell uname -s)
 OS_ARCH=$(shell uname -m)
@@ -47,6 +47,8 @@ generate-go: .generate-install-buf .generate-go .generate-finalize-go
 	@ command -v buf 2>&1 > /dev/null || (echo "Install buf" && \
     		curl -sSL0 https://github.com/bufbuild/buf/releases/download/$(BUF_VERSION)/buf-$(OS_NAME)-$(OS_ARCH)$(shell go env GOEXE) --create-dirs -o "$(BUF_EXE)" && \
     		chmod +x "$(BUF_EXE)")
+#.generate-install-buf:
+#	scoop install buf	for windows
 
 .generate-go:
 	$(BUF_EXE) generate
@@ -69,10 +71,10 @@ deps: deps-go .deps-python
 
 .PHONY: deps-go
 deps-go:
-	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.27.1
-	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.1.0
-	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.5.0
-	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.5.0
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.33.0
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.3.0
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@v2.19.1
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@v2.19.1
 	go install github.com/envoyproxy/protoc-gen-validate@$(PGV_VERSION)
 	go install github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger@latest
 

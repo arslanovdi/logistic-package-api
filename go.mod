@@ -2,7 +2,7 @@ module github.com/arslanovdi/logistic-package-api
 
 go 1.22
 
-replace github.com/arslanovdi/logistic-package-api => ./pkg/logistic-package-api
+//replace github.com/arslanovdi/logistic-package-api => ./pkg/logistic-package-api
 
 require (
 	github.com/envoyproxy/protoc-gen-validate v1.0.4

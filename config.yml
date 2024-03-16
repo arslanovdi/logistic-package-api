@@ -1,17 +1,17 @@
 project:
-  name: Ozon Code Platform Template API
+  name: Ozon Marketplace Logistic Package API
   debug: true
   environment: development
 
 grpc:
-  host: 0.0.0.0
+  host: localhost
   port: 8082
   maxConnectionIdle: 5 # Minutes
   timeout: 15 # Seconds
   maxConnectionAge: 5 # Minutes
 
 rest:
-  host: 0.0.0.0
+  host: localhost
   port: 8080
 
 metrics:
@@ -20,12 +20,12 @@ metrics:
   path: /metrics
 
 jaeger:
-  service: "omp-template-api"
+  service: "logistic-package-api"
   host: "jaeger"
   port: ":6831"
 
 status:
-  host: 0.0.0.0
+  host: localhost
   port: 8000
   livenessPath: /live
   readinessPath: /ready
@@ -36,15 +36,15 @@ database:
   port: 5432
   user: docker
   password: docker
-  name: omp_template_api
+  name: logistic-package-api
   sslmode: disable
   migrations: migrations
   driver: pgx
 
 kafka:
   capacity: 512
-  topic: "omp-template-events"
-  groupId: "omp-template-api"
+  topic: "logistic-package-events"
+  groupId: "logistic-package-api"
   brokers:
     - "kafka:9092"
     - "localhost:9094"

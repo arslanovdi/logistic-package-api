@@ -1,26 +1,26 @@
 version: v1
 plugins:
   - name: go
-    out: pkg/omp-template-api
+    out: pkg/logistic-package-api
     opt:
-      - paths=import
+      - paths=source_relative
     strategy: directory
 
   - name: go-grpc
-    out: pkg/omp-template-api
+    out: pkg/logistic-package-api
     opt:
-      - paths=import
+      - paths=source_relative
     strategy: directory
 
   - name: grpc-gateway
-    out: pkg/omp-template-api
+    out: pkg/logistic-package-api
     opt:
       - logtostderr=true
-      - paths=import
+      - paths=source_relative
     strategy: directory
 
   - name: validate
-    out: pkg/omp-template-api
+    out: pkg/logistic-package-api
     opt:
       - lang=go
     strategy: directory

@@ -2,13 +2,10 @@ package api
 
 import (
 	"context"
-
+	"github.com/arslanovdi/logistic-package-api/internal/model"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
-
-	"github.com/rs/zerolog/log"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	"log/slog"
 
 	"github.com/arslanovdi/logistic-package-api/internal/app/repo"
 
@@ -22,28 +19,31 @@ var (
 	})
 )
 
-type templateAPI struct {
-	pb.UnimplementedOmpTemplateApiServiceServer
+type packageAPI struct {
+	pb.UnimplementedLogisticPackageApiServiceServer
 	repo repo.Repo
 }
 
-// NewTemplateAPI returns api of omp-template-api service
-func NewTemplateAPI(r repo.Repo) pb.OmpTemplateApiServiceServer {
-	return &templateAPI{repo: r}
+func (p *packageAPI) CreatePackageV1(ctx context.Context, req *pb.CreatePackageRequestV1) (*pb.CreatePackageResponseV1, error) {
+	log := slog.With("func", "api.CreatePackageV1")
+	//TODO implement me
+	log.Debug("CreatePackageV1 - not implemented")
+	return nil, model.ErrNotImplemented
 }
 
-func (o *templateAPI) DescribeTemplateV1(
-	ctx context.Context,
-	req *pb.DescribeTemplateV1Request,
-) (*pb.DescribeTemplateV1Response, error) {
+func (p *packageAPI) DescribePackageV1(ctx context.Context, req *pb.DescribePackageV1Request) (*pb.DescribePackageV1Response, error) {
+	log := slog.With("func", "api.DescribePackageV1")
+	//TODO implement me
+	log.Debug("DescribePackageV1 - not implemented")
+	return nil, model.ErrNotImplemented
 
-	if err := req.Validate(); err != nil {
+	/*if err := req.Validate(); err != nil {
 		log.Error().Err(err).Msg("DescribeTemplateV1 - invalid argument")
 
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	template, err := o.repo.DescribeTemplate(ctx, req.TemplateId)
+	template, err := o.repo.Describe(ctx, req.PackageId)
 	if err != nil {
 		log.Error().Err(err).Msg("DescribeTemplateV1 -- failed")
 
@@ -51,7 +51,7 @@ func (o *templateAPI) DescribeTemplateV1(
 	}
 
 	if template == nil {
-		log.Debug().Uint64("templateId", req.TemplateId).Msg("template not found")
+		log.Debug().Uint64("templateId", req.PackageId).Msg("template not found")
 		totalTemplateNotFound.Inc()
 
 		return nil, status.Error(codes.NotFound, "template not found")
@@ -59,10 +59,24 @@ func (o *templateAPI) DescribeTemplateV1(
 
 	log.Debug().Msg("DescribeTemplateV1 - success")
 
-	return &pb.DescribeTemplateV1Response{
-		Value: &pb.Template{
-			Id:  template.ID,
-			Foo: template.Foo,
-		},
-	}, nil
+	return &pb.DescribePackageV1Response{}, nil*/
+}
+
+func (p *packageAPI) ListPackagesV1(ctx context.Context, req *pb.ListPackagesV1Request) (*pb.ListPackagesV1Response, error) {
+	log := slog.With("func", "api.ListPackagesV1")
+	//TODO implement me
+	log.Debug("ListPackagesV1 - not implemented")
+	return nil, model.ErrNotImplemented
+}
+
+func (p *packageAPI) RemovePackageV1(ctx context.Context, req *pb.RemovePackageV1Request) (*pb.RemovePackageV1Response, error) {
+	log := slog.With("func", "api.RemovePackageV1")
+	//TODO implement me
+	log.Debug("RemovePackageV1 - not implemented")
+	return nil, model.ErrNotImplemented
+}
+
+// NewPackageAPI returns api of logistic-package-api service
+func NewPackageAPI(r repo.Repo) *packageAPI {
+	return &packageAPI{repo: r}
 }

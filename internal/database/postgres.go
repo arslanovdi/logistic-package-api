@@ -1,16 +1,19 @@
 package database
 
 import (
-	"github.com/rs/zerolog/log"
+	"log/slog"
 
 	"github.com/jmoiron/sqlx"
 )
 
 // NewPostgres returns DB
 func NewPostgres(dsn, driver string) (*sqlx.DB, error) {
+
+	log := slog.With("func", "database.NewPostgres")
+
 	db, err := sqlx.Open(driver, dsn)
 	if err != nil {
-		log.Error().Err(err).Msgf("failed to create database connection")
+		log.Error("failed to create database connection", slog.Any("error", err))
 
 		return nil, err
 	}

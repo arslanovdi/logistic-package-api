@@ -4,14 +4,16 @@ import (
 	"context"
 	"errors"
 	"github.com/opentracing/opentracing-go"
+	"google.golang.org/grpc/credentials/insecure"
+	"log/slog"
 	"net/http"
+	"os"
 
 	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/opentracing/opentracing-go/ext"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
-	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 
 	pb "github.com/arslanovdi/logistic-package-api/pkg/logistic-package-api"
@@ -24,9 +26,13 @@ var (
 	})
 )
 
+// createGatewayServer returns HTTP gRPC-gateway server
 func createGatewayServer(grpcAddr, gatewayAddr string) *http.Server {
 	// Create a client connection to the gRPC Server we just started.
 	// This is where the gRPC-Gateway proxies the requests.
+
+	log := slog.With("func", "server.createGatewayServer")
+
 	conn, err := grpc.DialContext(
 		context.Background(),
 		grpcAddr,
@@ -35,20 +41,34 @@ func createGatewayServer(grpcAddr, gatewayAddr string) *http.Server {
 				grpc_opentracing.WithTracer(opentracing.GlobalTracer()),
 			),
 		),
-		grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to dial server")
+		log.Warn("Failed to dial gRPC server",
+			slog.String("func", "createGatewayServer"),
+			slog.Any("error", err))
 	}
 
-	mux := runtime.NewServeMux()
-	if err := pb.RegisterOmpTemplateApiServiceHandler(context.Background(), mux, conn); err != nil {
-		log.Fatal().Err(err).Msg("Failed registration handler")
+	rmux := runtime.NewServeMux()
+	if err := pb.RegisterLogisticPackageApiServiceHandler(context.Background(), rmux, conn); err != nil {
+		log.Warn("Failed registration handler",
+			slog.String("func", "createGatewayServer"),
+			slog.Any("error", err))
+		os.Exit(1)
 	}
+
+	mux := http.NewServeMux()
+	mux.Handle("/", rmux)
+
+	mux.HandleFunc("/swagger-ui/swagger.json", func(w http.ResponseWriter, r *http.Request) { // Подменяем swagger.json, указанный в файле swagger-initializer.js сгенерированным logistic_package_api.swagger.json
+		http.ServeFile(w, r, "./swagger/logistic_package_api.swagger.json")
+	})
+
+	mux.Handle("/swagger-ui/", http.StripPrefix("/swagger-ui/", http.FileServer(http.Dir("./swagger-ui/"))))
 
 	gatewayServer := &http.Server{
 		Addr:    gatewayAddr,
-		Handler: tracingWrapper(mux),
+		Handler: tracingWrapper(mux), // трэйсы, включая сваггер запросы
 	}
 
 	return gatewayServer
@@ -58,6 +78,7 @@ var grpcGatewayTag = opentracing.Tag{Key: string(ext.Component), Value: "grpc-ga
 
 func tracingWrapper(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
 		httpTotalRequests.Inc()
 		parentSpanContext, err := opentracing.GlobalTracer().Extract(
 			opentracing.HTTPHeaders,

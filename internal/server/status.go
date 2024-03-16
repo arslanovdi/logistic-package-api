@@ -3,11 +3,11 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 	"sync/atomic"
 
 	"github.com/arslanovdi/logistic-package-api/internal/config"
-	"github.com/rs/zerolog/log"
 )
 
 func createStatusServer(cfg *config.Config, isReady *atomic.Value) *http.Server {
@@ -44,6 +44,9 @@ func readinessHandler(isReady *atomic.Value) http.HandlerFunc {
 
 func versionHandler(cfg *config.Config) func(w http.ResponseWriter, _ *http.Request) {
 	return func(w http.ResponseWriter, _ *http.Request) {
+
+		log := slog.With("func", "versionHandler")
+
 		data := map[string]interface{}{
 			"name":        cfg.Project.Name,
 			"debug":       cfg.Project.Debug,
@@ -55,7 +58,7 @@ func versionHandler(cfg *config.Config) func(w http.ResponseWriter, _ *http.Requ
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(data); err != nil {
-			log.Error().Err(err).Msg("Service information encoding error")
+			log.Error("Service information encoding error", slog.Any("error", err))
 		}
 	}
 }

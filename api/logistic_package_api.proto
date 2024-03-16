@@ -1,12 +1,13 @@
 syntax = "proto3";
 
-package arslanovdi.logistic_package_api.v1;
+package logistic_package_api.v1;
 
 import "validate/validate.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/arslanovdi/logistic-package-api/pkg/logistic-package-api;logistic_package_api";
+//option go_package = "github.com/arslanovdi/logistic-package-api/pkg/logistic-package-api;logistic_package_api";
+option go_package = "logistic-package-api.v1";
 
 service LogisticPackageApiService {
   rpc CreatePackageV1(CreatePackageRequestV1) returns (CreatePackageResponseV1) {

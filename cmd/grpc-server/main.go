@@ -3,14 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
-
-	"github.com/pressly/goose/v3"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+	"github.com/arslanovdi/logistic-package-api/internal/logger"
+	"log/slog"
+	"os"
 
 	_ "github.com/jackc/pgx/v4"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	_ "github.com/lib/pq"
+	"github.com/pressly/goose/v3"
 
 	"github.com/arslanovdi/logistic-package-api/internal/config"
 	"github.com/arslanovdi/logistic-package-api/internal/database"
@@ -23,26 +23,30 @@ var (
 )
 
 func main() {
+	logger.InitializeLogger()
+	log := slog.With("func", "grpc-server.main")
+
 	if err := config.ReadConfigYML("config.yml"); err != nil {
-		log.Fatal().Err(err).Msg("Failed init configuration")
+		log.Warn("Failed init configuration", slog.Any("error", err))
+		os.Exit(1)
 	}
 	cfg := config.GetConfigInstance()
 
 	migration := flag.Bool("migration", true, "Defines the migration start option")
 	flag.Parse()
 
-	log.Info().
-		Str("version", cfg.Project.Version).
-		Str("commitHash", cfg.Project.CommitHash).
-		Bool("debug", cfg.Project.Debug).
-		Str("environment", cfg.Project.Environment).
-		Msgf("Starting service: %s", cfg.Project.Name)
-
 	if cfg.Project.Debug {
-		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+		logger.SetLogLevel(slog.LevelDebug)
 	} else {
-		zerolog.SetGlobalLevel(zerolog.InfoLevel)
+		logger.SetLogLevel(slog.LevelInfo)
 	}
+
+	log.Info(fmt.Sprintf("Starting service %s", cfg.Project.Name),
+		slog.String("version", cfg.Project.Version),
+		slog.String("commitHash", cfg.Project.CommitHash),
+		slog.Bool("debug", cfg.Project.Debug),
+		slog.String("environment", cfg.Project.Environment),
+	)
 
 	dsn := fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=%v sslmode=%v",
 		cfg.Database.Host,
@@ -55,29 +59,29 @@ func main() {
 
 	db, err := database.NewPostgres(dsn, cfg.Database.Driver)
 	if err != nil {
-		log.Fatal().Err(err).Msg("Failed init postgres")
+		log.Warn("Failed init postgres", slog.Any("error", err))
+		os.Exit(1)
 	}
 	defer db.Close()
 
 	*migration = false // todo: need to delete this line for homework-4
 	if *migration {
 		if err = goose.Up(db.DB, cfg.Database.Migrations); err != nil {
-			log.Error().Err(err).Msg("Migration failed")
-
+			log.Error("Migration failed", slog.Any("error", err))
 			return
 		}
 	}
 
 	tracing, err := tracer.NewTracer(&cfg)
 	if err != nil {
-		log.Error().Err(err).Msg("Failed init tracing")
+		log.Error("Failed init tracing", slog.Any("error", err))
 
 		return
 	}
 	defer tracing.Close()
 
 	if err := server.NewGrpcServer(db, batchSize).Start(&cfg); err != nil {
-		log.Error().Err(err).Msg("Failed creating gRPC server")
+		log.Error("Failed creating gRPC server", slog.Any("error", err))
 
 		return
 	}
