@@ -36,7 +36,7 @@ services:
       - ./config.yml:/root/config.yml
 
   postgres:
-    image: postgres:latest
+    image: postgres:16.2
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
       timeout: 45s
@@ -125,9 +125,9 @@ services:
     volumes:
       - ./swagger:/swagger
     environment:
-      SWAGGER_JSON: /swagger/ozonmp/omp_template_api/v1/omp_template_api.swagger.json
+      SWAGGER_JSON: /swagger/logistic_package_api.swagger.json
     depends_on:
-      - omp-template-api
+      - logistic-package-api
     networks:
       - ompnw
 

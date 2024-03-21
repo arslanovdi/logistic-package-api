@@ -57,8 +57,8 @@ generate-go: .generate-install-buf .generate-go .generate-finalize-go
 	$(BUF_EXE) generate --template buf.gen.python.yaml
 
 .generate-finalize-go:
-	mv pkg/$(SERVICE_NAME)/github.com/$(SERVICE_PATH)/pkg/$(SERVICE_NAME)/* pkg/$(SERVICE_NAME)
-	rm -rf pkg/$(SERVICE_NAME)/github.com/
+	#mv pkg/$(SERVICE_NAME)/github.com/$(SERVICE_PATH)/pkg/$(SERVICE_NAME)/* pkg/$(SERVICE_NAME)
+	#rm -rf pkg/$(SERVICE_NAME)/github.com/
 	cd pkg/$(SERVICE_NAME) && ls go.mod || (go mod init github.com/$(SERVICE_PATH)/pkg/$(SERVICE_NAME) && go mod tidy)
 
 .generate-finalize-python:
