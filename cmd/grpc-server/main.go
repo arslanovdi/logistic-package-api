@@ -6,6 +6,8 @@ import (
 	"github.com/arslanovdi/logistic-package-api/internal/logger"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 
 	_ "github.com/jackc/pgx/v5"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -48,29 +50,22 @@ func main() {
 		slog.String("environment", cfg.Project.Environment),
 	)
 
-	dsn := fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=%v sslmode=%v",
-		cfg.Database.Host,
-		cfg.Database.Port,
-		cfg.Database.User,
-		cfg.Database.Password,
-		cfg.Database.Name,
-		cfg.Database.SslMode,
-	)
-
-	db, err := database.NewPostgres(dsn, cfg.Database.Driver)
+	db, err := database.NewPostgres()
 	if err != nil {
 		log.Warn("Failed init postgres", slog.Any("error", err))
 		os.Exit(1)
 	}
 	defer db.Close()
 
-	*migration = false // todo: need to delete this line for homework-4
+	*migration = true // todo: need to delete this line for homework-4
 	if *migration {
 		if err = goose.Up(db.DB, cfg.Database.Migrations); err != nil {
 			log.Error("Migration failed", slog.Any("error", err))
 			return
 		}
 	}
+
+	//repo := repo.NewRepo(db, batchSize)
 
 	tracing, err := tracer.NewTracer(&cfg)
 	if err != nil {
@@ -83,6 +78,16 @@ func main() {
 	if err := server.NewGrpcServer(db, batchSize).Start(&cfg); err != nil {
 		log.Error("Failed creating gRPC server", slog.Any("error", err))
 
+		return
+	}
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+	select {
+	case <-stop:
+		slog.Info("Graceful shutdown")
+		goose.Down(db.DB, cfg.Database.Migrations)
+		slog.Info("Application stopped")
 		return
 	}
 }

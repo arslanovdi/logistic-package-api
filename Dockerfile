@@ -1,5 +1,6 @@
 #builder
 FROM golang:1.22-alpine as builder
+# качаем все что нужно для билда приложения
 RUN apk add --update make git protoc protobuf protobuf-dev curl
 
 COPY Makefile /home/Makefile
@@ -7,9 +8,11 @@ COPY go.mod /home/go.mod
 COPY go.sum /home/go.sum
 
 WORKDIR /home
+# установка зависимостей
 RUN make deps-go
 
 COPY . /home
+# собираем
 RUN make build-go
 
 # gRPC Server
@@ -23,7 +26,7 @@ LABEL org.opencontainers.image.source=https://${GITHUB_PATH}
 RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
-
+# копируем все что нужно для работы приложения
 COPY --from=builder /home/bin/grpc-server .
 COPY --from=builder /home/config.yml .
 COPY --from=builder /home/migrations/ ./migrations

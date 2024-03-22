@@ -4,14 +4,14 @@ project:
   environment: development
 
 grpc:
-  host: localhost
+  host: 0.0.0.0
   port: 8082
   maxConnectionIdle: 5 # Minutes
   timeout: 15 # Seconds
   maxConnectionAge: 5 # Minutes
 
 rest:
-  host: localhost
+  host: 0.0.0.0
   port: 8080
 
 metrics:
@@ -25,21 +25,25 @@ jaeger:
   port: ":6831"
 
 status:
-  host: localhost
+  host: 0.0.0.0
   port: 8000
   livenessPath: /live
   readinessPath: /ready
   versionPath: /version
 
 database:
-  host: postgres
+  host: localhost #postgres
   port: 5432
   user: docker
-  password: docker
-  name: logistic-package-api
+  password: P@$$w0rd
+  name: logistic_package_api
   sslmode: disable
   migrations: migrations
   driver: pgx
+  MaxOpenConns: 5
+  MaxIdleConns: 5
+  ConnMaxIdleTime: 5m
+  ConnMaxLifetime: 5m
 
 kafka:
   capacity: 512

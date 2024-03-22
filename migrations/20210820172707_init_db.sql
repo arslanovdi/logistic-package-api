@@ -1,8 +1,8 @@
 -- +goose Up
-CREATE TABLE template (
+CREATE TABLE IF NOT EXISTS package (
   id BIGSERIAL PRIMARY KEY,
-  foo BIGINT NOT NULL
+  title VARCHAR(255) NOT NULL
 );
 
 -- +goose Down
-DROP TABLE template;
+DROP TABLE package;
