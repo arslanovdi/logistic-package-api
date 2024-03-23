@@ -3,13 +3,14 @@ syntax = "proto3";
 package logistic_package_api.v1;
 
 import "validate/validate.proto";
+import "google/protobuf/wrappers.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 
-//option go_package = "github.com/arslanovdi/logistic-package-api/pkg/logistic-package-api;logistic_package_api";
 option go_package = "logistic-package-api.v1";
 
 service LogisticPackageApiService {
+
   rpc CreatePackageV1(CreatePackageRequestV1) returns (CreatePackageResponseV1) {
     option (google.api.http) = {
       post: "/v1/packages"
@@ -17,7 +18,13 @@ service LogisticPackageApiService {
     };
   }
 
-  rpc DescribePackageV1(DescribePackageV1Request) returns (DescribePackageV1Response) {
+  rpc DeletePackageV1(DeletePackageV1Request) returns (DeletePackageV1Response) {
+    option (google.api.http) = {
+      delete: "/v1/packages/{package_id}"
+    };
+  }
+
+  rpc GetPackageV1(GetPackageV1Request) returns (GetPackageV1Response) {
     option (google.api.http) = {
       get: "/v1/packages/{package_id}"
     };
@@ -29,18 +36,19 @@ service LogisticPackageApiService {
     };
   }
 
-  rpc RemovePackageV1(RemovePackageV1Request) returns (RemovePackageV1Response) {
+  rpc UpdatePackageV1(UpdatePackageV1Request) returns (UpdatePackageV1Response) {
     option (google.api.http) = {
-      delete: "/v1/packages/{package_id}"
+      put: "/v1/packages/{package_id}"
+      body: "*"
     };
   }
-
 }
 
 message Package {
   uint64 id  = 1;
   string title = 2;
-  google.protobuf.Timestamp created = 3;
+  optional uint64 weight = 3;
+  google.protobuf.Timestamp created = 4;
 }
 
 message CreatePackageRequestV1 {
@@ -51,11 +59,19 @@ message CreatePackageResponseV1 {
   uint64 package_id  = 1;
 }
 
-message DescribePackageV1Request {
+message DeletePackageV1Request {
   uint64 package_id = 1 [(validate.rules).uint64.gt = 0];
 }
 
-message DescribePackageV1Response {
+message DeletePackageV1Response {
+  bool removed = 1;
+}
+
+message GetPackageV1Request {
+  uint64 package_id = 1 [(validate.rules).uint64.gt = 0];
+}
+
+message GetPackageV1Response {
   Package value = 1;
 }
 
@@ -68,10 +84,13 @@ message ListPackagesV1Response {
   repeated Package packages = 1;
 }
 
-message RemovePackageV1Request {
+message UpdatePackageV1Request {
   uint64 package_id = 1 [(validate.rules).uint64.gt = 0];
+  Package value = 2;
 }
 
-message RemovePackageV1Response {
-  bool removed = 1;
+message UpdatePackageV1Response {
+  bool updated = 1;
 }
+
+

@@ -59,10 +59,13 @@ func main() {
 
 	*migration = true // todo: need to delete this line for homework-4
 	if *migration {
+		//goose.SetBaseFS(migrations.EmbedFS) // можно примонтировать как файлы с миграциями
+		//if err = goose.Up(db.DB, "."); err != nil {
 		if err = goose.Up(db.DB, cfg.Database.Migrations); err != nil {
 			log.Error("Migration failed", slog.Any("error", err))
 			return
 		}
+
 	}
 
 	//repo := repo.NewRepo(db, batchSize)

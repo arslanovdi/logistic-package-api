@@ -30,10 +30,17 @@ func (p *packageAPI) CreatePackageV1(ctx context.Context, req *pb.CreatePackageR
 	return nil, model.ErrNotImplemented
 }
 
-func (p *packageAPI) DescribePackageV1(ctx context.Context, req *pb.DescribePackageV1Request) (*pb.DescribePackageV1Response, error) {
-	log := slog.With("func", "api.DescribePackageV1")
+func (p *packageAPI) DeletePackageV1(ctx context.Context, req *pb.DeletePackageV1Request) (*pb.DeletePackageV1Response, error) {
+	log := slog.With("func", "api.DeletePackageV1")
 	//TODO implement me
-	log.Debug("DescribePackageV1 - not implemented")
+	log.Debug("DeletePackageV1 - not implemented")
+	return nil, model.ErrNotImplemented
+}
+
+func (p *packageAPI) GetPackageV1(ctx context.Context, req *pb.GetPackageV1Request) (*pb.GetPackageV1Response, error) {
+	log := slog.With("func", "api.GetPackageV1")
+	//TODO implement me
+	log.Debug("GetPackageV1 - not implemented")
 	return nil, model.ErrNotImplemented
 
 	/*if err := req.Validate(); err != nil {
@@ -68,10 +75,10 @@ func (p *packageAPI) ListPackagesV1(ctx context.Context, req *pb.ListPackagesV1R
 	return nil, model.ErrNotImplemented
 }
 
-func (p *packageAPI) RemovePackageV1(ctx context.Context, req *pb.RemovePackageV1Request) (*pb.RemovePackageV1Response, error) {
-	log := slog.With("func", "api.RemovePackageV1")
+func (p *packageAPI) UpdatePackageV1(ctx context.Context, req *pb.UpdatePackageV1Request) (*pb.UpdatePackageV1Response, error) {
+	log := slog.With("func", "api.UpdatePackageV1")
 	//TODO implement me
-	log.Debug("RemovePackageV1 - not implemented")
+	log.Debug("UpdatePackageV1 - not implemented")
 	return nil, model.ErrNotImplemented
 }
 

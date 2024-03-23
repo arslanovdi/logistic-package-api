@@ -86,12 +86,12 @@
     },
     "/v1/packages/{packageId}": {
       "get": {
-        "operationId": "LogisticPackageApiService_DescribePackageV1",
+        "operationId": "LogisticPackageApiService_GetPackageV1",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1DescribePackageV1Response"
+              "$ref": "#/definitions/v1GetPackageV1Response"
             }
           },
           "default": {
@@ -115,12 +115,12 @@
         ]
       },
       "delete": {
-        "operationId": "LogisticPackageApiService_RemovePackageV1",
+        "operationId": "LogisticPackageApiService_DeletePackageV1",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1RemovePackageV1Response"
+              "$ref": "#/definitions/v1DeletePackageV1Response"
             }
           },
           "default": {
@@ -142,10 +142,55 @@
         "tags": [
           "LogisticPackageApiService"
         ]
+      },
+      "put": {
+        "operationId": "LogisticPackageApiService_UpdatePackageV1",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdatePackageV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "packageId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LogisticPackageApiServiceUpdatePackageV1Body"
+            }
+          }
+        ],
+        "tags": [
+          "LogisticPackageApiService"
+        ]
       }
     }
   },
   "definitions": {
+    "LogisticPackageApiServiceUpdatePackageV1Body": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "$ref": "#/definitions/v1Package"
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -191,7 +236,15 @@
         }
       }
     },
-    "v1DescribePackageV1Response": {
+    "v1DeletePackageV1Response": {
+      "type": "object",
+      "properties": {
+        "removed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1GetPackageV1Response": {
       "type": "object",
       "properties": {
         "value": {
@@ -221,16 +274,20 @@
         "title": {
           "type": "string"
         },
+        "weight": {
+          "type": "string",
+          "format": "uint64"
+        },
         "created": {
           "type": "string",
           "format": "date-time"
         }
       }
     },
-    "v1RemovePackageV1Response": {
+    "v1UpdatePackageV1Response": {
       "type": "object",
       "properties": {
-        "removed": {
+        "updated": {
           "type": "boolean"
         }
       }
