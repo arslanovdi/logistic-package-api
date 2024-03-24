@@ -3,6 +3,8 @@ package server
 import (
 	"context"
 	"errors"
+	"fmt"
+	"github.com/arslanovdi/logistic-package-api/internal/config"
 	"github.com/opentracing/opentracing-go"
 	"google.golang.org/grpc/credentials/insecure"
 	"log/slog"
@@ -26,10 +28,18 @@ var (
 	})
 )
 
-// createGatewayServer returns HTTP gRPC-gateway server
-func createGatewayServer(grpcAddr, gatewayAddr string) *http.Server {
+type gatewayServer struct {
+	server *http.Server
+}
+
+// NewGatewayServer returns HTTP gRPC-gateway server
+func NewGatewayServer() *gatewayServer {
 	// Create a client connection to the gRPC Server we just started.
 	// This is where the gRPC-Gateway proxies the requests.
+
+	cfg := config.GetConfigInstance()
+	grpcAddr := fmt.Sprintf("%s:%v", cfg.Grpc.Host, cfg.Grpc.Port)
+	gatewayAddr := fmt.Sprintf("%s:%v", cfg.Rest.Host, cfg.Rest.Port)
 
 	log := slog.With("func", "server.createGatewayServer")
 
@@ -66,12 +76,41 @@ func createGatewayServer(grpcAddr, gatewayAddr string) *http.Server {
 
 	mux.Handle("/swagger-ui/", http.StripPrefix("/swagger-ui/", http.FileServer(http.Dir("./swagger-ui/"))))
 
-	gatewayServer := &http.Server{
+	server := &http.Server{
 		Addr:    gatewayAddr,
 		Handler: tracingWrapper(mux), // трэйсы, включая сваггер запросы
 	}
 
-	return gatewayServer
+	return &gatewayServer{
+		server: server,
+	}
+}
+
+func (s *gatewayServer) Start(cancelFunc context.CancelFunc) {
+	log := slog.With("func", "GatewayServer.Start")
+
+	cfg := config.GetConfigInstance()
+
+	gatewayAddr := fmt.Sprintf("%s:%v", cfg.Rest.Host, cfg.Rest.Port)
+
+	go func() {
+		log.Info("Gateway server is running", slog.String("address", gatewayAddr))
+		log.Info("Swagger server is running", slog.String("address", gatewayAddr+"/swagger-ui/"))
+		if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Error("Failed running gateway server", slog.Any("error", err))
+			cancelFunc()
+		}
+	}()
+}
+
+func (s *gatewayServer) Stop(ctx context.Context) {
+	log := slog.With("func", "GatewayServer.Stop")
+
+	if err := s.server.Shutdown(ctx); err != nil {
+		log.Error("gatewayServer.Shutdown", slog.Any("error", err))
+	} else {
+		log.Info("gatewayServer shut down correctly")
+	}
 }
 
 var grpcGatewayTag = opentracing.Tag{Key: string(ext.Component), Value: "grpc-gateway"}

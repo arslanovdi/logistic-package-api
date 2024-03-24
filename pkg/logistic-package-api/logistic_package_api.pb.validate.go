@@ -58,7 +58,16 @@ func (m *Package) validate(all bool) error {
 
 	// no validation rules for Id
 
-	// no validation rules for Title
+	if l := utf8.RuneCountInString(m.GetTitle()); l < 1 || l > 50 {
+		err := PackageValidationError{
+			field:  "Title",
+			reason: "value length must be between 1 and 50 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if all {
 		switch v := interface{}(m.GetCreated()).(type) {
@@ -90,7 +99,18 @@ func (m *Package) validate(all bool) error {
 	}
 
 	if m.Weight != nil {
-		// no validation rules for Weight
+
+		if m.GetWeight() <= 0 {
+			err := PackageValidationError{
+				field:  "Weight",
+				reason: "value must be greater than 0",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
 	}
 
 	if len(errors) > 0 {
@@ -540,7 +560,7 @@ func (m *DeletePackageV1Response) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Removed
+	// no validation rules for Deleted
 
 	if len(errors) > 0 {
 		return DeletePackageV1ResponseMultiError(errors)

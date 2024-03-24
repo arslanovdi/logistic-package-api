@@ -1,18 +1,22 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/arslanovdi/logistic-package-api/internal/logger"
-	"log/slog"
-	"os"
-	"os/signal"
-	"syscall"
-
+	"github.com/arslanovdi/logistic-package-api/internal/service"
 	_ "github.com/jackc/pgx/v5"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/lib/pq"
 	"github.com/pressly/goose/v3"
+	"log/slog"
+	"os"
+	"os/signal"
+	"sync/atomic"
+	"syscall"
+	"time"
 
 	"github.com/arslanovdi/logistic-package-api/internal/config"
 	"github.com/arslanovdi/logistic-package-api/internal/database"
@@ -28,14 +32,21 @@ func main() {
 	logger.InitializeLogger()
 	log := slog.With("func", "grpc-server.main")
 
+	startCtx, cancel := context.WithTimeout(context.Background(), time.Minute) // контекст запуска приложения
+	defer cancel()
+	go func() {
+		<-startCtx.Done()
+		if errors.Is(startCtx.Err(), context.DeadlineExceeded) { // приложение зависло при запуске
+			log.Warn("Application startup time exceeded")
+			os.Exit(1)
+		}
+	}()
+
 	if err := config.ReadConfigYML("config.yml"); err != nil {
 		log.Warn("Failed init configuration", slog.Any("error", err))
 		os.Exit(1)
 	}
 	cfg := config.GetConfigInstance()
-
-	migration := flag.Bool("migration", true, "Defines the migration start option")
-	flag.Parse()
 
 	if cfg.Project.Debug {
 		logger.SetLogLevel(slog.LevelDebug)
@@ -57,40 +68,67 @@ func main() {
 	}
 	defer db.Close()
 
-	*migration = true // todo: need to delete this line for homework-4
-	if *migration {
-		//goose.SetBaseFS(migrations.EmbedFS) // можно примонтировать как файлы с миграциями
-		//if err = goose.Up(db.DB, "."); err != nil {
-		if err = goose.Up(db.DB, cfg.Database.Migrations); err != nil {
-			log.Error("Migration failed", slog.Any("error", err))
-			return
-		}
+	migration := flag.Bool("migration", true, "Defines the migration start option") // миграцию запускаем параметром из командной строки -migration
+	flag.Parse()
 
+	if *migration {
+		log.Info("Migration started")
+		if err = goose.Up(db.DB, cfg.Database.Migrations); err != nil {
+			log.Warn("Migration failed", slog.Any("error", err))
+			os.Exit(1)
+		}
 	}
 
-	//repo := repo.NewRepo(db, batchSize)
+	repo := database.NewRepo(db, batchSize)
+	packageService := service.NewPackageService(db, repo)
 
 	tracing, err := tracer.NewTracer(&cfg)
 	if err != nil {
 		log.Error("Failed init tracing", slog.Any("error", err))
-
-		return
+		os.Exit(1)
 	}
 	defer tracing.Close()
 
-	if err := server.NewGrpcServer(db, batchSize).Start(&cfg); err != nil {
-		log.Error("Failed creating gRPC server", slog.Any("error", err))
+	ctxServer, cancelServer := context.WithCancel(context.Background()) // контекст запуска серверов, при ошибке в любом из серверов контекст отменяется
+	isReady := &atomic.Value{}
+	isReady.Store(false)
 
-		return
-	}
+	go func() { // TODO отсечка статус сервера
+		time.Sleep(2 * time.Second)
+		isReady.Store(true)
+		log.Info("The service is ready to accept requests")
+	}()
 
+	grpcServer := server.NewGrpcServer(packageService, batchSize)
+	grpcServer.Start(cancelServer)
+
+	metricsServer := server.NewMetricsServer()
+	metricsServer.Start(cancelServer)
+
+	statusServer := server.NewStatusServer(isReady)
+	statusServer.Start(cancelServer)
+
+	gatewayServer := server.NewGatewayServer()
+	gatewayServer.Start(cancelServer)
+
+	cancel() // отменяем контекст запуска приложения
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
-	select {
-	case <-stop:
-		slog.Info("Graceful shutdown")
-		goose.Down(db.DB, cfg.Database.Migrations)
-		slog.Info("Application stopped")
-		return
+	for {
+		select {
+		case <-ctxServer.Done(): // ошибка при старте любого из серверов
+			log.Warn("Fail on start servers")
+			os.Exit(1)
+		case <-stop:
+			slog.Info("Graceful shutdown")
+			isReady.Store(false)
+			//goose.Down(db.DB, cfg.Database.Migrations)
+			grpcServer.Stop()
+			metricsServer.Stop(ctxServer)
+			statusServer.Stop(ctxServer)
+			gatewayServer.Stop(ctxServer)
+			slog.Info("Application stopped")
+			return
+		}
 	}
 }

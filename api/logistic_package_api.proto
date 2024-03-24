@@ -46,8 +46,8 @@ service LogisticPackageApiService {
 
 message Package {
   uint64 id  = 1;
-  string title = 2;
-  optional uint64 weight = 3;
+  string title = 2 [(validate.rules).string = {min_len: 1, max_len: 50}];
+  optional uint64 weight = 3 [(validate.rules).uint64.gt = 0];
   google.protobuf.Timestamp created = 4;
 }
 
@@ -64,7 +64,7 @@ message DeletePackageV1Request {
 }
 
 message DeletePackageV1Response {
-  bool removed = 1;
+  bool deleted = 1;
 }
 
 message GetPackageV1Request {

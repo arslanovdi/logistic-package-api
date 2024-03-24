@@ -1,7 +1,9 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -10,21 +12,58 @@ import (
 	"github.com/arslanovdi/logistic-package-api/internal/config"
 )
 
-func createStatusServer(cfg *config.Config, isReady *atomic.Value) *http.Server {
+type statusServer struct {
+	server *http.Server
+}
+
+func NewStatusServer(isReady *atomic.Value) *statusServer {
+
+	cfg := config.GetConfigInstance()
+
 	statusAddr := fmt.Sprintf("%s:%v", cfg.Status.Host, cfg.Status.Port)
 
 	mux := http.DefaultServeMux
 
 	mux.HandleFunc(cfg.Status.LivenessPath, livenessHandler)
 	mux.HandleFunc(cfg.Status.ReadinessPath, readinessHandler(isReady))
-	mux.HandleFunc(cfg.Status.VersionPath, versionHandler(cfg))
+	mux.HandleFunc(cfg.Status.VersionPath, versionHandler(&cfg))
 
-	statusServer := &http.Server{
+	server := &http.Server{
 		Addr:    statusAddr,
 		Handler: mux,
 	}
 
-	return statusServer
+	return &statusServer{
+		server: server,
+	}
+}
+
+func (s *statusServer) Start(cancelFunc context.CancelFunc) {
+
+	log := slog.With("func", "StatusServer.Start")
+
+	cfg := config.GetConfigInstance()
+
+	statusAdrr := fmt.Sprintf("%s:%v", cfg.Status.Host, cfg.Status.Port)
+
+	go func() {
+		log.Info("Status server is running", slog.String("address", statusAdrr))
+		if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Error("Failed running status server", slog.Any("error", err))
+			cancelFunc()
+		}
+	}()
+}
+
+func (s *statusServer) Stop(ctx context.Context) {
+
+	log := slog.With("func", "StatusServer.Stop")
+
+	if err := s.server.Shutdown(ctx); err != nil {
+		log.Error("statusServer.Shutdown", slog.Any("error", err))
+	} else {
+		log.Info("statusServer shut down correctly")
+	}
 }
 
 func livenessHandler(w http.ResponseWriter, _ *http.Request) {

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"time"
@@ -108,15 +109,6 @@ type Config struct {
 	Status   Status   `yaml:"status"`
 }
 
-// TODO потом удалить, реализовать через database type
-type DB struct {
-	DSN             string        `yaml:"DSN"`
-	MaxOpenConns    int           `yaml:"maxOpenConns"`
-	MaxIdleConns    int           `yaml:"maxIdleConns"`
-	ConnMaxIdleTime time.Duration `yaml:"connMaxIdleTime"`
-	ConnMaxLifetime time.Duration `yaml:"connMaxLifetime"`
-}
-
 // ReadConfigYML - read configurations from file and init instance Config.
 func ReadConfigYML(filePath string) error {
 	if cfg != nil {
@@ -125,7 +117,7 @@ func ReadConfigYML(filePath string) error {
 
 	file, err := os.Open(filepath.Clean(filePath))
 	if err != nil {
-		return err
+		return fmt.Errorf("config.ReadConfigYML: %w", err)
 	}
 	defer func() {
 		_ = file.Close()
@@ -133,7 +125,7 @@ func ReadConfigYML(filePath string) error {
 
 	decoder := yaml.NewDecoder(file)
 	if err := decoder.Decode(&cfg); err != nil {
-		return err
+		return fmt.Errorf("config.ReadConfigYML: %w", err)
 	}
 
 	cfg.Project.Version = version

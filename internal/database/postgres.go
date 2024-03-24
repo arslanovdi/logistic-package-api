@@ -26,9 +26,7 @@ func NewPostgres() (*sqlx.DB, error) {
 
 	db, err := sqlx.Open(cfg.Database.Driver, dsn)
 	if err != nil {
-		log.Error("failed to create database connection", slog.Any("error", err))
-
-		return nil, err
+		return nil, fmt.Errorf("database.NewPostgres.Open: %w", err)
 	}
 
 	db.SetMaxOpenConns(cfg.Database.MaxOpenConns)
@@ -38,8 +36,7 @@ func NewPostgres() (*sqlx.DB, error) {
 
 	err = db.Ping()
 	if err != nil {
-		log.Error("failed to ping database", slog.Any("error", err))
-		return nil, err
+		return nil, fmt.Errorf("database.NewPostgres.Ping: %w", err)
 	}
 
 	log.Info("successfully connected to database")

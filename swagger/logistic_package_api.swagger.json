@@ -239,7 +239,7 @@
     "v1DeletePackageV1Response": {
       "type": "object",
       "properties": {
-        "removed": {
+        "deleted": {
           "type": "boolean"
         }
       }

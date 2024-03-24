@@ -32,9 +32,9 @@ status:
   versionPath: /version
 
 database:
-  host: localhost #postgres
+  host: postgres
   port: 5432
-  user: docker
+  user: logistic
   password: P@$$w0rd
   name: logistic_package_api
   sslmode: disable
