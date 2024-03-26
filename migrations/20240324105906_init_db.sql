@@ -1,13 +1,13 @@
 -- +goose Up
 -- +goose StatementBegin
-create table IF NOT EXISTS package
+create table package
 (
-    id        bigint
+    id        bigserial
         constraint package_pk
             primary key,
-    title     varchar(50) not null,
-    weight    bigint,
-    createdAt timestamp   not null
+    weight    integer,
+    title     varchar(50),
+    createdat timestamp
 );
 
 comment on table package is 'logistic package omp db';

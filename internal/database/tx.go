@@ -3,12 +3,9 @@ package database
 import (
 	"context"
 	"database/sql"
-	"github.com/Masterminds/squirrel"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
-
-var StaitmentBuilder = squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar) // Плэйсхолдер для Postgres
 
 type WithTxFunc func(ctx context.Context, tx *sqlx.Tx) error
 

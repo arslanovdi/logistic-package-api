@@ -8,6 +8,7 @@ import (
 	"github.com/arslanovdi/logistic-package-api/internal/logger"
 	"github.com/arslanovdi/logistic-package-api/internal/service"
 	_ "github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/lib/pq"
 	"github.com/pressly/goose/v3"
@@ -61,26 +62,23 @@ func main() {
 		slog.String("environment", cfg.Project.Environment),
 	)
 
-	db, err := database.NewPostgres()
-	if err != nil {
-		log.Warn("Failed init postgres", slog.Any("error", err))
-		os.Exit(1)
-	}
-	defer db.Close()
+	dbpool := database.MustGetPgxPool(context.Background())
+	defer dbpool.Close()
 
 	migration := flag.Bool("migration", true, "Defines the migration start option") // миграцию запускаем параметром из командной строки -migration
 	flag.Parse()
 
 	if *migration {
 		log.Info("Migration started")
-		if err = goose.Up(db.DB, cfg.Database.Migrations); err != nil {
+		if err := goose.Up(stdlib.OpenDBFromPool(dbpool), // получаем соединение с базой данных из пула
+			cfg.Database.Migrations); err != nil {
 			log.Warn("Migration failed", slog.Any("error", err))
 			os.Exit(1)
 		}
 	}
 
-	repo := database.NewRepo(db, batchSize)
-	packageService := service.NewPackageService(db, repo)
+	repo := database.NewPostgresRepo(dbpool, batchSize)
+	packageService := service.NewPackageService(dbpool, repo)
 
 	tracing, err := tracer.NewTracer(&cfg)
 	if err != nil {
@@ -122,7 +120,8 @@ func main() {
 		case <-stop:
 			slog.Info("Graceful shutdown")
 			isReady.Store(false)
-			//goose.Down(db.DB, cfg.Database.Migrations)
+			goose.Down(stdlib.OpenDBFromPool(dbpool),
+				cfg.Database.Migrations)
 			grpcServer.Stop()
 			metricsServer.Stop(ctxServer)
 			statusServer.Stop(ctxServer)

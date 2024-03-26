@@ -2,11 +2,9 @@ package config
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
-	"time"
-
-	"gopkg.in/yaml.v3"
 )
 
 // Build information -ldflags .
@@ -28,18 +26,14 @@ func GetConfigInstance() Config {
 
 // Database - contains all parameters database connection.
 type Database struct {
-	Host            string        `yaml:"host"`
-	Port            string        `yaml:"port"`
-	User            string        `yaml:"user"`
-	Password        string        `yaml:"password"`
-	Migrations      string        `yaml:"migrations"`
-	Name            string        `yaml:"name"`
-	SslMode         string        `yaml:"sslmode"`
-	Driver          string        `yaml:"driver"`
-	MaxOpenConns    int           `yaml:"maxOpenConns"`
-	MaxIdleConns    int           `yaml:"maxIdleConns"`
-	ConnMaxIdleTime time.Duration `yaml:"connMaxIdleTime"`
-	ConnMaxLifetime time.Duration `yaml:"connMaxLifetime"`
+	Host       string `yaml:"host"`
+	Port       string `yaml:"port"`
+	User       string `yaml:"user"`
+	Password   string `yaml:"password"`
+	Migrations string `yaml:"migrations"`
+	Name       string `yaml:"name"`
+	SslMode    string `yaml:"sslmode"`
+	Driver     string `yaml:"driver"`
 }
 
 // Grpc - contains parameter address grpc.
