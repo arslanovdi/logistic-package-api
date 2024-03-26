@@ -82,6 +82,36 @@
         "tags": [
           "LogisticPackageApiService"
         ]
+      },
+      "put": {
+        "operationId": "LogisticPackageApiService_UpdatePackageV1",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdatePackageV1Response"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1UpdatePackageV1Request"
+            }
+          }
+        ],
+        "tags": [
+          "LogisticPackageApiService"
+        ]
       }
     },
     "/v1/packages/{packageId}": {
@@ -142,55 +172,10 @@
         "tags": [
           "LogisticPackageApiService"
         ]
-      },
-      "put": {
-        "operationId": "LogisticPackageApiService_UpdatePackageV1",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1UpdatePackageV1Response"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "packageId",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/LogisticPackageApiServiceUpdatePackageV1Body"
-            }
-          }
-        ],
-        "tags": [
-          "LogisticPackageApiService"
-        ]
       }
     }
   },
   "definitions": {
-    "LogisticPackageApiServiceUpdatePackageV1Body": {
-      "type": "object",
-      "properties": {
-        "value": {
-          "$ref": "#/definitions/v1Package"
-        }
-      }
-    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -281,6 +266,18 @@
         "created": {
           "type": "string",
           "format": "date-time"
+        },
+        "updated": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "v1UpdatePackageV1Request": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "$ref": "#/definitions/v1Package"
         }
       }
     },

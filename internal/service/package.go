@@ -13,7 +13,7 @@ type Repo interface {
 	DeletePackage(ctx context.Context, id uint64) (bool, error)
 	GetPackage(ctx context.Context, id uint64) (*model.Package, error)
 	ListPackages(ctx context.Context, offset uint64, limit uint64) ([]model.Package, error)
-	UpdatePackage(ctx context.Context, id uint64, pkg model.Package) (bool, error)
+	UpdatePackage(ctx context.Context, pkg model.Package) (bool, error)
 }
 
 // PackageService is service for Package
@@ -60,9 +60,9 @@ func (p *PackageService) ListPackages(ctx context.Context, offset uint64, limit 
 	return packages, nil
 }
 
-func (p *PackageService) UpdatePackage(ctx context.Context, cursor uint64, pkg model.Package) (bool, error) {
+func (p *PackageService) UpdatePackage(ctx context.Context, pkg model.Package) (bool, error) {
 
-	ok, err := p.repo.UpdatePackage(ctx, cursor, pkg)
+	ok, err := p.repo.UpdatePackage(ctx, pkg)
 	if err != nil {
 		return false, fmt.Errorf("service.PackageService.UpdatePackage: %w", err)
 	}

@@ -30,18 +30,18 @@ func (p *packageAPI) CreatePackageV1(ctx context.Context, req *pb.CreatePackageR
 
 	log := slog.With("func", "api.CreatePackageV1")
 
-	if err := req.Validate(); err != nil {
-		log.Error("CreatePackageV1 - invalid argument", slog.Any("error", err))
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+	if err1 := req.Validate(); err1 != nil {
+		log.Error("CreatePackageV1 - invalid argument", slog.String("error", err1.Error()))
+		return nil, status.Error(codes.InvalidArgument, err1.Error())
 	}
 
 	pkg := model.Package{}
 	pkg.FromProto(req.Value)
 
-	id, err := p.packageService.Create(ctx, pkg)
-	if err != nil {
-		log.Error("CreatePackageV1 - failed", slog.Any("error", err))
-		return nil, status.Error(codes.Internal, err.Error())
+	id, err2 := p.packageService.Create(ctx, pkg)
+	if err2 != nil {
+		log.Error("CreatePackageV1 - failed", slog.String("error", err2.Error()))
+		return nil, status.Error(codes.Internal, err2.Error())
 	}
 
 	log.Debug("CreatePackageV1 - created", slog.Uint64("id", *id))
@@ -54,15 +54,15 @@ func (p *packageAPI) DeletePackageV1(ctx context.Context, req *pb.DeletePackageV
 
 	log := slog.With("func", "api.DeletePackageV1")
 
-	if err := req.Validate(); err != nil {
-		log.Error("DeletePackageV1 - invalid argument", slog.Any("error", err))
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+	if err1 := req.Validate(); err1 != nil {
+		log.Error("DeletePackageV1 - invalid argument", slog.String("error", err1.Error()))
+		return nil, status.Error(codes.InvalidArgument, err1.Error())
 	}
 
-	ok, err := p.packageService.DeletePackage(ctx, req.PackageId)
-	if err != nil {
-		log.Error("DeletePackageV1 - failed", slog.Any("error", err))
-		return nil, status.Error(codes.Internal, err.Error()) // TODO переделать коды, с возвратом ошибок из сервисного слоя -> из репо
+	ok, err2 := p.packageService.DeletePackage(ctx, req.PackageId)
+	if err2 != nil {
+		log.Error("DeletePackageV1 - failed", slog.String("error", err2.Error()))
+		return nil, status.Error(codes.Internal, err2.Error()) // TODO переделать коды, с возвратом ошибок из сервисного слоя -> из репо
 	}
 
 	if !ok { // TODO возможно нужно избавиться от возврата ok в проекте, возвращать ошибки
@@ -82,14 +82,14 @@ func (p *packageAPI) GetPackageV1(ctx context.Context, req *pb.GetPackageV1Reque
 
 	log := slog.With("func", "api.GetPackageV1")
 
-	if err := req.Validate(); err != nil {
-		log.Error("GetPackageV1 - invalid argument", slog.Any("error", err))
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+	if err1 := req.Validate(); err1 != nil {
+		log.Error("GetPackageV1 - invalid argument", slog.String("error", err1.Error()))
+		return nil, status.Error(codes.InvalidArgument, err1.Error())
 	}
 
-	pkg, err := p.packageService.GetPackage(ctx, req.PackageId)
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+	pkg, err2 := p.packageService.GetPackage(ctx, req.PackageId)
+	if err2 != nil {
+		return nil, status.Error(codes.Internal, err2.Error())
 	}
 
 	if pkg == nil { // TODO возможно нужно возвращать ошибки NotFound
@@ -97,7 +97,7 @@ func (p *packageAPI) GetPackageV1(ctx context.Context, req *pb.GetPackageV1Reque
 		return nil, status.Error(codes.NotFound, "")
 	}
 
-	log.Debug("GetPackageV1 - found", slog.Uint64("id", req.PackageId))
+	log.Debug("package found", slog.Any("package", pkg)) // TODO проверить
 
 	return &pb.GetPackageV1Response{
 			Value: pkg.ToProto(),
@@ -109,14 +109,14 @@ func (p *packageAPI) ListPackagesV1(ctx context.Context, req *pb.ListPackagesV1R
 
 	log := slog.With("func", "api.ListPackagesV1")
 
-	if err := req.Validate(); err != nil {
-		log.Error("ListPackagesV1 - invalid argument", slog.Any("error", err))
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+	if err1 := req.Validate(); err1 != nil {
+		log.Error("ListPackagesV1 - invalid argument", slog.String("error", err1.Error()))
+		return nil, status.Error(codes.InvalidArgument, err1.Error())
 	}
 
-	packages, err := p.packageService.ListPackages(ctx, req.Offset, req.Limit)
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+	packages, err2 := p.packageService.ListPackages(ctx, req.Offset, req.Limit)
+	if err2 != nil {
+		return nil, status.Error(codes.Internal, err2.Error())
 	}
 
 	if len(packages) == 0 {
@@ -141,24 +141,24 @@ func (p *packageAPI) UpdatePackageV1(ctx context.Context, req *pb.UpdatePackageV
 
 	log := slog.With("func", "api.UpdatePackageV1")
 
-	if err := req.Validate(); err != nil {
-		log.Error("UpdatePackageV1 - invalid argument", slog.Any("error", err))
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+	if err1 := req.Validate(); err1 != nil {
+		log.Error("UpdatePackageV1 - invalid argument", slog.String("error", err1.Error()))
+		return nil, status.Error(codes.InvalidArgument, err1.Error())
 	}
 
 	pkg := model.Package{}
 	pkg.FromProto(req.Value)
 
-	ok, err := p.packageService.UpdatePackage(ctx, req.PackageId, pkg)
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+	ok, err2 := p.packageService.UpdatePackage(ctx, pkg)
+	if err2 != nil {
+		return nil, status.Error(codes.Internal, err2.Error())
 	}
 	if !ok {
-		log.Debug("UpdatePackageV1 - not found", slog.Uint64("id", req.PackageId))
+		log.Debug("UpdatePackageV1 - not found", slog.Uint64("id", pkg.ID))
 		return nil, status.Error(codes.NotFound, "")
 	}
 
-	log.Debug("UpdatePackageV1 - updated", slog.Uint64("id", req.PackageId))
+	log.Debug("UpdatePackageV1 - updated", slog.Uint64("id", pkg.ID))
 
 	return &pb.UpdatePackageV1Response{
 			Updated: ok,

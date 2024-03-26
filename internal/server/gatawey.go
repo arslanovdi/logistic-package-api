@@ -56,14 +56,14 @@ func NewGatewayServer() *gatewayServer {
 	if err != nil {
 		log.Warn("Failed to dial gRPC server",
 			slog.String("func", "createGatewayServer"),
-			slog.Any("error", err))
+			slog.String("error", err.Error()))
 	}
 
 	rmux := runtime.NewServeMux()
 	if err := pb.RegisterLogisticPackageApiServiceHandler(context.Background(), rmux, conn); err != nil {
 		log.Warn("Failed registration handler",
 			slog.String("func", "createGatewayServer"),
-			slog.Any("error", err))
+			slog.String("error", err.Error()))
 		os.Exit(1)
 	}
 
@@ -97,7 +97,7 @@ func (s *gatewayServer) Start(cancelFunc context.CancelFunc) {
 		log.Info("Gateway server is running", slog.String("address", gatewayAddr))
 		log.Info("Swagger server is running", slog.String("address", gatewayAddr+"/swagger-ui/"))
 		if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Error("Failed running gateway server", slog.Any("error", err))
+			log.Error("Failed running gateway server", slog.String("error", err.Error()))
 			cancelFunc()
 		}
 	}()
@@ -107,7 +107,7 @@ func (s *gatewayServer) Stop(ctx context.Context) {
 	log := slog.With("func", "GatewayServer.Stop")
 
 	if err := s.server.Shutdown(ctx); err != nil {
-		log.Error("gatewayServer.Shutdown", slog.Any("error", err))
+		log.Error("gatewayServer.Shutdown", slog.String("error", err.Error()))
 	} else {
 		log.Info("gatewayServer shut down correctly")
 	}

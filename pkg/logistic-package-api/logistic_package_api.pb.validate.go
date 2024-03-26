@@ -98,6 +98,35 @@ func (m *Package) validate(all bool) error {
 		}
 	}
 
+	if all {
+		switch v := interface{}(m.GetUpdated()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, PackageValidationError{
+					field:  "Updated",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, PackageValidationError{
+					field:  "Updated",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUpdated()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return PackageValidationError{
+				field:  "Updated",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	if m.Weight != nil {
 
 		if m.GetWeight() <= 0 {
@@ -1167,17 +1196,6 @@ func (m *UpdatePackageV1Request) validate(all bool) error {
 	}
 
 	var errors []error
-
-	if m.GetPackageId() <= 0 {
-		err := UpdatePackageV1RequestValidationError{
-			field:  "PackageId",
-			reason: "value must be greater than 0",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
 
 	if all {
 		switch v := interface{}(m.GetValue()).(type) {

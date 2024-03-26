@@ -30,7 +30,7 @@ func NewTracer(cfg *config.Config) (io.Closer, error) {
 	}
 	tracer, closer, err := cfgTracer.NewTracer(jaegercfg.Logger(jaeger.StdLogger))
 	if err != nil {
-		log.Error("failed init jaeger", slog.Any("error", err))
+		log.Error("failed init jaeger", slog.String("error", err.Error()))
 
 		return nil, err
 	}

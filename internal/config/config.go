@@ -109,17 +109,17 @@ func ReadConfigYML(filePath string) error {
 		return nil
 	}
 
-	file, err := os.Open(filepath.Clean(filePath))
-	if err != nil {
-		return fmt.Errorf("config.ReadConfigYML: %w", err)
+	file, err1 := os.Open(filepath.Clean(filePath))
+	if err1 != nil {
+		return fmt.Errorf("config.ReadConfigYML: %w", err1)
 	}
 	defer func() {
 		_ = file.Close()
 	}()
 
 	decoder := yaml.NewDecoder(file)
-	if err := decoder.Decode(&cfg); err != nil {
-		return fmt.Errorf("config.ReadConfigYML: %w", err)
+	if err2 := decoder.Decode(&cfg); err2 != nil {
+		return fmt.Errorf("config.ReadConfigYML: %w", err2)
 	}
 
 	cfg.Project.Version = version

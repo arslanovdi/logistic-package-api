@@ -75,14 +75,14 @@ func (s *GrpcServer) Start(cancelFunc context.CancelFunc) {
 	var err error
 	s.lis, err = net.Listen("tcp", grpcAddr)
 	if err != nil {
-		log.Error("failed to listen", slog.Any("error", err))
+		log.Error("failed to listen", slog.String("error", err.Error()))
 		cancelFunc()
 	}
 
 	go func() {
 		log.Info("GRPC Server is listening", slog.String("address", grpcAddr))
 		if err := s.server.Serve(s.lis); err != nil {
-			log.Error("Failed running gRPC server", slog.Any("error", err))
+			log.Error("Failed running gRPC server", slog.String("error", err.Error()))
 			cancelFunc()
 		}
 	}()

@@ -43,8 +43,8 @@ func main() {
 		}
 	}()
 
-	if err := config.ReadConfigYML("config.yml"); err != nil {
-		log.Warn("Failed init configuration", slog.Any("error", err))
+	if err1 := config.ReadConfigYML("config.yml"); err1 != nil {
+		log.Warn("Failed init configuration", slog.String("error", err1.Error()))
 		os.Exit(1)
 	}
 	cfg := config.GetConfigInstance()
@@ -72,7 +72,7 @@ func main() {
 		log.Info("Migration started")
 		if err := goose.Up(stdlib.OpenDBFromPool(dbpool), // получаем соединение с базой данных из пула
 			cfg.Database.Migrations); err != nil {
-			log.Warn("Migration failed", slog.Any("error", err))
+			log.Warn("Migration failed", slog.String("error", err.Error()))
 			os.Exit(1)
 		}
 	}
@@ -80,9 +80,9 @@ func main() {
 	repo := database.NewPostgresRepo(dbpool, batchSize)
 	packageService := service.NewPackageService(dbpool, repo)
 
-	tracing, err := tracer.NewTracer(&cfg)
-	if err != nil {
-		log.Error("Failed init tracing", slog.Any("error", err))
+	tracing, err2 := tracer.NewTracer(&cfg)
+	if err2 != nil {
+		log.Error("Failed init tracing", slog.String("error", err2.Error()))
 		os.Exit(1)
 	}
 	defer tracing.Close()

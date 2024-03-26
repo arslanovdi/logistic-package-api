@@ -48,8 +48,8 @@ func (s *statusServer) Start(cancelFunc context.CancelFunc) {
 
 	go func() {
 		log.Info("Status server is running", slog.String("address", statusAdrr))
-		if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Error("Failed running status server", slog.Any("error", err))
+		if err1 := s.server.ListenAndServe(); err1 != nil && !errors.Is(err1, http.ErrServerClosed) {
+			log.Error("Failed running status server", slog.String("error", err1.Error()))
 			cancelFunc()
 		}
 	}()
@@ -59,8 +59,8 @@ func (s *statusServer) Stop(ctx context.Context) {
 
 	log := slog.With("func", "StatusServer.Stop")
 
-	if err := s.server.Shutdown(ctx); err != nil {
-		log.Error("statusServer.Shutdown", slog.Any("error", err))
+	if err1 := s.server.Shutdown(ctx); err1 != nil {
+		log.Error("statusServer.Shutdown", slog.String("error", err1.Error()))
 	} else {
 		log.Info("statusServer shut down correctly")
 	}
@@ -96,8 +96,8 @@ func versionHandler(cfg *config.Config) func(w http.ResponseWriter, _ *http.Requ
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		if err := json.NewEncoder(w).Encode(data); err != nil {
-			log.Error("Service information encoding error", slog.Any("error", err))
+		if err1 := json.NewEncoder(w).Encode(data); err1 != nil {
+			log.Error("Service information encoding error", slog.String("error", err1.Error()))
 		}
 	}
 }

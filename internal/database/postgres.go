@@ -19,9 +19,9 @@ func MustGetPgxPool(ctx context.Context) *pgxpool.Pool {
 
 	log := slog.With("func", "database.MustGetPgxPool")
 
-	dbpool, err := NewPgxPool(ctx)
-	if err != nil {
-		log.Warn("Failed init postgres", slog.String("error", err.Error()))
+	dbpool, err1 := NewPgxPool(ctx)
+	if err1 != nil {
+		log.Warn("Failed init postgres", slog.String("error", err1.Error()))
 		os.Exit(1)
 	}
 
@@ -50,16 +50,16 @@ func NewPgxPool(ctx context.Context) (*pgxpool.Pool, error) {
 	   pool_health_check_period = time.Minute
 	   pool_max_conns = greater of 4 or runtime.NumCPU() если ядер больше 4	*/
 
-	dbpool, err := pgxpool.New(ctx, dsn)
-	if err != nil {
-		log.Warn("Error connecting to the database", slog.Any("error", err))
-		return nil, fmt.Errorf("database.NewPgxPool: %w", err)
+	dbpool, err1 := pgxpool.New(ctx, dsn)
+	if err1 != nil {
+		log.Warn("Error connecting to the database", slog.String("error", err1.Error()))
+		return nil, fmt.Errorf("database.NewPgxPool: %w", err1)
 	}
 
-	err = dbpool.Ping(ctx) // эта команда заменяет acquire + ping
-	if err != nil {
-		log.Warn("Could not ping database", slog.Any("error", err))
-		return nil, fmt.Errorf("database.NewPgxPool: %w", err)
+	err2 := dbpool.Ping(ctx) // эта команда заменяет acquire + ping
+	if err2 != nil {
+		log.Warn("Could not ping database", slog.String("error", err2.Error()))
+		return nil, fmt.Errorf("database.NewPgxPool: %w", err2)
 	}
 
 	log.Info("successfully connected to database")

@@ -205,23 +205,6 @@ func request_LogisticPackageApiService_UpdatePackageV1_0(ctx context.Context, ma
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["package_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "package_id")
-	}
-
-	protoReq.PackageId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "package_id", err)
-	}
-
 	msg, err := client.UpdatePackageV1(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
@@ -233,23 +216,6 @@ func local_request_LogisticPackageApiService_UpdatePackageV1_0(ctx context.Conte
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["package_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "package_id")
-	}
-
-	protoReq.PackageId, err = runtime.Uint64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "package_id", err)
 	}
 
 	msg, err := server.UpdatePackageV1(ctx, &protoReq)
@@ -371,7 +337,7 @@ func RegisterLogisticPackageApiServiceHandlerServer(ctx context.Context, mux *ru
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/UpdatePackageV1", runtime.WithHTTPPathPattern("/v1/packages/{package_id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/UpdatePackageV1", runtime.WithHTTPPathPattern("/v1/packages"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -523,7 +489,7 @@ func RegisterLogisticPackageApiServiceHandlerClient(ctx context.Context, mux *ru
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/UpdatePackageV1", runtime.WithHTTPPathPattern("/v1/packages/{package_id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/UpdatePackageV1", runtime.WithHTTPPathPattern("/v1/packages"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -551,7 +517,7 @@ var (
 
 	pattern_LogisticPackageApiService_ListPackagesV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "packages"}, ""))
 
-	pattern_LogisticPackageApiService_UpdatePackageV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "packages", "package_id"}, ""))
+	pattern_LogisticPackageApiService_UpdatePackageV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "packages"}, ""))
 )
 
 var (

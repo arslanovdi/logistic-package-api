@@ -38,7 +38,7 @@ service LogisticPackageApiService {
 
   rpc UpdatePackageV1(UpdatePackageV1Request) returns (UpdatePackageV1Response) {
     option (google.api.http) = {
-      put: "/v1/packages/{package_id}"
+      put: "/v1/packages"
       body: "*"
     };
   }
@@ -49,6 +49,7 @@ message Package {
   string title = 2 [(validate.rules).string = {min_len: 1, max_len: 50}];
   optional uint64 weight = 3 [(validate.rules).uint64.gt = 0];
   google.protobuf.Timestamp created = 4;
+  google.protobuf.Timestamp updated = 5;
 }
 
 message CreatePackageRequestV1 {
@@ -85,8 +86,7 @@ message ListPackagesV1Response {
 }
 
 message UpdatePackageV1Request {
-  uint64 package_id = 1 [(validate.rules).uint64.gt = 0];
-  Package value = 2;
+  Package value = 1;
 }
 
 message UpdatePackageV1Response {

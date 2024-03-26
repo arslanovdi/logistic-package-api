@@ -45,7 +45,7 @@ func (s *metricsServer) Start(cancelFunc context.CancelFunc) {
 	go func() {
 		log.Info("Metrics server is running", slog.String("address", metricsAddr))
 		if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Error("Failed running metrics server", slog.Any("error", err))
+			log.Error("Failed running metrics server", slog.String("error", err.Error()))
 			cancelFunc()
 		}
 	}()
@@ -56,7 +56,7 @@ func (s *metricsServer) Stop(ctx context.Context) {
 	log := slog.With("func", "MetricsServer.Stop")
 
 	if err := s.server.Shutdown(ctx); err != nil {
-		log.Error("metricsServer.Shutdown", slog.Any("error", err))
+		log.Error("metricsServer.Shutdown", slog.String("error", err.Error()))
 	} else {
 		log.Info("metricsServer shut down correctly")
 	}

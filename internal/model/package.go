@@ -10,10 +10,12 @@ import (
 
 // Package сущность пакета
 type Package struct {
-	ID        uint64    `db:"id"`
-	Title     string    `db:"title"`
-	Weight    uint64    `db:"weight"`
-	CreatedAt time.Time `db:"createdAt"`
+	ID      uint64    `db:"id" json:"ID,omitempty"`
+	Title   string    `db:"title" json:"title,omitempty"`
+	Weight  uint64    `db:"weight" json:"weight,omitempty"`
+	Created time.Time `db:"created" json:"created"`
+	Updated time.Time `db:"updated" json:"updated"`
+	Removed bool      `db:"removed" json:"removed"`
 }
 
 type EventType uint8
@@ -21,24 +23,30 @@ type EventType uint8
 type EventStatus uint8
 
 const (
-	Created EventType = iota
+	_ EventType = iota
+	Created
 	Updated
 	Removed
+)
 
-	Deferred EventStatus = iota
-	Processed
+const (
+	_ EventStatus = iota
+	Locked
+	Unlocked
 )
 
 type PackageEvent struct {
-	ID     uint64
-	Type   EventType
-	Status EventStatus
-	Entity *Package
+	ID        uint64      `db:"id"`
+	PackageID uint64      `db:"package_id"`
+	Type      EventType   `db:"type"`
+	Status    EventStatus `db:"status"`
+	Payload   []byte      `db:"payload"`
+	Updated   time.Time   `db:"updated"`
 }
 
 // String implements fmt.Stringer
 func (c *Package) String() string {
-	return fmt.Sprintf("ID: %d, Title: %s, Weight: %d, CreatedAt: %s", c.ID, c.Title, c.Weight, c.CreatedAt)
+	return fmt.Sprintf("ID: %d, Title: %s, Weight: %d, Created: %s, UpdatedAt: %s, Removed: %t", c.ID, c.Title, c.Weight, c.Created, c.Updated, c.Removed)
 }
 
 // LogValue implements slog.LogValuer interface
@@ -47,7 +55,9 @@ func (c *Package) LogValue() slog.Value {
 		slog.Uint64("ID", c.ID),
 		slog.String("Title", c.Title),
 		slog.Uint64("Weight", c.Weight),
-		slog.Time("CreatedAt", c.CreatedAt),
+		slog.Time("Created", c.Created),
+		slog.Time("Updated", c.Updated),
+		slog.Bool("Removed", c.Removed),
 	)
 }
 
@@ -58,8 +68,12 @@ func (c *Package) ToProto() *pb.Package {
 		Title:  c.Title,
 		Weight: &c.Weight,
 		Created: &timestamp.Timestamp{
-			Seconds: c.CreatedAt.Unix(),
-			Nanos:   int32(c.CreatedAt.Nanosecond()),
+			Seconds: c.Created.Unix(),
+			Nanos:   int32(c.Created.Nanosecond()),
+		},
+		Updated: &timestamp.Timestamp{
+			Seconds: c.Updated.Unix(),
+			Nanos:   int32(c.Updated.Nanosecond()),
 		},
 	}
 }
@@ -69,5 +83,6 @@ func (c *Package) FromProto(pkg *pb.Package) {
 	c.ID = pkg.Id
 	c.Title = pkg.Title
 	c.Weight = *pkg.Weight
-	c.CreatedAt = time.Unix(pkg.Created.Seconds, int64(pkg.Created.Nanos))
+	c.Created = time.Unix(pkg.Created.Seconds, int64(pkg.Created.Nanos))
+	c.Updated = time.Unix(pkg.Updated.Seconds, int64(pkg.Updated.Nanos))
 }
