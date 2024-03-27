@@ -49,7 +49,7 @@ message Package {
   string title = 2 [(validate.rules).string = {min_len: 1, max_len: 50}];
   optional uint64 weight = 3 [(validate.rules).uint64.gt = 0];
   google.protobuf.Timestamp created = 4;
-  google.protobuf.Timestamp updated = 5;
+  optional google.protobuf.Timestamp updated = 5;
 }
 
 message CreatePackageRequestV1 {

@@ -27,12 +27,16 @@ func (r *repo) Lock(ctx context.Context, n uint64) ([]model.PackageEvent, error)
 
 	log := slog.With("func", "postgres.Lock")
 
-	query, args, err1 := psql.Update("package_event").
+	query, args, err1 := psql.Update("package_events").
 		Set("status", model.Locked).
 		Set("updated", time.Now()).
 		Where(sq.Or{
-			sq.NotEq{"status": model.Locked},                    // если статус не залочен
-			sq.LtOrEq{"updated": time.Now().Add(-stuckTimeout)}, // если событие зависло
+			sq.NotEq{"status": model.Locked}, // если статус не залочен
+			sq.And{
+				//sq.NotEq{"updated": nil},	// TODO протестировать
+				sq.LtOrEq{"updated": time.Now().Add(-stuckTimeout)}, // если событие зависло
+
+			},
 		}).
 		OrderBy("id").
 		Limit(n).
@@ -76,7 +80,7 @@ func (r *repo) Unlock(ctx context.Context, eventID []uint64) error {
 
 	log := slog.With("func", "postgres.Unlock")
 
-	query, args, err1 := psql.Update("package_event").
+	query, args, err1 := psql.Update("package_events").
 		Set("status", model.Unlocked).
 		Where(sq.Eq{"id": eventID}).
 		ToSql()
@@ -103,7 +107,7 @@ func (r *repo) Remove(ctx context.Context, eventIDs []uint64) error {
 
 	log := slog.With("func", "postgres.Remove")
 
-	query, args, err1 := psql.Delete("package_event").
+	query, args, err1 := psql.Delete("package_events").
 		Where(sq.Eq{"id": eventIDs}).
 		ToSql()
 
@@ -139,7 +143,7 @@ func (r *repo) DeletePackage(ctx context.Context, id uint64) (bool, error) {
 
 	log.Debug("query", slog.String("query", query), slog.Any("args", args))
 
-	queryEvent, argsEvent, err2 := psql.Insert("package_event").
+	queryEvent, argsEvent, err2 := psql.Insert("package_events").
 		Columns("package_id", "type").
 		Values(id, model.Removed).
 		ToSql()
@@ -184,7 +188,7 @@ func (r *repo) GetPackage(ctx context.Context, id uint64) (*model.Package, error
 
 	log := slog.With("func", "postgres.GetPackage")
 
-	query, args, err1 := psql.Select("id", "weight", "title", "Created").
+	query, args, err1 := psql.Select("*").
 		From("package").
 		Where(sq.Eq{"id": id}).
 		ToSql()
@@ -217,7 +221,7 @@ func (r *repo) ListPackages(ctx context.Context, offset uint64, limit uint64) ([
 
 	log := slog.With("func", "postgres.ListPackages")
 
-	query, args, err1 := psql.Select("id", "weight", "title", "Created").
+	query, args, err1 := psql.Select("*").
 		From("package").
 		Where(sq.GtOrEq{"id": offset}).
 		Where(sq.Lt{"id": offset + limit}).
@@ -258,9 +262,9 @@ func (r *repo) UpdatePackage(ctx context.Context, pkg model.Package) (bool, erro
 	query, args, err1 := psql.Update("package").
 		Set("weight", pkg.Weight).
 		Set("title", pkg.Title).
-		Set("Updated", pkg.Updated).
+		Set("updated", pkg.Updated).
 		Where(sq.Eq{"id": pkg.ID}).
-		Suffix("RETURNING Created, Removed").
+		Suffix("RETURNING created, removed").
 		ToSql()
 	if err1 != nil {
 		return false, fmt.Errorf("postgres.UpdatePackage: %w", err1)
@@ -285,7 +289,7 @@ func (r *repo) UpdatePackage(ctx context.Context, pkg model.Package) (bool, erro
 			return err
 		}
 
-		queryEvent, argsEvent, err := psql.Insert("package_event").
+		queryEvent, argsEvent, err := psql.Insert("package_events").
 			Columns("package_id", "type", "payload").
 			Values(pkg.ID, model.Updated, pkgJSON).
 			ToSql()
@@ -318,7 +322,7 @@ func (r *repo) Create(ctx context.Context, pkg model.Package) (*uint64, error) {
 	log := slog.With("func", "postgres.Create")
 
 	query, args, err1 := psql.Insert("package").
-		Columns("weight", "title", "Created").
+		Columns("weight", "title", "created").
 		Values(pkg.Weight, pkg.Title, pkg.Created).
 		Suffix("RETURNING id").
 		ToSql()
@@ -342,7 +346,7 @@ func (r *repo) Create(ctx context.Context, pkg model.Package) (*uint64, error) {
 			return err
 		}
 
-		queryEvent, argsEvent, err := psql.Insert("package_event").
+		queryEvent, argsEvent, err := psql.Insert("package_events").
 			Columns("package_id", "type", "payload").
 			Values(pkg.ID, model.Created, pkgJSON).
 			ToSql()

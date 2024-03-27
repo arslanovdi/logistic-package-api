@@ -6,8 +6,8 @@ create table if not exists package
         constraint package_pk
             primary key,
     weight  integer,
-    title   varchar(50),
-    created timestamp,
+    title   varchar(50) not null,
+    created timestamp   not null,
     updated timestamp,
     removed boolean
 );
@@ -26,7 +26,7 @@ create table if not exists package_events
             primary key,
     package_id bigint  not null,
     type       integer not null,
-    status     integer not null,
+    status     integer,
     payload    jsonb,
     updated    timestamp
 );

@@ -89,6 +89,7 @@ func (p *packageAPI) GetPackageV1(ctx context.Context, req *pb.GetPackageV1Reque
 
 	pkg, err2 := p.packageService.GetPackage(ctx, req.PackageId)
 	if err2 != nil {
+		log.Error("GetPackageV1 - failed", slog.String("error", err2.Error()))
 		return nil, status.Error(codes.Internal, err2.Error())
 	}
 
@@ -116,6 +117,7 @@ func (p *packageAPI) ListPackagesV1(ctx context.Context, req *pb.ListPackagesV1R
 
 	packages, err2 := p.packageService.ListPackages(ctx, req.Offset, req.Limit)
 	if err2 != nil {
+		log.Error("ListPackagesV1 - failed", slog.String("error", err2.Error()))
 		return nil, status.Error(codes.Internal, err2.Error())
 	}
 
@@ -151,6 +153,7 @@ func (p *packageAPI) UpdatePackageV1(ctx context.Context, req *pb.UpdatePackageV
 
 	ok, err2 := p.packageService.UpdatePackage(ctx, pkg)
 	if err2 != nil {
+		log.Error("UpdatePackageV1 - failed", slog.String("error", err2.Error()))
 		return nil, status.Error(codes.Internal, err2.Error())
 	}
 	if !ok {

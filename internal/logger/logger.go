@@ -1,45 +1,12 @@
 package logger
 
 import (
-	"context"
 	"log/slog"
 	"os"
 )
 
-var logHandler *LevelHandler
-
-type LevelHandler struct {
-	level   slog.Level
-	handler slog.Handler
-}
-
-// Enabled обработчик уровня логирования
-func (lh *LevelHandler) Enabled(_ context.Context, level slog.Level) bool {
-	return level >= lh.level.Level()
-}
-
-func (lh *LevelHandler) Handle(ctx context.Context, r slog.Record) error {
-	return lh.handler.Handle(ctx, r)
-}
-
-func (lh *LevelHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
-	return NewCustomLogger(lh.level, lh.handler.WithAttrs(attrs))
-}
-
-func (lh *LevelHandler) WithGroup(name string) slog.Handler {
-	return NewCustomLogger(lh.level, lh.handler.WithGroup(name))
-}
-
-func (lh *LevelHandler) SetLogLevel(level slog.Level) {
-	lh.level = level
-}
-
-func NewCustomLogger(level slog.Level, handler slog.Handler) *LevelHandler {
-	return &LevelHandler{
-		level:   level,
-		handler: handler,
-	}
-}
+var options *slog.HandlerOptions
+var loglevel *slog.LevelVar
 
 func InitializeLogger() {
 
@@ -49,23 +16,28 @@ func InitializeLogger() {
 		}
 		return a
 	}
+	loglevel = &slog.LevelVar{}
+	loglevel.Set(slog.LevelDebug)
 
-	jsonH := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+	options = &slog.HandlerOptions{
+		AddSource:   false,
 		ReplaceAttr: HidePassword,
-	})
+		Level:       loglevel,
+	}
 
-	logHandler = NewCustomLogger(slog.LevelDebug, jsonH)
-
-	logger := slog.New(logHandler)
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, options))
 
 	slog.SetDefault(logger)
+	slog.Info("InitializeLogger", slog.String("level", loglevel.String()))
 }
 
 // SetLogLevel sets the level of the logger
 // В пакете slog нет установки уровня логирования в дефолтном логере
 func SetLogLevel(level slog.Level) {
-	if logHandler == nil {
+	if options == nil {
 		InitializeLogger()
 	}
-	logHandler.SetLogLevel(level)
+
+	loglevel.Set(level)
+	slog.Info("SetLogLevel", slog.String("level", level.String()))
 }
