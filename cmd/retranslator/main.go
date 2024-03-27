@@ -51,6 +51,5 @@ func main() {
 		slog.Info("Graceful shutdown")
 		retranslator.Close()
 		slog.Info("Application stopped")
-		return
 	}
 }

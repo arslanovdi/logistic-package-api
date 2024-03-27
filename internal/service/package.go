@@ -13,7 +13,7 @@ type Repo interface {
 	Delete(ctx context.Context, id uint64) error
 	Get(ctx context.Context, id uint64) (*model.Package, error)
 	List(ctx context.Context, offset uint64, limit uint64) ([]model.Package, error)
-	Update(ctx context.Context, pkg model.Package) (bool, error)
+	Update(ctx context.Context, pkg model.Package) error
 }
 
 // PackageService is service for Package
@@ -60,13 +60,13 @@ func (p *PackageService) List(ctx context.Context, offset uint64, limit uint64) 
 	return packages, nil
 }
 
-func (p *PackageService) Update(ctx context.Context, pkg model.Package) (bool, error) {
+func (p *PackageService) Update(ctx context.Context, pkg model.Package) error {
 
-	ok, err := p.repo.Update(ctx, pkg)
+	err := p.repo.Update(ctx, pkg)
 	if err != nil {
-		return false, fmt.Errorf("service.PackageService.Update: %w", err)
+		return fmt.Errorf("service.PackageService.Update: %w", err)
 	}
-	return ok, nil
+	return nil
 }
 
 func NewPackageService(dbpool *pgxpool.Pool, repo Repo) *PackageService {

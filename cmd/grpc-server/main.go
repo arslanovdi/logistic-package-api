@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/arslanovdi/logistic-package-api/internal/database/fakedata"
 	"github.com/arslanovdi/logistic-package-api/internal/database/postgres"
 	"github.com/arslanovdi/logistic-package-api/internal/logger"
 	"github.com/arslanovdi/logistic-package-api/internal/service"
@@ -66,6 +67,9 @@ func main() {
 	dbpool := database.MustGetPgxPool(context.Background())
 	defer dbpool.Close()
 
+	repo := postgres.NewPostgresRepo(dbpool, batchSize)
+	packageService := service.NewPackageService(dbpool, repo)
+
 	migration := flag.Bool("migration", true, "Defines the migration start option") // миграцию запускаем параметром из командной строки -migration
 	flag.Parse()
 
@@ -76,10 +80,8 @@ func main() {
 			log.Warn("Migration failed", slog.String("error", err.Error()))
 			os.Exit(1)
 		}
+		fakedata.Generate(100, repo)
 	}
-
-	repo := postgres.NewPostgresRepo(dbpool, batchSize)
-	packageService := service.NewPackageService(dbpool, repo)
 
 	tracing, err2 := tracer.NewTracer(&cfg)
 	if err2 != nil {
@@ -113,22 +115,17 @@ func main() {
 	cancel() // отменяем контекст запуска приложения
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
-	for {
-		select {
-		case <-ctxServer.Done(): // ошибка при старте любого из серверов
-			log.Warn("Fail on start servers")
-			os.Exit(1)
-		case <-stop:
-			slog.Info("Graceful shutdown")
-			isReady.Store(false)
-			goose.Down(stdlib.OpenDBFromPool(dbpool),
-				cfg.Database.Migrations)
-			grpcServer.Stop()
-			metricsServer.Stop(ctxServer)
-			statusServer.Stop(ctxServer)
-			gatewayServer.Stop(ctxServer)
-			slog.Info("Application stopped")
-			return
-		}
+	select {
+	case <-ctxServer.Done(): // ошибка при старте любого из серверов
+		log.Warn("Fail on start servers")
+	case <-stop:
+		slog.Info("Graceful shutdown")
+		isReady.Store(false)
+		goose.Down(stdlib.OpenDBFromPool(dbpool), cfg.Database.Migrations)
+		grpcServer.Stop()
+		metricsServer.Stop(ctxServer)
+		statusServer.Stop(ctxServer)
+		gatewayServer.Stop(ctxServer)
+		slog.Info("Application stopped")
 	}
 }

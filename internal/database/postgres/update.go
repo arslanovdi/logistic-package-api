@@ -13,7 +13,7 @@ import (
 )
 
 // Update - update package by id in Postgres
-func (r *repo) Update(ctx context.Context, pkg model.Package) (bool, error) {
+func (r *repo) Update(ctx context.Context, pkg model.Package) error {
 
 	log := slog.With("func", "postgres.Update")
 
@@ -25,7 +25,7 @@ func (r *repo) Update(ctx context.Context, pkg model.Package) (bool, error) {
 		Suffix("RETURNING created, removed").
 		ToSql()
 	if err1 != nil {
-		return false, fmt.Errorf("postgres.Update: %w", err1)
+		return fmt.Errorf("postgres.Update: %w", err1)
 	}
 
 	log.Debug("query", slog.String("query", query), slog.Any("args", args))
@@ -66,10 +66,10 @@ func (r *repo) Update(ctx context.Context, pkg model.Package) (bool, error) {
 	})
 
 	if err2 != nil {
-		return false, fmt.Errorf("postgres.Update: %w", err2)
+		return fmt.Errorf("postgres.Update: %w", err2)
 	}
 
 	log.Debug("package updated", slog.String("package", pkg.String()))
 
-	return true, nil
+	return nil
 }

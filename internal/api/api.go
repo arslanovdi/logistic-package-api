@@ -87,16 +87,13 @@ func (p *packageAPI) GetV1(ctx context.Context, req *pb.GetV1Request) (*pb.GetV1
 
 	pkg, err2 := p.packageService.Get(ctx, req.PackageId)
 	if err2 != nil {
-		log.Error("GetV1 - failed", slog.String("error", err2.Error()))
+		if errors.Is(err2, model.ErrNotFound) {
+			log.Debug("not found", slog.Uint64("id", req.PackageId))
+			return nil, status.Error(codes.NotFound, "")
+		}
+		log.Error("failed", slog.String("error", err2.Error()))
 		return nil, status.Error(codes.Internal, err2.Error())
 	}
-
-	if pkg == nil { // TODO возможно нужно возвращать ошибки NotFound
-		log.Debug("GetV1 - not found", slog.Uint64("id", req.PackageId))
-		return nil, status.Error(codes.NotFound, "")
-	}
-
-	log.Debug("package found", slog.Any("package", pkg)) // TODO проверить
 
 	return &pb.GetV1Response{
 			Value: pkg.ToProto(),
@@ -149,17 +146,17 @@ func (p *packageAPI) UpdateV1(ctx context.Context, req *pb.UpdateV1Request) (*pb
 	pkg := model.Package{}
 	pkg.FromProto(req.Value)
 
-	ok, err2 := p.packageService.Update(ctx, pkg)
+	err2 := p.packageService.Update(ctx, pkg)
 	if err2 != nil {
-		log.Error("UpdateV1 - failed", slog.String("error", err2.Error()))
+		if errors.Is(err2, model.ErrNotFound) {
+			log.Debug("package not found", slog.Uint64("id", pkg.ID))
+			return nil, status.Error(codes.NotFound, "")
+		}
+		log.Error("failed", slog.String("error", err2.Error()))
 		return nil, status.Error(codes.Internal, err2.Error())
 	}
-	if !ok {
-		log.Debug("UpdateV1 - not found", slog.Uint64("id", pkg.ID))
-		return nil, status.Error(codes.NotFound, "")
-	}
 
-	log.Debug("UpdateV1 - updated", slog.Uint64("id", pkg.ID))
+	log.Debug("UpdateV1 - updated", slog.Any("package", pkg))
 
 	return &pb.UpdateV1Response{},
 		status.New(codes.OK, "").Err()
