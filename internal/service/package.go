@@ -10,10 +10,10 @@ import (
 // Repo interface for work with database
 type Repo interface {
 	Create(ctx context.Context, pkg model.Package) (*uint64, error)
-	DeletePackage(ctx context.Context, id uint64) (bool, error)
-	GetPackage(ctx context.Context, id uint64) (*model.Package, error)
-	ListPackages(ctx context.Context, offset uint64, limit uint64) ([]model.Package, error)
-	UpdatePackage(ctx context.Context, pkg model.Package) (bool, error)
+	Delete(ctx context.Context, id uint64) error
+	Get(ctx context.Context, id uint64) (*model.Package, error)
+	List(ctx context.Context, offset uint64, limit uint64) ([]model.Package, error)
+	Update(ctx context.Context, pkg model.Package) (bool, error)
 }
 
 // PackageService is service for Package
@@ -32,39 +32,39 @@ func (p *PackageService) Create(ctx context.Context, pkg model.Package) (*uint64
 	return id, nil
 }
 
-func (p *PackageService) DeletePackage(ctx context.Context, id uint64) (bool, error) {
+func (p *PackageService) Delete(ctx context.Context, id uint64) error {
 
-	ok, err := p.repo.DeletePackage(ctx, id)
+	err := p.repo.Delete(ctx, id)
 	if err != nil {
-		return false, fmt.Errorf("service.PackageService.DeletePackage: %w", err)
+		return fmt.Errorf("service.PackageService.Delete: %w", err)
 	}
 
-	return ok, nil
+	return nil
 }
 
-func (p *PackageService) GetPackage(ctx context.Context, id uint64) (*model.Package, error) {
+func (p *PackageService) Get(ctx context.Context, id uint64) (*model.Package, error) {
 
-	pkg, err := p.repo.GetPackage(ctx, id)
+	pkg, err := p.repo.Get(ctx, id)
 	if err != nil {
-		return nil, fmt.Errorf("service.PackageService.GetPackage: %w", err)
+		return nil, fmt.Errorf("service.PackageService.Get: %w", err)
 	}
 	return pkg, nil
 }
 
-func (p *PackageService) ListPackages(ctx context.Context, offset uint64, limit uint64) ([]model.Package, error) {
+func (p *PackageService) List(ctx context.Context, offset uint64, limit uint64) ([]model.Package, error) {
 
-	packages, err := p.repo.ListPackages(ctx, offset, limit)
+	packages, err := p.repo.List(ctx, offset, limit)
 	if err != nil {
-		return nil, fmt.Errorf("service.PackageService.ListPackages: %w", err)
+		return nil, fmt.Errorf("service.PackageService.List: %w", err)
 	}
 	return packages, nil
 }
 
-func (p *PackageService) UpdatePackage(ctx context.Context, pkg model.Package) (bool, error) {
+func (p *PackageService) Update(ctx context.Context, pkg model.Package) (bool, error) {
 
-	ok, err := p.repo.UpdatePackage(ctx, pkg)
+	ok, err := p.repo.Update(ctx, pkg)
 	if err != nil {
-		return false, fmt.Errorf("service.PackageService.UpdatePackage: %w", err)
+		return false, fmt.Errorf("service.PackageService.Update: %w", err)
 	}
 	return ok, nil
 }

@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"errors"
 	"github.com/arslanovdi/logistic-package-api/internal/model"
 	"github.com/arslanovdi/logistic-package-api/internal/service"
 	"github.com/prometheus/client_golang/prometheus"
@@ -26,12 +27,12 @@ type packageAPI struct {
 	packageService *service.PackageService
 }
 
-func (p *packageAPI) CreatePackageV1(ctx context.Context, req *pb.CreatePackageRequestV1) (*pb.CreatePackageResponseV1, error) {
+func (p *packageAPI) CreateV1(ctx context.Context, req *pb.CreateRequestV1) (*pb.CreateResponseV1, error) {
 
-	log := slog.With("func", "api.CreatePackageV1")
+	log := slog.With("func", "api.CreateV1")
 
 	if err1 := req.Validate(); err1 != nil {
-		log.Error("CreatePackageV1 - invalid argument", slog.String("error", err1.Error()))
+		log.Error("CreateV1 - invalid argument", slog.String("error", err1.Error()))
 		return nil, status.Error(codes.InvalidArgument, err1.Error())
 	}
 
@@ -40,132 +41,127 @@ func (p *packageAPI) CreatePackageV1(ctx context.Context, req *pb.CreatePackageR
 
 	id, err2 := p.packageService.Create(ctx, pkg)
 	if err2 != nil {
-		log.Error("CreatePackageV1 - failed", slog.String("error", err2.Error()))
+		log.Error("CreateV1 - failed", slog.String("error", err2.Error()))
 		return nil, status.Error(codes.Internal, err2.Error())
 	}
 
-	log.Debug("CreatePackageV1 - created", slog.Uint64("id", *id))
+	log.Debug("CreateV1 - created", slog.Uint64("id", *id))
 
-	return &pb.CreatePackageResponseV1{PackageId: *id},
+	return &pb.CreateResponseV1{PackageId: *id},
 		status.New(codes.OK, "").Err()
 }
 
-func (p *packageAPI) DeletePackageV1(ctx context.Context, req *pb.DeletePackageV1Request) (*pb.DeletePackageV1Response, error) {
+func (p *packageAPI) DeleteV1(ctx context.Context, req *pb.DeleteV1Request) (*pb.DeleteV1Response, error) {
 
-	log := slog.With("func", "api.DeletePackageV1")
+	log := slog.With("func", "api.DeleteV1")
 
 	if err1 := req.Validate(); err1 != nil {
-		log.Error("DeletePackageV1 - invalid argument", slog.String("error", err1.Error()))
+		log.Error("DeleteV1 - invalid argument", slog.String("error", err1.Error()))
 		return nil, status.Error(codes.InvalidArgument, err1.Error())
 	}
 
-	ok, err2 := p.packageService.DeletePackage(ctx, req.PackageId)
+	err2 := p.packageService.Delete(ctx, req.PackageId)
 	if err2 != nil {
-		log.Error("DeletePackageV1 - failed", slog.String("error", err2.Error()))
-		return nil, status.Error(codes.Internal, err2.Error()) // TODO переделать коды, с возвратом ошибок из сервисного слоя -> из репо
+		log.Error("DeleteV1 - failed", slog.String("error", err2.Error()))
+
+		if errors.Is(err2, model.ErrNotFound) {
+			return nil, status.Error(codes.NotFound, err2.Error())
+		}
+		return nil, status.Error(codes.Internal, err2.Error())
 	}
 
-	if !ok { // TODO возможно нужно избавиться от возврата ok в проекте, возвращать ошибки
-		log.Debug("DeletePackageV1 - not found", slog.Uint64("id", req.PackageId))
-		return nil, status.Error(codes.NotFound, "")
-	}
-
-	log.Debug("DeletePackageV1 - deleted", slog.Uint64("id", req.PackageId))
-	return &pb.DeletePackageV1Response{
-			Deleted: ok,
-		},
+	log.Debug("DeleteV1 - deleted", slog.Uint64("id", req.PackageId))
+	return &pb.DeleteV1Response{},
 		status.New(codes.OK, "").Err()
 
 }
 
-func (p *packageAPI) GetPackageV1(ctx context.Context, req *pb.GetPackageV1Request) (*pb.GetPackageV1Response, error) {
+func (p *packageAPI) GetV1(ctx context.Context, req *pb.GetV1Request) (*pb.GetV1Response, error) {
 
-	log := slog.With("func", "api.GetPackageV1")
+	log := slog.With("func", "api.GetV1")
 
 	if err1 := req.Validate(); err1 != nil {
-		log.Error("GetPackageV1 - invalid argument", slog.String("error", err1.Error()))
+		log.Error("GetV1 - invalid argument", slog.String("error", err1.Error()))
 		return nil, status.Error(codes.InvalidArgument, err1.Error())
 	}
 
-	pkg, err2 := p.packageService.GetPackage(ctx, req.PackageId)
+	pkg, err2 := p.packageService.Get(ctx, req.PackageId)
 	if err2 != nil {
-		log.Error("GetPackageV1 - failed", slog.String("error", err2.Error()))
+		log.Error("GetV1 - failed", slog.String("error", err2.Error()))
 		return nil, status.Error(codes.Internal, err2.Error())
 	}
 
 	if pkg == nil { // TODO возможно нужно возвращать ошибки NotFound
-		log.Debug("GetPackageV1 - not found", slog.Uint64("id", req.PackageId))
+		log.Debug("GetV1 - not found", slog.Uint64("id", req.PackageId))
 		return nil, status.Error(codes.NotFound, "")
 	}
 
 	log.Debug("package found", slog.Any("package", pkg)) // TODO проверить
 
-	return &pb.GetPackageV1Response{
+	return &pb.GetV1Response{
 			Value: pkg.ToProto(),
 		},
 		status.New(codes.OK, "").Err()
 }
 
-func (p *packageAPI) ListPackagesV1(ctx context.Context, req *pb.ListPackagesV1Request) (*pb.ListPackagesV1Response, error) {
+func (p *packageAPI) ListV1(ctx context.Context, req *pb.ListV1Request) (*pb.ListV1Response, error) {
 
-	log := slog.With("func", "api.ListPackagesV1")
+	log := slog.With("func", "api.ListV1")
 
 	if err1 := req.Validate(); err1 != nil {
-		log.Error("ListPackagesV1 - invalid argument", slog.String("error", err1.Error()))
+		log.Error("ListV1 - invalid argument", slog.String("error", err1.Error()))
 		return nil, status.Error(codes.InvalidArgument, err1.Error())
 	}
 
-	packages, err2 := p.packageService.ListPackages(ctx, req.Offset, req.Limit)
+	packages, err2 := p.packageService.List(ctx, req.Offset, req.Limit)
 	if err2 != nil {
-		log.Error("ListPackagesV1 - failed", slog.String("error", err2.Error()))
+		log.Error("ListV1 - failed", slog.String("error", err2.Error()))
 		return nil, status.Error(codes.Internal, err2.Error())
 	}
 
 	if len(packages) == 0 {
-		log.Debug("ListPackagesV1 - empty")
-		return &pb.ListPackagesV1Response{}, status.Error(codes.NotFound, "")
+		log.Debug("ListV1 - empty")
+		return &pb.ListV1Response{}, status.Error(codes.NotFound, "")
 	}
 
-	log.Debug("ListPackagesV1 - found", slog.Uint64("count", uint64(len(packages))))
+	log.Debug("ListV1 - found", slog.Uint64("count", uint64(len(packages))))
 
 	resp := make([]*pb.Package, len(packages))
 	for i := 0; i < len(packages); i++ {
 		resp[i] = packages[i].ToProto()
 	}
 
-	return &pb.ListPackagesV1Response{
+	return &pb.ListV1Response{
 			Packages: resp,
 		},
 		status.New(codes.OK, "").Err()
 }
 
-func (p *packageAPI) UpdatePackageV1(ctx context.Context, req *pb.UpdatePackageV1Request) (*pb.UpdatePackageV1Response, error) {
+func (p *packageAPI) UpdateV1(ctx context.Context, req *pb.UpdateV1Request) (*pb.UpdateV1Response, error) {
 
-	log := slog.With("func", "api.UpdatePackageV1")
+	log := slog.With("func", "api.UpdateV1")
 
 	if err1 := req.Validate(); err1 != nil {
-		log.Error("UpdatePackageV1 - invalid argument", slog.String("error", err1.Error()))
+		log.Error("UpdateV1 - invalid argument", slog.String("error", err1.Error()))
 		return nil, status.Error(codes.InvalidArgument, err1.Error())
 	}
 
 	pkg := model.Package{}
 	pkg.FromProto(req.Value)
 
-	ok, err2 := p.packageService.UpdatePackage(ctx, pkg)
+	ok, err2 := p.packageService.Update(ctx, pkg)
 	if err2 != nil {
-		log.Error("UpdatePackageV1 - failed", slog.String("error", err2.Error()))
+		log.Error("UpdateV1 - failed", slog.String("error", err2.Error()))
 		return nil, status.Error(codes.Internal, err2.Error())
 	}
 	if !ok {
-		log.Debug("UpdatePackageV1 - not found", slog.Uint64("id", pkg.ID))
+		log.Debug("UpdateV1 - not found", slog.Uint64("id", pkg.ID))
 		return nil, status.Error(codes.NotFound, "")
 	}
 
-	log.Debug("UpdatePackageV1 - updated", slog.Uint64("id", pkg.ID))
+	log.Debug("UpdateV1 - updated", slog.Uint64("id", pkg.ID))
 
-	return &pb.UpdatePackageV1Response{
-			Updated: ok,
-		},
+	return &pb.UpdateV1Response{},
 		status.New(codes.OK, "").Err()
 }
 

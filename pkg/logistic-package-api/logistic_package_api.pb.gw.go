@@ -31,34 +31,34 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-func request_LogisticPackageApiService_CreatePackageV1_0(ctx context.Context, marshaler runtime.Marshaler, client LogisticPackageApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CreatePackageRequestV1
+func request_LogisticPackageApiService_CreateV1_0(ctx context.Context, marshaler runtime.Marshaler, client LogisticPackageApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq CreateRequestV1
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.CreatePackageV1(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.CreateV1(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_LogisticPackageApiService_CreatePackageV1_0(ctx context.Context, marshaler runtime.Marshaler, server LogisticPackageApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CreatePackageRequestV1
+func local_request_LogisticPackageApiService_CreateV1_0(ctx context.Context, marshaler runtime.Marshaler, server LogisticPackageApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq CreateRequestV1
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.CreatePackageV1(ctx, &protoReq)
+	msg, err := server.CreateV1(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_LogisticPackageApiService_DeletePackageV1_0(ctx context.Context, marshaler runtime.Marshaler, client LogisticPackageApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq DeletePackageV1Request
+func request_LogisticPackageApiService_DeleteV1_0(ctx context.Context, marshaler runtime.Marshaler, client LogisticPackageApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq DeleteV1Request
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -78,13 +78,13 @@ func request_LogisticPackageApiService_DeletePackageV1_0(ctx context.Context, ma
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "package_id", err)
 	}
 
-	msg, err := client.DeletePackageV1(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.DeleteV1(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_LogisticPackageApiService_DeletePackageV1_0(ctx context.Context, marshaler runtime.Marshaler, server LogisticPackageApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq DeletePackageV1Request
+func local_request_LogisticPackageApiService_DeleteV1_0(ctx context.Context, marshaler runtime.Marshaler, server LogisticPackageApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq DeleteV1Request
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -104,13 +104,13 @@ func local_request_LogisticPackageApiService_DeletePackageV1_0(ctx context.Conte
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "package_id", err)
 	}
 
-	msg, err := server.DeletePackageV1(ctx, &protoReq)
+	msg, err := server.DeleteV1(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_LogisticPackageApiService_GetPackageV1_0(ctx context.Context, marshaler runtime.Marshaler, client LogisticPackageApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetPackageV1Request
+func request_LogisticPackageApiService_GetV1_0(ctx context.Context, marshaler runtime.Marshaler, client LogisticPackageApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetV1Request
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -130,13 +130,13 @@ func request_LogisticPackageApiService_GetPackageV1_0(ctx context.Context, marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "package_id", err)
 	}
 
-	msg, err := client.GetPackageV1(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetV1(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_LogisticPackageApiService_GetPackageV1_0(ctx context.Context, marshaler runtime.Marshaler, server LogisticPackageApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetPackageV1Request
+func local_request_LogisticPackageApiService_GetV1_0(ctx context.Context, marshaler runtime.Marshaler, server LogisticPackageApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq GetV1Request
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -156,69 +156,69 @@ func local_request_LogisticPackageApiService_GetPackageV1_0(ctx context.Context,
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "package_id", err)
 	}
 
-	msg, err := server.GetPackageV1(ctx, &protoReq)
+	msg, err := server.GetV1(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
 var (
-	filter_LogisticPackageApiService_ListPackagesV1_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_LogisticPackageApiService_ListV1_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_LogisticPackageApiService_ListPackagesV1_0(ctx context.Context, marshaler runtime.Marshaler, client LogisticPackageApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ListPackagesV1Request
+func request_LogisticPackageApiService_ListV1_0(ctx context.Context, marshaler runtime.Marshaler, client LogisticPackageApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq ListV1Request
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_LogisticPackageApiService_ListPackagesV1_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_LogisticPackageApiService_ListV1_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.ListPackagesV1(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.ListV1(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_LogisticPackageApiService_ListPackagesV1_0(ctx context.Context, marshaler runtime.Marshaler, server LogisticPackageApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ListPackagesV1Request
+func local_request_LogisticPackageApiService_ListV1_0(ctx context.Context, marshaler runtime.Marshaler, server LogisticPackageApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq ListV1Request
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_LogisticPackageApiService_ListPackagesV1_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_LogisticPackageApiService_ListV1_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.ListPackagesV1(ctx, &protoReq)
+	msg, err := server.ListV1(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-func request_LogisticPackageApiService_UpdatePackageV1_0(ctx context.Context, marshaler runtime.Marshaler, client LogisticPackageApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UpdatePackageV1Request
+func request_LogisticPackageApiService_UpdateV1_0(ctx context.Context, marshaler runtime.Marshaler, client LogisticPackageApiServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq UpdateV1Request
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.UpdatePackageV1(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.UpdateV1(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_LogisticPackageApiService_UpdatePackageV1_0(ctx context.Context, marshaler runtime.Marshaler, server LogisticPackageApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq UpdatePackageV1Request
+func local_request_LogisticPackageApiService_UpdateV1_0(ctx context.Context, marshaler runtime.Marshaler, server LogisticPackageApiServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq UpdateV1Request
 	var metadata runtime.ServerMetadata
 
 	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.UpdatePackageV1(ctx, &protoReq)
+	msg, err := server.UpdateV1(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -229,7 +229,7 @@ func local_request_LogisticPackageApiService_UpdatePackageV1_0(ctx context.Conte
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterLogisticPackageApiServiceHandlerFromEndpoint instead.
 func RegisterLogisticPackageApiServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server LogisticPackageApiServiceServer) error {
 
-	mux.Handle("POST", pattern_LogisticPackageApiService_CreatePackageV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_LogisticPackageApiService_CreateV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -237,12 +237,12 @@ func RegisterLogisticPackageApiServiceHandlerServer(ctx context.Context, mux *ru
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/CreatePackageV1", runtime.WithHTTPPathPattern("/v1/packages"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/CreateV1", runtime.WithHTTPPathPattern("/v1/packages"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_LogisticPackageApiService_CreatePackageV1_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_LogisticPackageApiService_CreateV1_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -250,11 +250,11 @@ func RegisterLogisticPackageApiServiceHandlerServer(ctx context.Context, mux *ru
 			return
 		}
 
-		forward_LogisticPackageApiService_CreatePackageV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_LogisticPackageApiService_CreateV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_LogisticPackageApiService_DeletePackageV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_LogisticPackageApiService_DeleteV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -262,12 +262,12 @@ func RegisterLogisticPackageApiServiceHandlerServer(ctx context.Context, mux *ru
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/DeletePackageV1", runtime.WithHTTPPathPattern("/v1/packages/{package_id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/DeleteV1", runtime.WithHTTPPathPattern("/v1/packages/{package_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_LogisticPackageApiService_DeletePackageV1_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_LogisticPackageApiService_DeleteV1_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -275,11 +275,11 @@ func RegisterLogisticPackageApiServiceHandlerServer(ctx context.Context, mux *ru
 			return
 		}
 
-		forward_LogisticPackageApiService_DeletePackageV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_LogisticPackageApiService_DeleteV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_LogisticPackageApiService_GetPackageV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_LogisticPackageApiService_GetV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -287,12 +287,12 @@ func RegisterLogisticPackageApiServiceHandlerServer(ctx context.Context, mux *ru
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/GetPackageV1", runtime.WithHTTPPathPattern("/v1/packages/{package_id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/GetV1", runtime.WithHTTPPathPattern("/v1/packages/{package_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_LogisticPackageApiService_GetPackageV1_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_LogisticPackageApiService_GetV1_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -300,11 +300,11 @@ func RegisterLogisticPackageApiServiceHandlerServer(ctx context.Context, mux *ru
 			return
 		}
 
-		forward_LogisticPackageApiService_GetPackageV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_LogisticPackageApiService_GetV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_LogisticPackageApiService_ListPackagesV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_LogisticPackageApiService_ListV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -312,12 +312,12 @@ func RegisterLogisticPackageApiServiceHandlerServer(ctx context.Context, mux *ru
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/ListPackagesV1", runtime.WithHTTPPathPattern("/v1/packages"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/ListV1", runtime.WithHTTPPathPattern("/v1/packages"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_LogisticPackageApiService_ListPackagesV1_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_LogisticPackageApiService_ListV1_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -325,11 +325,11 @@ func RegisterLogisticPackageApiServiceHandlerServer(ctx context.Context, mux *ru
 			return
 		}
 
-		forward_LogisticPackageApiService_ListPackagesV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_LogisticPackageApiService_ListV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_LogisticPackageApiService_UpdatePackageV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_LogisticPackageApiService_UpdateV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -337,12 +337,12 @@ func RegisterLogisticPackageApiServiceHandlerServer(ctx context.Context, mux *ru
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/UpdatePackageV1", runtime.WithHTTPPathPattern("/v1/packages"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/UpdateV1", runtime.WithHTTPPathPattern("/v1/packages"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_LogisticPackageApiService_UpdatePackageV1_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_LogisticPackageApiService_UpdateV1_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -350,7 +350,7 @@ func RegisterLogisticPackageApiServiceHandlerServer(ctx context.Context, mux *ru
 			return
 		}
 
-		forward_LogisticPackageApiService_UpdatePackageV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_LogisticPackageApiService_UpdateV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -395,113 +395,113 @@ func RegisterLogisticPackageApiServiceHandler(ctx context.Context, mux *runtime.
 // "LogisticPackageApiServiceClient" to call the correct interceptors.
 func RegisterLogisticPackageApiServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client LogisticPackageApiServiceClient) error {
 
-	mux.Handle("POST", pattern_LogisticPackageApiService_CreatePackageV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_LogisticPackageApiService_CreateV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/CreatePackageV1", runtime.WithHTTPPathPattern("/v1/packages"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/CreateV1", runtime.WithHTTPPathPattern("/v1/packages"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_LogisticPackageApiService_CreatePackageV1_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_LogisticPackageApiService_CreateV1_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_LogisticPackageApiService_CreatePackageV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_LogisticPackageApiService_CreateV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("DELETE", pattern_LogisticPackageApiService_DeletePackageV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("DELETE", pattern_LogisticPackageApiService_DeleteV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/DeletePackageV1", runtime.WithHTTPPathPattern("/v1/packages/{package_id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/DeleteV1", runtime.WithHTTPPathPattern("/v1/packages/{package_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_LogisticPackageApiService_DeletePackageV1_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_LogisticPackageApiService_DeleteV1_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_LogisticPackageApiService_DeletePackageV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_LogisticPackageApiService_DeleteV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_LogisticPackageApiService_GetPackageV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_LogisticPackageApiService_GetV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/GetPackageV1", runtime.WithHTTPPathPattern("/v1/packages/{package_id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/GetV1", runtime.WithHTTPPathPattern("/v1/packages/{package_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_LogisticPackageApiService_GetPackageV1_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_LogisticPackageApiService_GetV1_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_LogisticPackageApiService_GetPackageV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_LogisticPackageApiService_GetV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("GET", pattern_LogisticPackageApiService_ListPackagesV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_LogisticPackageApiService_ListV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/ListPackagesV1", runtime.WithHTTPPathPattern("/v1/packages"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/ListV1", runtime.WithHTTPPathPattern("/v1/packages"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_LogisticPackageApiService_ListPackagesV1_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_LogisticPackageApiService_ListV1_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_LogisticPackageApiService_ListPackagesV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_LogisticPackageApiService_ListV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("PUT", pattern_LogisticPackageApiService_UpdatePackageV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("PUT", pattern_LogisticPackageApiService_UpdateV1_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/UpdatePackageV1", runtime.WithHTTPPathPattern("/v1/packages"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/logistic_package_api.v1.LogisticPackageApiService/UpdateV1", runtime.WithHTTPPathPattern("/v1/packages"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_LogisticPackageApiService_UpdatePackageV1_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_LogisticPackageApiService_UpdateV1_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_LogisticPackageApiService_UpdatePackageV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_LogisticPackageApiService_UpdateV1_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -509,25 +509,25 @@ func RegisterLogisticPackageApiServiceHandlerClient(ctx context.Context, mux *ru
 }
 
 var (
-	pattern_LogisticPackageApiService_CreatePackageV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "packages"}, ""))
+	pattern_LogisticPackageApiService_CreateV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "packages"}, ""))
 
-	pattern_LogisticPackageApiService_DeletePackageV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "packages", "package_id"}, ""))
+	pattern_LogisticPackageApiService_DeleteV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "packages", "package_id"}, ""))
 
-	pattern_LogisticPackageApiService_GetPackageV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "packages", "package_id"}, ""))
+	pattern_LogisticPackageApiService_GetV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "packages", "package_id"}, ""))
 
-	pattern_LogisticPackageApiService_ListPackagesV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "packages"}, ""))
+	pattern_LogisticPackageApiService_ListV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "packages"}, ""))
 
-	pattern_LogisticPackageApiService_UpdatePackageV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "packages"}, ""))
+	pattern_LogisticPackageApiService_UpdateV1_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "packages"}, ""))
 )
 
 var (
-	forward_LogisticPackageApiService_CreatePackageV1_0 = runtime.ForwardResponseMessage
+	forward_LogisticPackageApiService_CreateV1_0 = runtime.ForwardResponseMessage
 
-	forward_LogisticPackageApiService_DeletePackageV1_0 = runtime.ForwardResponseMessage
+	forward_LogisticPackageApiService_DeleteV1_0 = runtime.ForwardResponseMessage
 
-	forward_LogisticPackageApiService_GetPackageV1_0 = runtime.ForwardResponseMessage
+	forward_LogisticPackageApiService_GetV1_0 = runtime.ForwardResponseMessage
 
-	forward_LogisticPackageApiService_ListPackagesV1_0 = runtime.ForwardResponseMessage
+	forward_LogisticPackageApiService_ListV1_0 = runtime.ForwardResponseMessage
 
-	forward_LogisticPackageApiService_UpdatePackageV1_0 = runtime.ForwardResponseMessage
+	forward_LogisticPackageApiService_UpdateV1_0 = runtime.ForwardResponseMessage
 )

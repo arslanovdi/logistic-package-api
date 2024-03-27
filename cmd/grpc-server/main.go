@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/arslanovdi/logistic-package-api/internal/database/postgres"
 	"github.com/arslanovdi/logistic-package-api/internal/logger"
 	"github.com/arslanovdi/logistic-package-api/internal/service"
 	_ "github.com/jackc/pgx/v5"
@@ -77,7 +78,7 @@ func main() {
 		}
 	}
 
-	repo := database.NewPostgresRepo(dbpool, batchSize)
+	repo := postgres.NewPostgresRepo(dbpool, batchSize)
 	packageService := service.NewPackageService(dbpool, repo)
 
 	tracing, err2 := tracer.NewTracer(&cfg)

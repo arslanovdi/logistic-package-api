@@ -11,32 +11,32 @@ option go_package = "logistic-package-api.v1";
 
 service LogisticPackageApiService {
 
-  rpc CreatePackageV1(CreatePackageRequestV1) returns (CreatePackageResponseV1) {
+  rpc CreateV1(CreateRequestV1) returns (CreateResponseV1) {
     option (google.api.http) = {
       post: "/v1/packages"
       body: "*"
     };
   }
 
-  rpc DeletePackageV1(DeletePackageV1Request) returns (DeletePackageV1Response) {
+  rpc DeleteV1(DeleteV1Request) returns (DeleteV1Response) {
     option (google.api.http) = {
       delete: "/v1/packages/{package_id}"
     };
   }
 
-  rpc GetPackageV1(GetPackageV1Request) returns (GetPackageV1Response) {
+  rpc GetV1(GetV1Request) returns (GetV1Response) {
     option (google.api.http) = {
       get: "/v1/packages/{package_id}"
     };
   }
 
-  rpc ListPackagesV1(ListPackagesV1Request) returns (ListPackagesV1Response) {
+  rpc ListV1(ListV1Request) returns (ListV1Response) {
     option (google.api.http) = {
       get: "/v1/packages"
     };
   }
 
-  rpc UpdatePackageV1(UpdatePackageV1Request) returns (UpdatePackageV1Response) {
+  rpc UpdateV1(UpdateV1Request) returns (UpdateV1Response) {
     option (google.api.http) = {
       put: "/v1/packages"
       body: "*"
@@ -52,45 +52,43 @@ message Package {
   optional google.protobuf.Timestamp updated = 5;
 }
 
-message CreatePackageRequestV1 {
+message CreateRequestV1 {
   Package value = 1;
 }
 
-message CreatePackageResponseV1 {
+message CreateResponseV1 {
   uint64 package_id  = 1;
 }
 
-message DeletePackageV1Request {
+message DeleteV1Request {
   uint64 package_id = 1 [(validate.rules).uint64.gt = 0];
 }
 
-message DeletePackageV1Response {
-  bool deleted = 1;
+message DeleteV1Response {
 }
 
-message GetPackageV1Request {
+message GetV1Request {
   uint64 package_id = 1 [(validate.rules).uint64.gt = 0];
 }
 
-message GetPackageV1Response {
+message GetV1Response {
   Package value = 1;
 }
 
-message ListPackagesV1Request {
+message ListV1Request {
   uint64 offset = 1 [(validate.rules).uint64.gt = 0];
   uint64 limit = 2 [(validate.rules).uint64.gt = 0];
 }
 
-message ListPackagesV1Response {
+message ListV1Response {
   repeated Package packages = 1;
 }
 
-message UpdatePackageV1Request {
+message UpdateV1Request {
   Package value = 1;
 }
 
-message UpdatePackageV1Response {
-  bool updated = 1;
+message UpdateV1Response {
 }
 
 

@@ -223,22 +223,22 @@ var _ interface {
 	ErrorName() string
 } = PackageValidationError{}
 
-// Validate checks the field values on CreatePackageRequestV1 with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *CreatePackageRequestV1) Validate() error {
+// Validate checks the field values on CreateRequestV1 with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *CreateRequestV1) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on CreatePackageRequestV1 with the rules
+// ValidateAll checks the field values on CreateRequestV1 with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// CreatePackageRequestV1MultiError, or nil if none found.
-func (m *CreatePackageRequestV1) ValidateAll() error {
+// CreateRequestV1MultiError, or nil if none found.
+func (m *CreateRequestV1) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *CreatePackageRequestV1) validate(all bool) error {
+func (m *CreateRequestV1) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -249,7 +249,7 @@ func (m *CreatePackageRequestV1) validate(all bool) error {
 		switch v := interface{}(m.GetValue()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, CreatePackageRequestV1ValidationError{
+				errors = append(errors, CreateRequestV1ValidationError{
 					field:  "Value",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -257,7 +257,7 @@ func (m *CreatePackageRequestV1) validate(all bool) error {
 			}
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
-				errors = append(errors, CreatePackageRequestV1ValidationError{
+				errors = append(errors, CreateRequestV1ValidationError{
 					field:  "Value",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -266,7 +266,7 @@ func (m *CreatePackageRequestV1) validate(all bool) error {
 		}
 	} else if v, ok := interface{}(m.GetValue()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return CreatePackageRequestV1ValidationError{
+			return CreateRequestV1ValidationError{
 				field:  "Value",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -275,19 +275,19 @@ func (m *CreatePackageRequestV1) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return CreatePackageRequestV1MultiError(errors)
+		return CreateRequestV1MultiError(errors)
 	}
 
 	return nil
 }
 
-// CreatePackageRequestV1MultiError is an error wrapping multiple validation
-// errors returned by CreatePackageRequestV1.ValidateAll() if the designated
-// constraints aren't met.
-type CreatePackageRequestV1MultiError []error
+// CreateRequestV1MultiError is an error wrapping multiple validation errors
+// returned by CreateRequestV1.ValidateAll() if the designated constraints
+// aren't met.
+type CreateRequestV1MultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m CreatePackageRequestV1MultiError) Error() string {
+func (m CreateRequestV1MultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -296,11 +296,11 @@ func (m CreatePackageRequestV1MultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m CreatePackageRequestV1MultiError) AllErrors() []error { return m }
+func (m CreateRequestV1MultiError) AllErrors() []error { return m }
 
-// CreatePackageRequestV1ValidationError is the validation error returned by
-// CreatePackageRequestV1.Validate if the designated constraints aren't met.
-type CreatePackageRequestV1ValidationError struct {
+// CreateRequestV1ValidationError is the validation error returned by
+// CreateRequestV1.Validate if the designated constraints aren't met.
+type CreateRequestV1ValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -308,24 +308,22 @@ type CreatePackageRequestV1ValidationError struct {
 }
 
 // Field function returns field value.
-func (e CreatePackageRequestV1ValidationError) Field() string { return e.field }
+func (e CreateRequestV1ValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e CreatePackageRequestV1ValidationError) Reason() string { return e.reason }
+func (e CreateRequestV1ValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e CreatePackageRequestV1ValidationError) Cause() error { return e.cause }
+func (e CreateRequestV1ValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e CreatePackageRequestV1ValidationError) Key() bool { return e.key }
+func (e CreateRequestV1ValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e CreatePackageRequestV1ValidationError) ErrorName() string {
-	return "CreatePackageRequestV1ValidationError"
-}
+func (e CreateRequestV1ValidationError) ErrorName() string { return "CreateRequestV1ValidationError" }
 
 // Error satisfies the builtin error interface
-func (e CreatePackageRequestV1ValidationError) Error() string {
+func (e CreateRequestV1ValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -337,14 +335,14 @@ func (e CreatePackageRequestV1ValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sCreatePackageRequestV1.%s: %s%s",
+		"invalid %sCreateRequestV1.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = CreatePackageRequestV1ValidationError{}
+var _ error = CreateRequestV1ValidationError{}
 
 var _ interface {
 	Field() string
@@ -352,24 +350,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = CreatePackageRequestV1ValidationError{}
+} = CreateRequestV1ValidationError{}
 
-// Validate checks the field values on CreatePackageResponseV1 with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *CreatePackageResponseV1) Validate() error {
+// Validate checks the field values on CreateResponseV1 with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *CreateResponseV1) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on CreatePackageResponseV1 with the
-// rules defined in the proto definition for this message. If any rules are
+// ValidateAll checks the field values on CreateResponseV1 with the rules
+// defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// CreatePackageResponseV1MultiError, or nil if none found.
-func (m *CreatePackageResponseV1) ValidateAll() error {
+// CreateResponseV1MultiError, or nil if none found.
+func (m *CreateResponseV1) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *CreatePackageResponseV1) validate(all bool) error {
+func (m *CreateResponseV1) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -379,19 +377,19 @@ func (m *CreatePackageResponseV1) validate(all bool) error {
 	// no validation rules for PackageId
 
 	if len(errors) > 0 {
-		return CreatePackageResponseV1MultiError(errors)
+		return CreateResponseV1MultiError(errors)
 	}
 
 	return nil
 }
 
-// CreatePackageResponseV1MultiError is an error wrapping multiple validation
-// errors returned by CreatePackageResponseV1.ValidateAll() if the designated
-// constraints aren't met.
-type CreatePackageResponseV1MultiError []error
+// CreateResponseV1MultiError is an error wrapping multiple validation errors
+// returned by CreateResponseV1.ValidateAll() if the designated constraints
+// aren't met.
+type CreateResponseV1MultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m CreatePackageResponseV1MultiError) Error() string {
+func (m CreateResponseV1MultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -400,11 +398,11 @@ func (m CreatePackageResponseV1MultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m CreatePackageResponseV1MultiError) AllErrors() []error { return m }
+func (m CreateResponseV1MultiError) AllErrors() []error { return m }
 
-// CreatePackageResponseV1ValidationError is the validation error returned by
-// CreatePackageResponseV1.Validate if the designated constraints aren't met.
-type CreatePackageResponseV1ValidationError struct {
+// CreateResponseV1ValidationError is the validation error returned by
+// CreateResponseV1.Validate if the designated constraints aren't met.
+type CreateResponseV1ValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -412,24 +410,22 @@ type CreatePackageResponseV1ValidationError struct {
 }
 
 // Field function returns field value.
-func (e CreatePackageResponseV1ValidationError) Field() string { return e.field }
+func (e CreateResponseV1ValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e CreatePackageResponseV1ValidationError) Reason() string { return e.reason }
+func (e CreateResponseV1ValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e CreatePackageResponseV1ValidationError) Cause() error { return e.cause }
+func (e CreateResponseV1ValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e CreatePackageResponseV1ValidationError) Key() bool { return e.key }
+func (e CreateResponseV1ValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e CreatePackageResponseV1ValidationError) ErrorName() string {
-	return "CreatePackageResponseV1ValidationError"
-}
+func (e CreateResponseV1ValidationError) ErrorName() string { return "CreateResponseV1ValidationError" }
 
 // Error satisfies the builtin error interface
-func (e CreatePackageResponseV1ValidationError) Error() string {
+func (e CreateResponseV1ValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -441,14 +437,14 @@ func (e CreatePackageResponseV1ValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sCreatePackageResponseV1.%s: %s%s",
+		"invalid %sCreateResponseV1.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = CreatePackageResponseV1ValidationError{}
+var _ error = CreateResponseV1ValidationError{}
 
 var _ interface {
 	Field() string
@@ -456,24 +452,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = CreatePackageResponseV1ValidationError{}
+} = CreateResponseV1ValidationError{}
 
-// Validate checks the field values on DeletePackageV1Request with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *DeletePackageV1Request) Validate() error {
+// Validate checks the field values on DeleteV1Request with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *DeleteV1Request) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on DeletePackageV1Request with the rules
+// ValidateAll checks the field values on DeleteV1Request with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// DeletePackageV1RequestMultiError, or nil if none found.
-func (m *DeletePackageV1Request) ValidateAll() error {
+// DeleteV1RequestMultiError, or nil if none found.
+func (m *DeleteV1Request) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *DeletePackageV1Request) validate(all bool) error {
+func (m *DeleteV1Request) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -481,7 +477,7 @@ func (m *DeletePackageV1Request) validate(all bool) error {
 	var errors []error
 
 	if m.GetPackageId() <= 0 {
-		err := DeletePackageV1RequestValidationError{
+		err := DeleteV1RequestValidationError{
 			field:  "PackageId",
 			reason: "value must be greater than 0",
 		}
@@ -492,19 +488,19 @@ func (m *DeletePackageV1Request) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return DeletePackageV1RequestMultiError(errors)
+		return DeleteV1RequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// DeletePackageV1RequestMultiError is an error wrapping multiple validation
-// errors returned by DeletePackageV1Request.ValidateAll() if the designated
-// constraints aren't met.
-type DeletePackageV1RequestMultiError []error
+// DeleteV1RequestMultiError is an error wrapping multiple validation errors
+// returned by DeleteV1Request.ValidateAll() if the designated constraints
+// aren't met.
+type DeleteV1RequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m DeletePackageV1RequestMultiError) Error() string {
+func (m DeleteV1RequestMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -513,11 +509,11 @@ func (m DeletePackageV1RequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m DeletePackageV1RequestMultiError) AllErrors() []error { return m }
+func (m DeleteV1RequestMultiError) AllErrors() []error { return m }
 
-// DeletePackageV1RequestValidationError is the validation error returned by
-// DeletePackageV1Request.Validate if the designated constraints aren't met.
-type DeletePackageV1RequestValidationError struct {
+// DeleteV1RequestValidationError is the validation error returned by
+// DeleteV1Request.Validate if the designated constraints aren't met.
+type DeleteV1RequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -525,24 +521,22 @@ type DeletePackageV1RequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e DeletePackageV1RequestValidationError) Field() string { return e.field }
+func (e DeleteV1RequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e DeletePackageV1RequestValidationError) Reason() string { return e.reason }
+func (e DeleteV1RequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e DeletePackageV1RequestValidationError) Cause() error { return e.cause }
+func (e DeleteV1RequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e DeletePackageV1RequestValidationError) Key() bool { return e.key }
+func (e DeleteV1RequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e DeletePackageV1RequestValidationError) ErrorName() string {
-	return "DeletePackageV1RequestValidationError"
-}
+func (e DeleteV1RequestValidationError) ErrorName() string { return "DeleteV1RequestValidationError" }
 
 // Error satisfies the builtin error interface
-func (e DeletePackageV1RequestValidationError) Error() string {
+func (e DeleteV1RequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -554,14 +548,14 @@ func (e DeletePackageV1RequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sDeletePackageV1Request.%s: %s%s",
+		"invalid %sDeleteV1Request.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = DeletePackageV1RequestValidationError{}
+var _ error = DeleteV1RequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -569,46 +563,44 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = DeletePackageV1RequestValidationError{}
+} = DeleteV1RequestValidationError{}
 
-// Validate checks the field values on DeletePackageV1Response with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *DeletePackageV1Response) Validate() error {
+// Validate checks the field values on DeleteV1Response with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *DeleteV1Response) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on DeletePackageV1Response with the
-// rules defined in the proto definition for this message. If any rules are
+// ValidateAll checks the field values on DeleteV1Response with the rules
+// defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// DeletePackageV1ResponseMultiError, or nil if none found.
-func (m *DeletePackageV1Response) ValidateAll() error {
+// DeleteV1ResponseMultiError, or nil if none found.
+func (m *DeleteV1Response) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *DeletePackageV1Response) validate(all bool) error {
+func (m *DeleteV1Response) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	// no validation rules for Deleted
-
 	if len(errors) > 0 {
-		return DeletePackageV1ResponseMultiError(errors)
+		return DeleteV1ResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// DeletePackageV1ResponseMultiError is an error wrapping multiple validation
-// errors returned by DeletePackageV1Response.ValidateAll() if the designated
-// constraints aren't met.
-type DeletePackageV1ResponseMultiError []error
+// DeleteV1ResponseMultiError is an error wrapping multiple validation errors
+// returned by DeleteV1Response.ValidateAll() if the designated constraints
+// aren't met.
+type DeleteV1ResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m DeletePackageV1ResponseMultiError) Error() string {
+func (m DeleteV1ResponseMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -617,11 +609,11 @@ func (m DeletePackageV1ResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m DeletePackageV1ResponseMultiError) AllErrors() []error { return m }
+func (m DeleteV1ResponseMultiError) AllErrors() []error { return m }
 
-// DeletePackageV1ResponseValidationError is the validation error returned by
-// DeletePackageV1Response.Validate if the designated constraints aren't met.
-type DeletePackageV1ResponseValidationError struct {
+// DeleteV1ResponseValidationError is the validation error returned by
+// DeleteV1Response.Validate if the designated constraints aren't met.
+type DeleteV1ResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -629,24 +621,22 @@ type DeletePackageV1ResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e DeletePackageV1ResponseValidationError) Field() string { return e.field }
+func (e DeleteV1ResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e DeletePackageV1ResponseValidationError) Reason() string { return e.reason }
+func (e DeleteV1ResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e DeletePackageV1ResponseValidationError) Cause() error { return e.cause }
+func (e DeleteV1ResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e DeletePackageV1ResponseValidationError) Key() bool { return e.key }
+func (e DeleteV1ResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e DeletePackageV1ResponseValidationError) ErrorName() string {
-	return "DeletePackageV1ResponseValidationError"
-}
+func (e DeleteV1ResponseValidationError) ErrorName() string { return "DeleteV1ResponseValidationError" }
 
 // Error satisfies the builtin error interface
-func (e DeletePackageV1ResponseValidationError) Error() string {
+func (e DeleteV1ResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -658,14 +648,14 @@ func (e DeletePackageV1ResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sDeletePackageV1Response.%s: %s%s",
+		"invalid %sDeleteV1Response.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = DeletePackageV1ResponseValidationError{}
+var _ error = DeleteV1ResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -673,24 +663,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = DeletePackageV1ResponseValidationError{}
+} = DeleteV1ResponseValidationError{}
 
-// Validate checks the field values on GetPackageV1Request with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *GetPackageV1Request) Validate() error {
+// Validate checks the field values on GetV1Request with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *GetV1Request) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on GetPackageV1Request with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// GetPackageV1RequestMultiError, or nil if none found.
-func (m *GetPackageV1Request) ValidateAll() error {
+// ValidateAll checks the field values on GetV1Request with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in GetV1RequestMultiError, or
+// nil if none found.
+func (m *GetV1Request) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *GetPackageV1Request) validate(all bool) error {
+func (m *GetV1Request) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -698,7 +688,7 @@ func (m *GetPackageV1Request) validate(all bool) error {
 	var errors []error
 
 	if m.GetPackageId() <= 0 {
-		err := GetPackageV1RequestValidationError{
+		err := GetV1RequestValidationError{
 			field:  "PackageId",
 			reason: "value must be greater than 0",
 		}
@@ -709,19 +699,18 @@ func (m *GetPackageV1Request) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return GetPackageV1RequestMultiError(errors)
+		return GetV1RequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// GetPackageV1RequestMultiError is an error wrapping multiple validation
-// errors returned by GetPackageV1Request.ValidateAll() if the designated
-// constraints aren't met.
-type GetPackageV1RequestMultiError []error
+// GetV1RequestMultiError is an error wrapping multiple validation errors
+// returned by GetV1Request.ValidateAll() if the designated constraints aren't met.
+type GetV1RequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m GetPackageV1RequestMultiError) Error() string {
+func (m GetV1RequestMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -730,11 +719,11 @@ func (m GetPackageV1RequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m GetPackageV1RequestMultiError) AllErrors() []error { return m }
+func (m GetV1RequestMultiError) AllErrors() []error { return m }
 
-// GetPackageV1RequestValidationError is the validation error returned by
-// GetPackageV1Request.Validate if the designated constraints aren't met.
-type GetPackageV1RequestValidationError struct {
+// GetV1RequestValidationError is the validation error returned by
+// GetV1Request.Validate if the designated constraints aren't met.
+type GetV1RequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -742,24 +731,22 @@ type GetPackageV1RequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e GetPackageV1RequestValidationError) Field() string { return e.field }
+func (e GetV1RequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e GetPackageV1RequestValidationError) Reason() string { return e.reason }
+func (e GetV1RequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e GetPackageV1RequestValidationError) Cause() error { return e.cause }
+func (e GetV1RequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e GetPackageV1RequestValidationError) Key() bool { return e.key }
+func (e GetV1RequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e GetPackageV1RequestValidationError) ErrorName() string {
-	return "GetPackageV1RequestValidationError"
-}
+func (e GetV1RequestValidationError) ErrorName() string { return "GetV1RequestValidationError" }
 
 // Error satisfies the builtin error interface
-func (e GetPackageV1RequestValidationError) Error() string {
+func (e GetV1RequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -771,14 +758,14 @@ func (e GetPackageV1RequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetPackageV1Request.%s: %s%s",
+		"invalid %sGetV1Request.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = GetPackageV1RequestValidationError{}
+var _ error = GetV1RequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -786,24 +773,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = GetPackageV1RequestValidationError{}
+} = GetV1RequestValidationError{}
 
-// Validate checks the field values on GetPackageV1Response with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *GetPackageV1Response) Validate() error {
+// Validate checks the field values on GetV1Response with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *GetV1Response) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on GetPackageV1Response with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// GetPackageV1ResponseMultiError, or nil if none found.
-func (m *GetPackageV1Response) ValidateAll() error {
+// ValidateAll checks the field values on GetV1Response with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in GetV1ResponseMultiError, or
+// nil if none found.
+func (m *GetV1Response) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *GetPackageV1Response) validate(all bool) error {
+func (m *GetV1Response) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -814,7 +801,7 @@ func (m *GetPackageV1Response) validate(all bool) error {
 		switch v := interface{}(m.GetValue()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, GetPackageV1ResponseValidationError{
+				errors = append(errors, GetV1ResponseValidationError{
 					field:  "Value",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -822,7 +809,7 @@ func (m *GetPackageV1Response) validate(all bool) error {
 			}
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
-				errors = append(errors, GetPackageV1ResponseValidationError{
+				errors = append(errors, GetV1ResponseValidationError{
 					field:  "Value",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -831,7 +818,7 @@ func (m *GetPackageV1Response) validate(all bool) error {
 		}
 	} else if v, ok := interface{}(m.GetValue()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return GetPackageV1ResponseValidationError{
+			return GetV1ResponseValidationError{
 				field:  "Value",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -840,19 +827,19 @@ func (m *GetPackageV1Response) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return GetPackageV1ResponseMultiError(errors)
+		return GetV1ResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// GetPackageV1ResponseMultiError is an error wrapping multiple validation
-// errors returned by GetPackageV1Response.ValidateAll() if the designated
-// constraints aren't met.
-type GetPackageV1ResponseMultiError []error
+// GetV1ResponseMultiError is an error wrapping multiple validation errors
+// returned by GetV1Response.ValidateAll() if the designated constraints
+// aren't met.
+type GetV1ResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m GetPackageV1ResponseMultiError) Error() string {
+func (m GetV1ResponseMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -861,11 +848,11 @@ func (m GetPackageV1ResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m GetPackageV1ResponseMultiError) AllErrors() []error { return m }
+func (m GetV1ResponseMultiError) AllErrors() []error { return m }
 
-// GetPackageV1ResponseValidationError is the validation error returned by
-// GetPackageV1Response.Validate if the designated constraints aren't met.
-type GetPackageV1ResponseValidationError struct {
+// GetV1ResponseValidationError is the validation error returned by
+// GetV1Response.Validate if the designated constraints aren't met.
+type GetV1ResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -873,24 +860,22 @@ type GetPackageV1ResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e GetPackageV1ResponseValidationError) Field() string { return e.field }
+func (e GetV1ResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e GetPackageV1ResponseValidationError) Reason() string { return e.reason }
+func (e GetV1ResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e GetPackageV1ResponseValidationError) Cause() error { return e.cause }
+func (e GetV1ResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e GetPackageV1ResponseValidationError) Key() bool { return e.key }
+func (e GetV1ResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e GetPackageV1ResponseValidationError) ErrorName() string {
-	return "GetPackageV1ResponseValidationError"
-}
+func (e GetV1ResponseValidationError) ErrorName() string { return "GetV1ResponseValidationError" }
 
 // Error satisfies the builtin error interface
-func (e GetPackageV1ResponseValidationError) Error() string {
+func (e GetV1ResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -902,14 +887,14 @@ func (e GetPackageV1ResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetPackageV1Response.%s: %s%s",
+		"invalid %sGetV1Response.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = GetPackageV1ResponseValidationError{}
+var _ error = GetV1ResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -917,24 +902,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = GetPackageV1ResponseValidationError{}
+} = GetV1ResponseValidationError{}
 
-// Validate checks the field values on ListPackagesV1Request with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ListPackagesV1Request) Validate() error {
+// Validate checks the field values on ListV1Request with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ListV1Request) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ListPackagesV1Request with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// ListPackagesV1RequestMultiError, or nil if none found.
-func (m *ListPackagesV1Request) ValidateAll() error {
+// ValidateAll checks the field values on ListV1Request with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in ListV1RequestMultiError, or
+// nil if none found.
+func (m *ListV1Request) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ListPackagesV1Request) validate(all bool) error {
+func (m *ListV1Request) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -942,7 +927,7 @@ func (m *ListPackagesV1Request) validate(all bool) error {
 	var errors []error
 
 	if m.GetOffset() <= 0 {
-		err := ListPackagesV1RequestValidationError{
+		err := ListV1RequestValidationError{
 			field:  "Offset",
 			reason: "value must be greater than 0",
 		}
@@ -953,7 +938,7 @@ func (m *ListPackagesV1Request) validate(all bool) error {
 	}
 
 	if m.GetLimit() <= 0 {
-		err := ListPackagesV1RequestValidationError{
+		err := ListV1RequestValidationError{
 			field:  "Limit",
 			reason: "value must be greater than 0",
 		}
@@ -964,19 +949,19 @@ func (m *ListPackagesV1Request) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return ListPackagesV1RequestMultiError(errors)
+		return ListV1RequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// ListPackagesV1RequestMultiError is an error wrapping multiple validation
-// errors returned by ListPackagesV1Request.ValidateAll() if the designated
-// constraints aren't met.
-type ListPackagesV1RequestMultiError []error
+// ListV1RequestMultiError is an error wrapping multiple validation errors
+// returned by ListV1Request.ValidateAll() if the designated constraints
+// aren't met.
+type ListV1RequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ListPackagesV1RequestMultiError) Error() string {
+func (m ListV1RequestMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -985,11 +970,11 @@ func (m ListPackagesV1RequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ListPackagesV1RequestMultiError) AllErrors() []error { return m }
+func (m ListV1RequestMultiError) AllErrors() []error { return m }
 
-// ListPackagesV1RequestValidationError is the validation error returned by
-// ListPackagesV1Request.Validate if the designated constraints aren't met.
-type ListPackagesV1RequestValidationError struct {
+// ListV1RequestValidationError is the validation error returned by
+// ListV1Request.Validate if the designated constraints aren't met.
+type ListV1RequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -997,24 +982,22 @@ type ListPackagesV1RequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListPackagesV1RequestValidationError) Field() string { return e.field }
+func (e ListV1RequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListPackagesV1RequestValidationError) Reason() string { return e.reason }
+func (e ListV1RequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListPackagesV1RequestValidationError) Cause() error { return e.cause }
+func (e ListV1RequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListPackagesV1RequestValidationError) Key() bool { return e.key }
+func (e ListV1RequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListPackagesV1RequestValidationError) ErrorName() string {
-	return "ListPackagesV1RequestValidationError"
-}
+func (e ListV1RequestValidationError) ErrorName() string { return "ListV1RequestValidationError" }
 
 // Error satisfies the builtin error interface
-func (e ListPackagesV1RequestValidationError) Error() string {
+func (e ListV1RequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1026,14 +1009,14 @@ func (e ListPackagesV1RequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListPackagesV1Request.%s: %s%s",
+		"invalid %sListV1Request.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListPackagesV1RequestValidationError{}
+var _ error = ListV1RequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -1041,24 +1024,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListPackagesV1RequestValidationError{}
+} = ListV1RequestValidationError{}
 
-// Validate checks the field values on ListPackagesV1Response with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *ListPackagesV1Response) Validate() error {
+// Validate checks the field values on ListV1Response with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ListV1Response) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on ListPackagesV1Response with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// ListPackagesV1ResponseMultiError, or nil if none found.
-func (m *ListPackagesV1Response) ValidateAll() error {
+// ValidateAll checks the field values on ListV1Response with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in ListV1ResponseMultiError,
+// or nil if none found.
+func (m *ListV1Response) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ListPackagesV1Response) validate(all bool) error {
+func (m *ListV1Response) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -1072,7 +1055,7 @@ func (m *ListPackagesV1Response) validate(all bool) error {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, ListPackagesV1ResponseValidationError{
+					errors = append(errors, ListV1ResponseValidationError{
 						field:  fmt.Sprintf("Packages[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -1080,7 +1063,7 @@ func (m *ListPackagesV1Response) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, ListPackagesV1ResponseValidationError{
+					errors = append(errors, ListV1ResponseValidationError{
 						field:  fmt.Sprintf("Packages[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -1089,7 +1072,7 @@ func (m *ListPackagesV1Response) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return ListPackagesV1ResponseValidationError{
+				return ListV1ResponseValidationError{
 					field:  fmt.Sprintf("Packages[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -1100,19 +1083,19 @@ func (m *ListPackagesV1Response) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return ListPackagesV1ResponseMultiError(errors)
+		return ListV1ResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// ListPackagesV1ResponseMultiError is an error wrapping multiple validation
-// errors returned by ListPackagesV1Response.ValidateAll() if the designated
-// constraints aren't met.
-type ListPackagesV1ResponseMultiError []error
+// ListV1ResponseMultiError is an error wrapping multiple validation errors
+// returned by ListV1Response.ValidateAll() if the designated constraints
+// aren't met.
+type ListV1ResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ListPackagesV1ResponseMultiError) Error() string {
+func (m ListV1ResponseMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1121,11 +1104,11 @@ func (m ListPackagesV1ResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ListPackagesV1ResponseMultiError) AllErrors() []error { return m }
+func (m ListV1ResponseMultiError) AllErrors() []error { return m }
 
-// ListPackagesV1ResponseValidationError is the validation error returned by
-// ListPackagesV1Response.Validate if the designated constraints aren't met.
-type ListPackagesV1ResponseValidationError struct {
+// ListV1ResponseValidationError is the validation error returned by
+// ListV1Response.Validate if the designated constraints aren't met.
+type ListV1ResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1133,24 +1116,22 @@ type ListPackagesV1ResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e ListPackagesV1ResponseValidationError) Field() string { return e.field }
+func (e ListV1ResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ListPackagesV1ResponseValidationError) Reason() string { return e.reason }
+func (e ListV1ResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ListPackagesV1ResponseValidationError) Cause() error { return e.cause }
+func (e ListV1ResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ListPackagesV1ResponseValidationError) Key() bool { return e.key }
+func (e ListV1ResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ListPackagesV1ResponseValidationError) ErrorName() string {
-	return "ListPackagesV1ResponseValidationError"
-}
+func (e ListV1ResponseValidationError) ErrorName() string { return "ListV1ResponseValidationError" }
 
 // Error satisfies the builtin error interface
-func (e ListPackagesV1ResponseValidationError) Error() string {
+func (e ListV1ResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1162,14 +1143,14 @@ func (e ListPackagesV1ResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sListPackagesV1Response.%s: %s%s",
+		"invalid %sListV1Response.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ListPackagesV1ResponseValidationError{}
+var _ error = ListV1ResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -1177,24 +1158,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ListPackagesV1ResponseValidationError{}
+} = ListV1ResponseValidationError{}
 
-// Validate checks the field values on UpdatePackageV1Request with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *UpdatePackageV1Request) Validate() error {
+// Validate checks the field values on UpdateV1Request with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *UpdateV1Request) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on UpdatePackageV1Request with the rules
+// ValidateAll checks the field values on UpdateV1Request with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// UpdatePackageV1RequestMultiError, or nil if none found.
-func (m *UpdatePackageV1Request) ValidateAll() error {
+// UpdateV1RequestMultiError, or nil if none found.
+func (m *UpdateV1Request) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *UpdatePackageV1Request) validate(all bool) error {
+func (m *UpdateV1Request) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -1205,7 +1186,7 @@ func (m *UpdatePackageV1Request) validate(all bool) error {
 		switch v := interface{}(m.GetValue()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, UpdatePackageV1RequestValidationError{
+				errors = append(errors, UpdateV1RequestValidationError{
 					field:  "Value",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -1213,7 +1194,7 @@ func (m *UpdatePackageV1Request) validate(all bool) error {
 			}
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
-				errors = append(errors, UpdatePackageV1RequestValidationError{
+				errors = append(errors, UpdateV1RequestValidationError{
 					field:  "Value",
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -1222,7 +1203,7 @@ func (m *UpdatePackageV1Request) validate(all bool) error {
 		}
 	} else if v, ok := interface{}(m.GetValue()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
-			return UpdatePackageV1RequestValidationError{
+			return UpdateV1RequestValidationError{
 				field:  "Value",
 				reason: "embedded message failed validation",
 				cause:  err,
@@ -1231,19 +1212,19 @@ func (m *UpdatePackageV1Request) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return UpdatePackageV1RequestMultiError(errors)
+		return UpdateV1RequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// UpdatePackageV1RequestMultiError is an error wrapping multiple validation
-// errors returned by UpdatePackageV1Request.ValidateAll() if the designated
-// constraints aren't met.
-type UpdatePackageV1RequestMultiError []error
+// UpdateV1RequestMultiError is an error wrapping multiple validation errors
+// returned by UpdateV1Request.ValidateAll() if the designated constraints
+// aren't met.
+type UpdateV1RequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m UpdatePackageV1RequestMultiError) Error() string {
+func (m UpdateV1RequestMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1252,11 +1233,11 @@ func (m UpdatePackageV1RequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m UpdatePackageV1RequestMultiError) AllErrors() []error { return m }
+func (m UpdateV1RequestMultiError) AllErrors() []error { return m }
 
-// UpdatePackageV1RequestValidationError is the validation error returned by
-// UpdatePackageV1Request.Validate if the designated constraints aren't met.
-type UpdatePackageV1RequestValidationError struct {
+// UpdateV1RequestValidationError is the validation error returned by
+// UpdateV1Request.Validate if the designated constraints aren't met.
+type UpdateV1RequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1264,24 +1245,22 @@ type UpdatePackageV1RequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e UpdatePackageV1RequestValidationError) Field() string { return e.field }
+func (e UpdateV1RequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e UpdatePackageV1RequestValidationError) Reason() string { return e.reason }
+func (e UpdateV1RequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e UpdatePackageV1RequestValidationError) Cause() error { return e.cause }
+func (e UpdateV1RequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e UpdatePackageV1RequestValidationError) Key() bool { return e.key }
+func (e UpdateV1RequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e UpdatePackageV1RequestValidationError) ErrorName() string {
-	return "UpdatePackageV1RequestValidationError"
-}
+func (e UpdateV1RequestValidationError) ErrorName() string { return "UpdateV1RequestValidationError" }
 
 // Error satisfies the builtin error interface
-func (e UpdatePackageV1RequestValidationError) Error() string {
+func (e UpdateV1RequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1293,14 +1272,14 @@ func (e UpdatePackageV1RequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sUpdatePackageV1Request.%s: %s%s",
+		"invalid %sUpdateV1Request.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = UpdatePackageV1RequestValidationError{}
+var _ error = UpdateV1RequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -1308,46 +1287,44 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = UpdatePackageV1RequestValidationError{}
+} = UpdateV1RequestValidationError{}
 
-// Validate checks the field values on UpdatePackageV1Response with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *UpdatePackageV1Response) Validate() error {
+// Validate checks the field values on UpdateV1Response with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *UpdateV1Response) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on UpdatePackageV1Response with the
-// rules defined in the proto definition for this message. If any rules are
+// ValidateAll checks the field values on UpdateV1Response with the rules
+// defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// UpdatePackageV1ResponseMultiError, or nil if none found.
-func (m *UpdatePackageV1Response) ValidateAll() error {
+// UpdateV1ResponseMultiError, or nil if none found.
+func (m *UpdateV1Response) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *UpdatePackageV1Response) validate(all bool) error {
+func (m *UpdateV1Response) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	// no validation rules for Updated
-
 	if len(errors) > 0 {
-		return UpdatePackageV1ResponseMultiError(errors)
+		return UpdateV1ResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// UpdatePackageV1ResponseMultiError is an error wrapping multiple validation
-// errors returned by UpdatePackageV1Response.ValidateAll() if the designated
-// constraints aren't met.
-type UpdatePackageV1ResponseMultiError []error
+// UpdateV1ResponseMultiError is an error wrapping multiple validation errors
+// returned by UpdateV1Response.ValidateAll() if the designated constraints
+// aren't met.
+type UpdateV1ResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m UpdatePackageV1ResponseMultiError) Error() string {
+func (m UpdateV1ResponseMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -1356,11 +1333,11 @@ func (m UpdatePackageV1ResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m UpdatePackageV1ResponseMultiError) AllErrors() []error { return m }
+func (m UpdateV1ResponseMultiError) AllErrors() []error { return m }
 
-// UpdatePackageV1ResponseValidationError is the validation error returned by
-// UpdatePackageV1Response.Validate if the designated constraints aren't met.
-type UpdatePackageV1ResponseValidationError struct {
+// UpdateV1ResponseValidationError is the validation error returned by
+// UpdateV1Response.Validate if the designated constraints aren't met.
+type UpdateV1ResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -1368,24 +1345,22 @@ type UpdatePackageV1ResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e UpdatePackageV1ResponseValidationError) Field() string { return e.field }
+func (e UpdateV1ResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e UpdatePackageV1ResponseValidationError) Reason() string { return e.reason }
+func (e UpdateV1ResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e UpdatePackageV1ResponseValidationError) Cause() error { return e.cause }
+func (e UpdateV1ResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e UpdatePackageV1ResponseValidationError) Key() bool { return e.key }
+func (e UpdateV1ResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e UpdatePackageV1ResponseValidationError) ErrorName() string {
-	return "UpdatePackageV1ResponseValidationError"
-}
+func (e UpdateV1ResponseValidationError) ErrorName() string { return "UpdateV1ResponseValidationError" }
 
 // Error satisfies the builtin error interface
-func (e UpdatePackageV1ResponseValidationError) Error() string {
+func (e UpdateV1ResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -1397,14 +1372,14 @@ func (e UpdatePackageV1ResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sUpdatePackageV1Response.%s: %s%s",
+		"invalid %sUpdateV1Response.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = UpdatePackageV1ResponseValidationError{}
+var _ error = UpdateV1ResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -1412,4 +1387,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = UpdatePackageV1ResponseValidationError{}
+} = UpdateV1ResponseValidationError{}

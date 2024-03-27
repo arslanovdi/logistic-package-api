@@ -18,12 +18,12 @@
   "paths": {
     "/v1/packages": {
       "get": {
-        "operationId": "LogisticPackageApiService_ListPackagesV1",
+        "operationId": "LogisticPackageApiService_ListV1",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ListPackagesV1Response"
+              "$ref": "#/definitions/v1ListV1Response"
             }
           },
           "default": {
@@ -54,12 +54,12 @@
         ]
       },
       "post": {
-        "operationId": "LogisticPackageApiService_CreatePackageV1",
+        "operationId": "LogisticPackageApiService_CreateV1",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1CreatePackageResponseV1"
+              "$ref": "#/definitions/v1CreateResponseV1"
             }
           },
           "default": {
@@ -75,7 +75,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1CreatePackageRequestV1"
+              "$ref": "#/definitions/v1CreateRequestV1"
             }
           }
         ],
@@ -84,12 +84,12 @@
         ]
       },
       "put": {
-        "operationId": "LogisticPackageApiService_UpdatePackageV1",
+        "operationId": "LogisticPackageApiService_UpdateV1",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1UpdatePackageV1Response"
+              "$ref": "#/definitions/v1UpdateV1Response"
             }
           },
           "default": {
@@ -105,7 +105,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1UpdatePackageV1Request"
+              "$ref": "#/definitions/v1UpdateV1Request"
             }
           }
         ],
@@ -116,12 +116,12 @@
     },
     "/v1/packages/{packageId}": {
       "get": {
-        "operationId": "LogisticPackageApiService_GetPackageV1",
+        "operationId": "LogisticPackageApiService_GetV1",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1GetPackageV1Response"
+              "$ref": "#/definitions/v1GetV1Response"
             }
           },
           "default": {
@@ -145,12 +145,12 @@
         ]
       },
       "delete": {
-        "operationId": "LogisticPackageApiService_DeletePackageV1",
+        "operationId": "LogisticPackageApiService_DeleteV1",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1DeletePackageV1Response"
+              "$ref": "#/definitions/v1DeleteV1Response"
             }
           },
           "default": {
@@ -204,7 +204,7 @@
         }
       }
     },
-    "v1CreatePackageRequestV1": {
+    "v1CreateRequestV1": {
       "type": "object",
       "properties": {
         "value": {
@@ -212,7 +212,7 @@
         }
       }
     },
-    "v1CreatePackageResponseV1": {
+    "v1CreateResponseV1": {
       "type": "object",
       "properties": {
         "packageId": {
@@ -221,15 +221,10 @@
         }
       }
     },
-    "v1DeletePackageV1Response": {
-      "type": "object",
-      "properties": {
-        "deleted": {
-          "type": "boolean"
-        }
-      }
+    "v1DeleteV1Response": {
+      "type": "object"
     },
-    "v1GetPackageV1Response": {
+    "v1GetV1Response": {
       "type": "object",
       "properties": {
         "value": {
@@ -237,7 +232,7 @@
         }
       }
     },
-    "v1ListPackagesV1Response": {
+    "v1ListV1Response": {
       "type": "object",
       "properties": {
         "packages": {
@@ -273,7 +268,7 @@
         }
       }
     },
-    "v1UpdatePackageV1Request": {
+    "v1UpdateV1Request": {
       "type": "object",
       "properties": {
         "value": {
@@ -281,13 +276,8 @@
         }
       }
     },
-    "v1UpdatePackageV1Response": {
-      "type": "object",
-      "properties": {
-        "updated": {
-          "type": "boolean"
-        }
-      }
+    "v1UpdateV1Response": {
+      "type": "object"
     }
   }
 }

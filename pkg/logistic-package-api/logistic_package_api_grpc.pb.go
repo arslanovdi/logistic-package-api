@@ -19,22 +19,22 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	LogisticPackageApiService_CreatePackageV1_FullMethodName = "/logistic_package_api.v1.LogisticPackageApiService/CreatePackageV1"
-	LogisticPackageApiService_DeletePackageV1_FullMethodName = "/logistic_package_api.v1.LogisticPackageApiService/DeletePackageV1"
-	LogisticPackageApiService_GetPackageV1_FullMethodName    = "/logistic_package_api.v1.LogisticPackageApiService/GetPackageV1"
-	LogisticPackageApiService_ListPackagesV1_FullMethodName  = "/logistic_package_api.v1.LogisticPackageApiService/ListPackagesV1"
-	LogisticPackageApiService_UpdatePackageV1_FullMethodName = "/logistic_package_api.v1.LogisticPackageApiService/UpdatePackageV1"
+	LogisticPackageApiService_CreateV1_FullMethodName = "/logistic_package_api.v1.LogisticPackageApiService/CreateV1"
+	LogisticPackageApiService_DeleteV1_FullMethodName = "/logistic_package_api.v1.LogisticPackageApiService/DeleteV1"
+	LogisticPackageApiService_GetV1_FullMethodName    = "/logistic_package_api.v1.LogisticPackageApiService/GetV1"
+	LogisticPackageApiService_ListV1_FullMethodName   = "/logistic_package_api.v1.LogisticPackageApiService/ListV1"
+	LogisticPackageApiService_UpdateV1_FullMethodName = "/logistic_package_api.v1.LogisticPackageApiService/UpdateV1"
 )
 
 // LogisticPackageApiServiceClient is the client API for LogisticPackageApiService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LogisticPackageApiServiceClient interface {
-	CreatePackageV1(ctx context.Context, in *CreatePackageRequestV1, opts ...grpc.CallOption) (*CreatePackageResponseV1, error)
-	DeletePackageV1(ctx context.Context, in *DeletePackageV1Request, opts ...grpc.CallOption) (*DeletePackageV1Response, error)
-	GetPackageV1(ctx context.Context, in *GetPackageV1Request, opts ...grpc.CallOption) (*GetPackageV1Response, error)
-	ListPackagesV1(ctx context.Context, in *ListPackagesV1Request, opts ...grpc.CallOption) (*ListPackagesV1Response, error)
-	UpdatePackageV1(ctx context.Context, in *UpdatePackageV1Request, opts ...grpc.CallOption) (*UpdatePackageV1Response, error)
+	CreateV1(ctx context.Context, in *CreateRequestV1, opts ...grpc.CallOption) (*CreateResponseV1, error)
+	DeleteV1(ctx context.Context, in *DeleteV1Request, opts ...grpc.CallOption) (*DeleteV1Response, error)
+	GetV1(ctx context.Context, in *GetV1Request, opts ...grpc.CallOption) (*GetV1Response, error)
+	ListV1(ctx context.Context, in *ListV1Request, opts ...grpc.CallOption) (*ListV1Response, error)
+	UpdateV1(ctx context.Context, in *UpdateV1Request, opts ...grpc.CallOption) (*UpdateV1Response, error)
 }
 
 type logisticPackageApiServiceClient struct {
@@ -45,45 +45,45 @@ func NewLogisticPackageApiServiceClient(cc grpc.ClientConnInterface) LogisticPac
 	return &logisticPackageApiServiceClient{cc}
 }
 
-func (c *logisticPackageApiServiceClient) CreatePackageV1(ctx context.Context, in *CreatePackageRequestV1, opts ...grpc.CallOption) (*CreatePackageResponseV1, error) {
-	out := new(CreatePackageResponseV1)
-	err := c.cc.Invoke(ctx, LogisticPackageApiService_CreatePackageV1_FullMethodName, in, out, opts...)
+func (c *logisticPackageApiServiceClient) CreateV1(ctx context.Context, in *CreateRequestV1, opts ...grpc.CallOption) (*CreateResponseV1, error) {
+	out := new(CreateResponseV1)
+	err := c.cc.Invoke(ctx, LogisticPackageApiService_CreateV1_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *logisticPackageApiServiceClient) DeletePackageV1(ctx context.Context, in *DeletePackageV1Request, opts ...grpc.CallOption) (*DeletePackageV1Response, error) {
-	out := new(DeletePackageV1Response)
-	err := c.cc.Invoke(ctx, LogisticPackageApiService_DeletePackageV1_FullMethodName, in, out, opts...)
+func (c *logisticPackageApiServiceClient) DeleteV1(ctx context.Context, in *DeleteV1Request, opts ...grpc.CallOption) (*DeleteV1Response, error) {
+	out := new(DeleteV1Response)
+	err := c.cc.Invoke(ctx, LogisticPackageApiService_DeleteV1_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *logisticPackageApiServiceClient) GetPackageV1(ctx context.Context, in *GetPackageV1Request, opts ...grpc.CallOption) (*GetPackageV1Response, error) {
-	out := new(GetPackageV1Response)
-	err := c.cc.Invoke(ctx, LogisticPackageApiService_GetPackageV1_FullMethodName, in, out, opts...)
+func (c *logisticPackageApiServiceClient) GetV1(ctx context.Context, in *GetV1Request, opts ...grpc.CallOption) (*GetV1Response, error) {
+	out := new(GetV1Response)
+	err := c.cc.Invoke(ctx, LogisticPackageApiService_GetV1_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *logisticPackageApiServiceClient) ListPackagesV1(ctx context.Context, in *ListPackagesV1Request, opts ...grpc.CallOption) (*ListPackagesV1Response, error) {
-	out := new(ListPackagesV1Response)
-	err := c.cc.Invoke(ctx, LogisticPackageApiService_ListPackagesV1_FullMethodName, in, out, opts...)
+func (c *logisticPackageApiServiceClient) ListV1(ctx context.Context, in *ListV1Request, opts ...grpc.CallOption) (*ListV1Response, error) {
+	out := new(ListV1Response)
+	err := c.cc.Invoke(ctx, LogisticPackageApiService_ListV1_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *logisticPackageApiServiceClient) UpdatePackageV1(ctx context.Context, in *UpdatePackageV1Request, opts ...grpc.CallOption) (*UpdatePackageV1Response, error) {
-	out := new(UpdatePackageV1Response)
-	err := c.cc.Invoke(ctx, LogisticPackageApiService_UpdatePackageV1_FullMethodName, in, out, opts...)
+func (c *logisticPackageApiServiceClient) UpdateV1(ctx context.Context, in *UpdateV1Request, opts ...grpc.CallOption) (*UpdateV1Response, error) {
+	out := new(UpdateV1Response)
+	err := c.cc.Invoke(ctx, LogisticPackageApiService_UpdateV1_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -94,11 +94,11 @@ func (c *logisticPackageApiServiceClient) UpdatePackageV1(ctx context.Context, i
 // All implementations must embed UnimplementedLogisticPackageApiServiceServer
 // for forward compatibility
 type LogisticPackageApiServiceServer interface {
-	CreatePackageV1(context.Context, *CreatePackageRequestV1) (*CreatePackageResponseV1, error)
-	DeletePackageV1(context.Context, *DeletePackageV1Request) (*DeletePackageV1Response, error)
-	GetPackageV1(context.Context, *GetPackageV1Request) (*GetPackageV1Response, error)
-	ListPackagesV1(context.Context, *ListPackagesV1Request) (*ListPackagesV1Response, error)
-	UpdatePackageV1(context.Context, *UpdatePackageV1Request) (*UpdatePackageV1Response, error)
+	CreateV1(context.Context, *CreateRequestV1) (*CreateResponseV1, error)
+	DeleteV1(context.Context, *DeleteV1Request) (*DeleteV1Response, error)
+	GetV1(context.Context, *GetV1Request) (*GetV1Response, error)
+	ListV1(context.Context, *ListV1Request) (*ListV1Response, error)
+	UpdateV1(context.Context, *UpdateV1Request) (*UpdateV1Response, error)
 	mustEmbedUnimplementedLogisticPackageApiServiceServer()
 }
 
@@ -106,20 +106,20 @@ type LogisticPackageApiServiceServer interface {
 type UnimplementedLogisticPackageApiServiceServer struct {
 }
 
-func (UnimplementedLogisticPackageApiServiceServer) CreatePackageV1(context.Context, *CreatePackageRequestV1) (*CreatePackageResponseV1, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreatePackageV1 not implemented")
+func (UnimplementedLogisticPackageApiServiceServer) CreateV1(context.Context, *CreateRequestV1) (*CreateResponseV1, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateV1 not implemented")
 }
-func (UnimplementedLogisticPackageApiServiceServer) DeletePackageV1(context.Context, *DeletePackageV1Request) (*DeletePackageV1Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeletePackageV1 not implemented")
+func (UnimplementedLogisticPackageApiServiceServer) DeleteV1(context.Context, *DeleteV1Request) (*DeleteV1Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteV1 not implemented")
 }
-func (UnimplementedLogisticPackageApiServiceServer) GetPackageV1(context.Context, *GetPackageV1Request) (*GetPackageV1Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPackageV1 not implemented")
+func (UnimplementedLogisticPackageApiServiceServer) GetV1(context.Context, *GetV1Request) (*GetV1Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetV1 not implemented")
 }
-func (UnimplementedLogisticPackageApiServiceServer) ListPackagesV1(context.Context, *ListPackagesV1Request) (*ListPackagesV1Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListPackagesV1 not implemented")
+func (UnimplementedLogisticPackageApiServiceServer) ListV1(context.Context, *ListV1Request) (*ListV1Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListV1 not implemented")
 }
-func (UnimplementedLogisticPackageApiServiceServer) UpdatePackageV1(context.Context, *UpdatePackageV1Request) (*UpdatePackageV1Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdatePackageV1 not implemented")
+func (UnimplementedLogisticPackageApiServiceServer) UpdateV1(context.Context, *UpdateV1Request) (*UpdateV1Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateV1 not implemented")
 }
 func (UnimplementedLogisticPackageApiServiceServer) mustEmbedUnimplementedLogisticPackageApiServiceServer() {
 }
@@ -135,92 +135,92 @@ func RegisterLogisticPackageApiServiceServer(s grpc.ServiceRegistrar, srv Logist
 	s.RegisterService(&LogisticPackageApiService_ServiceDesc, srv)
 }
 
-func _LogisticPackageApiService_CreatePackageV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreatePackageRequestV1)
+func _LogisticPackageApiService_CreateV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRequestV1)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LogisticPackageApiServiceServer).CreatePackageV1(ctx, in)
+		return srv.(LogisticPackageApiServiceServer).CreateV1(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: LogisticPackageApiService_CreatePackageV1_FullMethodName,
+		FullMethod: LogisticPackageApiService_CreateV1_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LogisticPackageApiServiceServer).CreatePackageV1(ctx, req.(*CreatePackageRequestV1))
+		return srv.(LogisticPackageApiServiceServer).CreateV1(ctx, req.(*CreateRequestV1))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _LogisticPackageApiService_DeletePackageV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeletePackageV1Request)
+func _LogisticPackageApiService_DeleteV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteV1Request)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LogisticPackageApiServiceServer).DeletePackageV1(ctx, in)
+		return srv.(LogisticPackageApiServiceServer).DeleteV1(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: LogisticPackageApiService_DeletePackageV1_FullMethodName,
+		FullMethod: LogisticPackageApiService_DeleteV1_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LogisticPackageApiServiceServer).DeletePackageV1(ctx, req.(*DeletePackageV1Request))
+		return srv.(LogisticPackageApiServiceServer).DeleteV1(ctx, req.(*DeleteV1Request))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _LogisticPackageApiService_GetPackageV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetPackageV1Request)
+func _LogisticPackageApiService_GetV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetV1Request)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LogisticPackageApiServiceServer).GetPackageV1(ctx, in)
+		return srv.(LogisticPackageApiServiceServer).GetV1(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: LogisticPackageApiService_GetPackageV1_FullMethodName,
+		FullMethod: LogisticPackageApiService_GetV1_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LogisticPackageApiServiceServer).GetPackageV1(ctx, req.(*GetPackageV1Request))
+		return srv.(LogisticPackageApiServiceServer).GetV1(ctx, req.(*GetV1Request))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _LogisticPackageApiService_ListPackagesV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListPackagesV1Request)
+func _LogisticPackageApiService_ListV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListV1Request)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LogisticPackageApiServiceServer).ListPackagesV1(ctx, in)
+		return srv.(LogisticPackageApiServiceServer).ListV1(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: LogisticPackageApiService_ListPackagesV1_FullMethodName,
+		FullMethod: LogisticPackageApiService_ListV1_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LogisticPackageApiServiceServer).ListPackagesV1(ctx, req.(*ListPackagesV1Request))
+		return srv.(LogisticPackageApiServiceServer).ListV1(ctx, req.(*ListV1Request))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _LogisticPackageApiService_UpdatePackageV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdatePackageV1Request)
+func _LogisticPackageApiService_UpdateV1_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateV1Request)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LogisticPackageApiServiceServer).UpdatePackageV1(ctx, in)
+		return srv.(LogisticPackageApiServiceServer).UpdateV1(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: LogisticPackageApiService_UpdatePackageV1_FullMethodName,
+		FullMethod: LogisticPackageApiService_UpdateV1_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LogisticPackageApiServiceServer).UpdatePackageV1(ctx, req.(*UpdatePackageV1Request))
+		return srv.(LogisticPackageApiServiceServer).UpdateV1(ctx, req.(*UpdateV1Request))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -233,24 +233,24 @@ var LogisticPackageApiService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*LogisticPackageApiServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreatePackageV1",
-			Handler:    _LogisticPackageApiService_CreatePackageV1_Handler,
+			MethodName: "CreateV1",
+			Handler:    _LogisticPackageApiService_CreateV1_Handler,
 		},
 		{
-			MethodName: "DeletePackageV1",
-			Handler:    _LogisticPackageApiService_DeletePackageV1_Handler,
+			MethodName: "DeleteV1",
+			Handler:    _LogisticPackageApiService_DeleteV1_Handler,
 		},
 		{
-			MethodName: "GetPackageV1",
-			Handler:    _LogisticPackageApiService_GetPackageV1_Handler,
+			MethodName: "GetV1",
+			Handler:    _LogisticPackageApiService_GetV1_Handler,
 		},
 		{
-			MethodName: "ListPackagesV1",
-			Handler:    _LogisticPackageApiService_ListPackagesV1_Handler,
+			MethodName: "ListV1",
+			Handler:    _LogisticPackageApiService_ListV1_Handler,
 		},
 		{
-			MethodName: "UpdatePackageV1",
-			Handler:    _LogisticPackageApiService_UpdatePackageV1_Handler,
+			MethodName: "UpdateV1",
+			Handler:    _LogisticPackageApiService_UpdateV1_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
