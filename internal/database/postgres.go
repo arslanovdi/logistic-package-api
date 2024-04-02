@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/arslanovdi/logistic-package-api/internal/config"
+	"github.com/exaring/otelpgx"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"log/slog"
 	"os"
@@ -50,7 +51,14 @@ func NewPgxPool(ctx context.Context) (*pgxpool.Pool, error) {
 	   pool_health_check_period = time.Minute
 	   pool_max_conns = greater of 4 or runtime.NumCPU() если ядер больше 4	*/
 
-	dbpool, err1 := pgxpool.New(ctx, dsn)
+	pgxConfig, err := pgxpool.ParseConfig(dsn)
+	if err != nil {
+		return nil, fmt.Errorf("database.NewPgxPool: %w", err)
+	}
+
+	pgxConfig.ConnConfig.Tracer = otelpgx.NewTracer() // Добавляем OpenTelemtry таррировку для PostgreSQL
+
+	dbpool, err1 := pgxpool.NewWithConfig(ctx, pgxConfig) //pgxpool.New(ctx, dsn)
 	if err1 != nil {
 		log.Warn("Error connecting to the database", slog.String("error", err1.Error()))
 		return nil, fmt.Errorf("database.NewPgxPool: %w", err1)

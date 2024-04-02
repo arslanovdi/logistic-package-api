@@ -5,14 +5,11 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/arslanovdi/logistic-package-api/internal/database/fakedata"
 	"github.com/arslanovdi/logistic-package-api/internal/database/postgres"
 	"github.com/arslanovdi/logistic-package-api/internal/logger"
 	"github.com/arslanovdi/logistic-package-api/internal/service"
-	_ "github.com/jackc/pgx/v5"
+	"github.com/arslanovdi/logistic-package-api/internal/tracer"
 	"github.com/jackc/pgx/v5/stdlib"
-	_ "github.com/jackc/pgx/v5/stdlib"
-	_ "github.com/lib/pq"
 	"github.com/pressly/goose/v3"
 	"log/slog"
 	"os"
@@ -24,7 +21,6 @@ import (
 	"github.com/arslanovdi/logistic-package-api/internal/config"
 	"github.com/arslanovdi/logistic-package-api/internal/database"
 	"github.com/arslanovdi/logistic-package-api/internal/server"
-	"github.com/arslanovdi/logistic-package-api/internal/tracer"
 )
 
 var (
@@ -80,15 +76,16 @@ func main() {
 			log.Warn("Migration failed", slog.String("error", err.Error()))
 			os.Exit(1)
 		}
-		fakedata.Generate(100, repo)
+		//fakedata.Generate(100, repo)
 	}
 
-	tracing, err2 := tracer.NewTracer(&cfg)
-	if err2 != nil {
-		log.Error("Failed init tracing", slog.String("error", err2.Error()))
+	ctxTrace, cancelTrace := context.WithCancel(context.Background())
+	defer cancelTrace()
+	trace, err := tracer.NewTracer(ctxTrace)
+	if err != nil {
+		log.Warn("Failed to init tracer", slog.String("error", err.Error()))
 		os.Exit(1)
 	}
-	defer tracing.Close()
 
 	ctxServer, cancelServer := context.WithCancel(context.Background()) // контекст запуска серверов, при ошибке в любом из серверов контекст отменяется
 	isReady := &atomic.Value{}
@@ -121,11 +118,19 @@ func main() {
 	case <-stop:
 		slog.Info("Graceful shutdown")
 		isReady.Store(false)
+
 		goose.Down(stdlib.OpenDBFromPool(dbpool), cfg.Database.Migrations)
-		grpcServer.Stop()
+
+		if err := grpcServer.Stop(); err != nil {
+			log.Error("Failed to stop gRPC server", slog.String("error", err.Error()))
+		}
 		metricsServer.Stop(ctxServer)
 		statusServer.Stop(ctxServer)
 		gatewayServer.Stop(ctxServer)
+		if err := trace.Shutdown(ctxTrace); err != nil {
+			log.Error("Error shutting down tracer provider", slog.String("error", err.Error()))
+		}
+
 		slog.Info("Application stopped")
 	}
 }

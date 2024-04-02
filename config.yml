@@ -1,13 +1,13 @@
 project:
   name: Ozon Marketplace Logistic Package API
-  debug: true
+  debug: false
   environment: development
 
 grpc:
   host: 0.0.0.0
   port: 8082
   maxConnectionIdle: 5 # Minutes
-  timeout: 15 # Seconds
+  timeout: 5 # Seconds
   maxConnectionAge: 5 # Minutes
 
 rest:
@@ -22,7 +22,7 @@ metrics:
 jaeger:
   service: "logistic-package-api"
   host: "jaeger"
-  port: ":6831"
+  port: ":4317"   # grpc 4317; http 6831
 
 status:
   host: 0.0.0.0
@@ -32,7 +32,7 @@ status:
   versionPath: /version
 
 database:
-  host: localhost # postgres
+  host: postgres #localhost #
   port: 5432
   user: logistic
   password: P@$$w0rd

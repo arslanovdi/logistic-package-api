@@ -1,0 +1,225 @@
+services:
+  logistic-package-api:
+    build:  # сборка из образа контейнера
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    logging:
+      driver: 'gelf'
+      options:
+        gelf-address: 'udp://127.0.0.1:12201'
+        tag: logistic-package-api
+    networks:
+      - ompnw
+    depends_on:
+      postgres:
+        condition: service_healthy  # ждем полного запуска Postgres
+      graylog:
+        condition: service_healthy  # ждем полного запуска Graylog
+      jaeger:
+        condition: service_started # ждем полного запуска Jaeger
+    #  kafka
+    links:                  # определяет сетевую ссылку на контейнеры в другом сервисе, они не нужны для взаимодействия. Они выражают неявную зависимость между службами и влияют на порядок запуска служб.
+      - postgres
+      - jaeger
+    #      - kafka
+    ports:
+      - "8080:8080"     # REST
+      - "8082:8082"     # gRPC
+      - "9100:9100"     # Metrics prometheus
+      - "8000:8000"     # Status prometheus
+      - "40000:40000"   # Debug port
+    healthcheck:
+      test: [ 'CMD', 'curl', '-f', 'http://localhost:8000/live' ]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    volumes:
+      - ./migrations:/root/migrations
+      - ./config.yml:/root/config.yml
+
+  postgres:
+    attach: true                      # контейнер можно отключить = false
+    image: postgres:16.2
+    labels:                           # добавление метаданных в контейнер
+      logistic.package.api: postgres
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]   #  проверки состояния подключения сервера базы данных PostgreSQL: pg_isready -q -d postgres -U postgres
+      interval: 10s
+      timeout: 45s
+      retries: 10
+    restart: unless-stopped
+    logging:                # конфигурация ведения журнала    https://www.squadcast.com/blog/docker-compose-logs
+      driver: gelf
+      options:
+        gelf-address: 'udp://127.0.0.1:12201'
+        tag: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgresTest@123
+      POSTGRES_DB: logistic_package_api
+      APP_DB_USER: logistic
+      APP_DB_PASS: P@$$$$w0rd
+    networks:
+      - ompnw
+    depends_on:
+      graylog:
+        condition: service_healthy  # ждем полного запуска Graylog
+    volumes:
+      # - pgdata:/var/lib/postgresql/data
+      - ./scripts/init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    logging:
+      driver: 'gelf'
+      options:
+        gelf-address: 'udp://127.0.0.1:12201'
+        tag: prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - ompnw
+    depends_on:
+      graylog:
+        condition: service_healthy  # ждем полного запуска Graylog
+    volumes:
+      - "./prometheus.yml:/etc/prometheus/prometheus.yml"
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    links:
+      - prometheus
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: MYPASSWORD
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    networks:
+      - ompnw
+    volumes:
+      - "./data/grafana:/var/lib/grafana"
+
+  mongo:
+    image: mongo:7.0.7
+    restart: unless-stopped
+    networks:
+      - ompnw
+    volumes:
+      - mongodata:/data/db
+      - mongodb_configdb:/data/configdb
+
+  opensearch-node:                                    # This is also the hostname of the container within the Docker network (i.e. https://opensearch-node1/)
+    image: opensearchproject/opensearch:2.12.0        # Specifying the latest available image - modify if you want a specific version
+    container_name: opensearch-node
+    environment:
+      discovery.type: single-node
+      bootstrap.memory_lock: "true"                   # Disable JVM heap memory swapping
+      OPENSEARCH_JAVA_OPTS: -Xms512m -Xmx512m         # Set min and max JVM heap sizes to at least 50% of system RAM
+      OPENSEARCH_INITIAL_ADMIN_PASSWORD: "?PassW0rd?" # Sets the demo admin user password when using demo configuration, required for OpenSearch 2.12 and later
+      DISABLE_INSTALL_DEMO_CONFIG: "true"             # Prevents execution of bundled demo script which installs demo certificates and security configurations to OpenSearch
+      DISABLE_SECURITY_PLUGIN: "true"                 # Disables Security plugin
+    ulimits:
+      memlock:
+        soft: -1      # Set memlock to unlimited (no soft or hard limit)
+        hard: -1
+      nofile:
+        soft: 65536   # Maximum number of open files for the opensearch user - set to at least 65536
+        hard: 65536
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data    # Creates volume called opensearch-data1 and mounts it to the container
+    ports:
+      - "9200:9200"   # REST API
+      - "9600:9600"   # Performance Analyzer
+    networks:
+      - ompnw         # All the containers will join the same Docker bridge network
+
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:2.12.0
+    container_name: opensearch-dashboards
+    restart: unless-stopped
+    ports:
+      - "5601:5601"   # Map host port 5601 to container port 5601
+    expose:
+      - "5601"        # Expose port 5601 for web access to OpenSearch Dashboards
+    environment:
+      OPENSEARCH_HOSTS: '["http://opensearch-node:9200"]'
+      DISABLE_SECURITY_DASHBOARDS_PLUGIN: "true"            # disables security dashboards plugin in OpenSearch Dashboards
+    networks:
+      - ompnw
+
+  graylog:
+    image: graylog/graylog:5.2.5
+    restart: unless-stopped
+    volumes:
+      - graylog_data:/usr/share/graylog/data
+      - graylog_plugin:/usr/share/graylog/plugin
+    environment:
+      # CHANGE ME (must be at least 16 characters)!
+      GRAYLOG_PASSWORD_SECRET: somepasswordpepper
+      # Password: admin
+      GRAYLOG_ROOT_PASSWORD_SHA2: 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+      GRAYLOG_HTTP_EXTERNAL_URI: http://localhost:9000/
+      GRAYLOG_BIND_ADDRESS: 0.0.0.0:9000
+      GRAYLOG_ELASTICSEARCH_HOSTS: http://opensearch-node:9200
+      GRAYLOG_MONGODB_URI: mongodb://mongo:27017/graylog
+
+    entrypoint: /usr/bin/tini -- wait-for-it opensearch-node:9200 -- /docker-entrypoint.sh
+    networks:
+      - ompnw
+    links:
+      - mongo
+      - opensearch-node
+    depends_on:
+      mongo:
+        condition: service_started
+      opensearch-node:
+        condition: service_started
+    ports:
+      - "9000:9000"       # Graylog web interface and REST API
+      - "1514:1514"       # Syslog TCP
+      - "1514:1514/udp"   # Syslog UDP
+      - "12201:12201"     # GELF TCP
+      - "12201:12201/udp" # GELF UDP
+      - "5044:5044"       # Beats
+
+  jaeger:
+    image: jaegertracing/all-in-one
+    restart: unless-stopped
+    logging:
+      driver: 'gelf'
+      options:
+        gelf-address: 'udp://127.0.0.1:12201'
+        tag: jaeger
+    ports:
+      - "4317:4317"
+      - "6831:6831/udp"
+      - "16686:16686"
+    networks:
+      - ompnw
+    depends_on:
+      graylog:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+    driver: local
+  mongodata:
+    driver: local
+  mongodb_configdb:
+    driver: local
+  opensearch-data:
+    driver: local
+  graylog_data:
+    driver: local
+  graylog_plugin:
+    driver: local
+
+networks:
+  ompnw:
+    driver: bridge

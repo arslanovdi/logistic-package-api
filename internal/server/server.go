@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/arslanovdi/logistic-package-api/internal/service"
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
-	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 	"log/slog"
@@ -28,6 +27,19 @@ type GrpcServer struct {
 	batchSize uint
 }
 
+// grpcMiddleware Перехватчик унарных методов
+func grpcMiddleware(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+
+	d := time.Now()
+
+	m, err := handler(ctx, req)
+
+	GRPCCounter.Inc() // TODO похожу тут уже есть встроенный grpc_prometheus, этот удалить после теста
+	GRPC2.WithLabelValues(info.FullMethod).Observe(time.Since(d).Seconds())
+
+	return m, err
+}
+
 // NewGrpcServer returns gRPC server with supporting of batch listing
 func NewGrpcServer(packageService *service.PackageService, batchSize uint) *GrpcServer {
 
@@ -44,12 +56,13 @@ func NewGrpcServer(packageService *service.PackageService, batchSize uint) *Grpc
 			MaxConnectionAge:  time.Duration(cfg.Grpc.MaxConnectionAge) * time.Minute,
 			Time:              time.Duration(cfg.Grpc.Timeout) * time.Minute,
 		}),
-		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer( // последовательное исполнение middleware, с общим контекстом
+		grpc.StatsHandler(otelgrpc.NewServerHandler()), // openTelemtry трассировка
+		grpc.ChainUnaryInterceptor( // последовательное исполнение middleware, с общим контекстом
+			grpcMiddleware,
 			grpc_ctxtags.UnaryServerInterceptor(),
 			grpc_prometheus.UnaryServerInterceptor,
-			grpc_opentracing.UnaryServerInterceptor(),
 			grpcrecovery.UnaryServerInterceptor(),
-		)),
+		),
 	)
 
 	pb.RegisterLogisticPackageApiServiceServer(s.server, api.NewPackageAPI(packageService)) // регистрируем имплементацию интерфейса в gRPC-сервере
@@ -88,11 +101,11 @@ func (s *GrpcServer) Start(cancelFunc context.CancelFunc) {
 	}()
 }
 
-func (s *GrpcServer) Stop() {
-
-	log := slog.With("func", "GrpcServer.Stop")
-
+func (s *GrpcServer) Stop() error {
 	s.server.GracefulStop()
-	s.lis.Close()
-	log.Info("grpcServer shut down correctly")
+	err := s.lis.Close()
+	if err != nil {
+		return err
+	}
+	return nil
 }

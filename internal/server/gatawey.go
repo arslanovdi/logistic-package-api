@@ -5,18 +5,16 @@ import (
 	"errors"
 	"fmt"
 	"github.com/arslanovdi/logistic-package-api/internal/config"
-	"github.com/opentracing/opentracing-go"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log/slog"
 	"net/http"
 	"os"
-
-	grpc_opentracing "github.com/grpc-ecosystem/go-grpc-middleware/tracing/opentracing"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/opentracing/opentracing-go/ext"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
-	"google.golang.org/grpc"
 
 	pb "github.com/arslanovdi/logistic-package-api/pkg/logistic-package-api"
 )
@@ -34,41 +32,37 @@ type gatewayServer struct {
 
 // NewGatewayServer returns HTTP gRPC-gateway server
 func NewGatewayServer() *gatewayServer {
-	// Create a client connection to the gRPC Server we just started.
-	// This is where the gRPC-Gateway proxies the requests.
 
 	cfg := config.GetConfigInstance()
 	grpcAddr := fmt.Sprintf("%s:%v", cfg.Grpc.Host, cfg.Grpc.Port)
 	gatewayAddr := fmt.Sprintf("%s:%v", cfg.Rest.Host, cfg.Rest.Port)
 
-	log := slog.With("func", "server.createGatewayServer")
+	log := slog.With("func", "server.NewGatewayServer")
 
 	conn, err := grpc.DialContext(
 		context.Background(),
 		grpcAddr,
-		grpc.WithUnaryInterceptor(
-			grpc_opentracing.UnaryClientInterceptor(
-				grpc_opentracing.WithTracer(opentracing.GlobalTracer()),
-			),
-		),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()), // openTelemtry трассировка grpc клиента
 	)
 	if err != nil {
 		log.Warn("Failed to dial gRPC server",
-			slog.String("func", "createGatewayServer"),
 			slog.String("error", err.Error()))
 	}
 
 	rmux := runtime.NewServeMux()
 	if err := pb.RegisterLogisticPackageApiServiceHandler(context.Background(), rmux, conn); err != nil {
 		log.Warn("Failed registration handler",
-			slog.String("func", "createGatewayServer"),
 			slog.String("error", err.Error()))
 		os.Exit(1)
 	}
 
 	mux := http.NewServeMux()
-	mux.Handle("/", rmux)
+	mux.Handle("/",
+		httpMetricWrapper( // оборачиваем HTTP методы, подсчитываем метрики
+			otelhttp.NewHandler(rmux, "grpc-gateway"), // Оборачиваем HTTP методы gRPC в openTelemtry трейсы
+		),
+	)
 
 	mux.HandleFunc("/swagger-ui/swagger.json", func(w http.ResponseWriter, r *http.Request) { // Подменяем swagger.json, указанный в файле swagger-initializer.js сгенерированным logistic_package_api.swagger.json
 		http.ServeFile(w, r, "./swagger/logistic_package_api.swagger.json")
@@ -78,7 +72,7 @@ func NewGatewayServer() *gatewayServer {
 
 	server := &http.Server{
 		Addr:    gatewayAddr,
-		Handler: tracingWrapper(mux), // трэйсы, включая сваггер запросы
+		Handler: mux,
 	}
 
 	return &gatewayServer{
@@ -86,6 +80,9 @@ func NewGatewayServer() *gatewayServer {
 	}
 }
 
+// Start
+// starts the gateway server and Swagger server
+// cancelFunc - функция отмены контекста, вызывается в случае ошибки запуска
 func (s *gatewayServer) Start(cancelFunc context.CancelFunc) {
 	log := slog.With("func", "GatewayServer.Start")
 
@@ -103,6 +100,8 @@ func (s *gatewayServer) Start(cancelFunc context.CancelFunc) {
 	}()
 }
 
+// Stop
+// stops the gateway server correctly
 func (s *gatewayServer) Stop(ctx context.Context) {
 	log := slog.With("func", "GatewayServer.Stop")
 
@@ -113,24 +112,14 @@ func (s *gatewayServer) Stop(ctx context.Context) {
 	}
 }
 
-var grpcGatewayTag = opentracing.Tag{Key: string(ext.Component), Value: "grpc-gateway"}
-
-func tracingWrapper(h http.Handler) http.Handler {
+// httpMetricWrapper
+// обертка для http запросов
+// подсчет метрик
+func httpMetricWrapper(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		httpTotalRequests.Inc()
-		parentSpanContext, err := opentracing.GlobalTracer().Extract(
-			opentracing.HTTPHeaders,
-			opentracing.HTTPHeadersCarrier(r.Header))
-		if err == nil || errors.Is(err, opentracing.ErrSpanContextNotFound) {
-			serverSpan := opentracing.GlobalTracer().StartSpan(
-				"ServeHTTP",
-				ext.RPCServerOption(parentSpanContext),
-				grpcGatewayTag,
-			)
-			r = r.WithContext(opentracing.ContextWithSpan(r.Context(), serverSpan))
-			defer serverSpan.Finish()
-		}
+		httpTotalRequests.Inc() // метрика
+
 		h.ServeHTTP(w, r)
 	})
 }

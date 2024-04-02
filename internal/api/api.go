@@ -7,6 +7,7 @@ import (
 	"github.com/arslanovdi/logistic-package-api/internal/service"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"log/slog"
@@ -31,6 +32,10 @@ func (p *packageAPI) CreateV1(ctx context.Context, req *pb.CreateRequestV1) (*pb
 
 	log := slog.With("func", "api.CreateV1")
 
+	if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
+		log = log.With("trace_id", span.TraceID().String())
+	}
+
 	if err1 := req.Validate(); err1 != nil {
 		log.Error("CreateV1 - invalid argument", slog.String("error", err1.Error()))
 		return nil, status.Error(codes.InvalidArgument, err1.Error())
@@ -54,6 +59,10 @@ func (p *packageAPI) CreateV1(ctx context.Context, req *pb.CreateRequestV1) (*pb
 func (p *packageAPI) DeleteV1(ctx context.Context, req *pb.DeleteV1Request) (*pb.DeleteV1Response, error) {
 
 	log := slog.With("func", "api.DeleteV1")
+
+	if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
+		log = log.With("trace_id", span.TraceID().String())
+	}
 
 	if err1 := req.Validate(); err1 != nil {
 		log.Error("DeleteV1 - invalid argument", slog.String("error", err1.Error()))
@@ -80,6 +89,10 @@ func (p *packageAPI) GetV1(ctx context.Context, req *pb.GetV1Request) (*pb.GetV1
 
 	log := slog.With("func", "api.GetV1")
 
+	if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
+		log = log.With("trace_id", span.TraceID().String())
+	}
+
 	if err1 := req.Validate(); err1 != nil {
 		log.Error("GetV1 - invalid argument", slog.String("error", err1.Error()))
 		return nil, status.Error(codes.InvalidArgument, err1.Error())
@@ -104,6 +117,10 @@ func (p *packageAPI) GetV1(ctx context.Context, req *pb.GetV1Request) (*pb.GetV1
 func (p *packageAPI) ListV1(ctx context.Context, req *pb.ListV1Request) (*pb.ListV1Response, error) {
 
 	log := slog.With("func", "api.ListV1")
+
+	if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
+		log = log.With("trace_id", span.TraceID().String())
+	}
 
 	if err1 := req.Validate(); err1 != nil {
 		log.Error("ListV1 - invalid argument", slog.String("error", err1.Error()))
@@ -137,6 +154,10 @@ func (p *packageAPI) ListV1(ctx context.Context, req *pb.ListV1Request) (*pb.Lis
 func (p *packageAPI) UpdateV1(ctx context.Context, req *pb.UpdateV1Request) (*pb.UpdateV1Response, error) {
 
 	log := slog.With("func", "api.UpdateV1")
+
+	if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
+		log = log.With("trace_id", span.TraceID().String())
+	}
 
 	if err1 := req.Validate(); err1 != nil {
 		log.Error("UpdateV1 - invalid argument", slog.String("error", err1.Error()))

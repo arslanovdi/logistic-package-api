@@ -25,7 +25,7 @@ func InitializeLogger() {
 		Level:       loglevel,
 	}
 
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, options))
+	logger := slog.New(slog.NewJSONHandler(os.Stderr, options))
 
 	slog.SetDefault(logger)
 	slog.Info("InitializeLogger", slog.String("level", loglevel.String()))
