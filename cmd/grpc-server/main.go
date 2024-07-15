@@ -1,3 +1,4 @@
+// Core домен - главный сервис продукта
 package main
 
 import (
@@ -41,8 +42,8 @@ func main() {
 		}
 	}()
 
-	if err1 := config.ReadConfigYML("config.yml"); err1 != nil {
-		log.Warn("Failed init configuration", slog.String("error", err1.Error()))
+	if err := config.ReadConfigYML("config.yml"); err != nil {
+		log.Warn("Failed init configuration", slog.String("error", err.Error()))
 		os.Exit(1)
 	}
 	cfg := config.GetConfigInstance()
@@ -81,9 +82,9 @@ func main() {
 
 	ctxTrace, cancelTrace := context.WithCancel(context.Background())
 	defer cancelTrace()
-	trace, err := tracer.NewTracer(ctxTrace)
-	if err != nil {
-		log.Warn("Failed to init tracer", slog.String("error", err.Error()))
+	trace, err1 := tracer.NewTracer(ctxTrace)
+	if err1 != nil {
+		log.Warn("Failed to init tracer", slog.String("error", err1.Error()))
 		os.Exit(1)
 	}
 
@@ -119,16 +120,19 @@ func main() {
 		slog.Info("Graceful shutdown")
 		isReady.Store(false)
 
-		goose.Down(stdlib.OpenDBFromPool(dbpool), cfg.Database.Migrations)
+		err2 := goose.Down(stdlib.OpenDBFromPool(dbpool), cfg.Database.Migrations)
+		if err2 != nil {
+			log.Warn("Goose down migration", slog.String("error", err2.Error()))
+		}
 
-		if err := grpcServer.Stop(); err != nil {
-			log.Error("Failed to stop gRPC server", slog.String("error", err.Error()))
+		if err3 := grpcServer.Stop(); err3 != nil {
+			log.Error("Failed to stop gRPC server", slog.String("error", err3.Error()))
 		}
 		metricsServer.Stop(ctxServer)
 		statusServer.Stop(ctxServer)
 		gatewayServer.Stop(ctxServer)
-		if err := trace.Shutdown(ctxTrace); err != nil {
-			log.Error("Error shutting down tracer provider", slog.String("error", err.Error()))
+		if err4 := trace.Shutdown(ctxTrace); err4 != nil {
+			log.Error("Error shutting down tracer provider", slog.String("error", err4.Error()))
 		}
 
 		slog.Info("Application stopped")

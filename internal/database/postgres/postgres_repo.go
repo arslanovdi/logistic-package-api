@@ -1,3 +1,4 @@
+// Package postgres - Postgres implementation of service.Repo and repo.EventRepo
 package postgres
 
 import (
@@ -10,14 +11,15 @@ var psql = sq.StatementBuilder.PlaceholderFormat(sq.Dollar) // Плэйсхол�
 
 const stuckTimeout = 5 * time.Minute // время через которое залоченное событие считается зависшим и отправляется повторно
 
-type repo struct {
+// Repo - Postgres implementation of service.Repo
+type Repo struct {
 	dbpool    *pgxpool.Pool
 	batchSize uint
 }
 
-// NewPostgresRepo returns Postgres implementation of service.Repo and retranslator.EventRepo
-func NewPostgresRepo(dbpool *pgxpool.Pool, batchSize uint) *repo {
-	return &repo{
+// NewPostgresRepo returns Postgres implementation of service.Repo and repo.EventRepo
+func NewPostgresRepo(dbpool *pgxpool.Pool, batchSize uint) *Repo {
+	return &Repo{
 		dbpool:    dbpool,
 		batchSize: batchSize,
 	}

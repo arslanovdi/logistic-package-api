@@ -1,9 +1,12 @@
+// Сервис для пересылки событий из базы данных в кафку (outbox pattern)
 package main
 
 import (
 	"context"
 	"errors"
 	"github.com/arslanovdi/logistic-package-api/internal/app/retranslator"
+	"github.com/arslanovdi/logistic-package-api/internal/database"
+	"github.com/arslanovdi/logistic-package-api/internal/database/postgres"
 	"github.com/arslanovdi/logistic-package-api/internal/logger"
 	"log/slog"
 	"os"
@@ -13,10 +16,11 @@ import (
 )
 
 const level = slog.LevelDebug // log level
+const batchsize = 10
 
 func main() {
 	logger.SetLogLevel(level)
-	log := slog.With("func", "retranslator.main")
+	log := slog.With("func", "kafkaRetranslator.main")
 
 	startCtx, cancel := context.WithTimeout(context.Background(), time.Minute) // контекст запуска приложения
 	defer cancel()
@@ -28,6 +32,8 @@ func main() {
 		}
 	}()
 
+	pool := database.MustGetPgxPool(startCtx)
+
 	cfg := retranslator.Config{
 		ChannelSize:    512,
 		ConsumerCount:  2,
@@ -35,21 +41,22 @@ func main() {
 		ConsumeTimeout: 10 * time.Second,
 		ProducerCount:  28,
 		WorkerCount:    2,
-		Repo:           nil,
+		Repo:           postgres.NewPostgresRepo(pool, batchsize),
 		Sender:         nil,
 	}
 
-	retranslator := retranslator.NewRetranslator(cfg)
-	retranslator.Start()
+	kafkaRetranslator := retranslator.NewRetranslator(cfg)
+	kafkaRetranslator.Start()
 	slog.Info("Retranslator started")
 
 	cancel() // отменяем контекст запуска приложения
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
-	select {
-	case <-stop:
-		slog.Info("Graceful shutdown")
-		retranslator.Close()
-		slog.Info("Application stopped")
-	}
+
+	<-stop
+	slog.Info("Graceful shutdown")
+	kafkaRetranslator.Stop()
+	pool.Close()
+	slog.Info("Application stopped")
+
 }

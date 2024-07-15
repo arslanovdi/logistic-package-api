@@ -1,3 +1,4 @@
+// Package retranslator get events from database (consumer) and send to kafka (producer)
 package retranslator
 
 import (
@@ -11,12 +12,13 @@ import (
 	"time"
 )
 
-// Retranslator
+// Retranslator считывает события из БД и отправляет в кафку
 type Retranslator interface {
 	Start()
-	Close()
+	Stop()
 }
 
+// Config конфигурация Retranslator
 type Config struct {
 	ChannelSize uint64
 
@@ -38,17 +40,18 @@ type retranslator struct {
 	workerPool *workerpool.WorkerPool
 }
 
+// NewRetranslator конструктор
 func NewRetranslator(cfg Config) Retranslator {
 	events := make(chan model.PackageEvent, cfg.ChannelSize)
 	workerPool := workerpool.New(cfg.WorkerCount)
 
-	consumer := consumer.NewDbConsumer(
+	dbconsumer := consumer.NewDbConsumer(
 		cfg.ConsumerCount,
 		cfg.ConsumeSize,
 		cfg.ConsumeTimeout,
 		cfg.Repo,
 		events)
-	producer := producer.NewKafkaProducer(
+	kafkaproducer := producer.NewKafkaProducer(
 		cfg.ProducerCount,
 		cfg.Sender,
 		events,
@@ -58,20 +61,22 @@ func NewRetranslator(cfg Config) Retranslator {
 	slog.Debug("Retranslator created")
 	return &retranslator{
 		events:     events,
-		consumer:   consumer,
-		producer:   producer,
+		consumer:   dbconsumer,
+		producer:   kafkaproducer,
 		workerPool: workerPool,
 	}
 }
 
+// Start запускает пул воркеров, считывает события из БД и отправляет в кафку
 func (r *retranslator) Start() {
 	r.producer.Start()
 	r.consumer.Start()
 }
 
-func (r *retranslator) Close() {
-	r.consumer.Close()
-	r.producer.Close()
+// Stop останавливает пул воркеров
+func (r *retranslator) Stop() {
+	r.consumer.Stop()
+	r.producer.Stop()
 	r.workerPool.StopWait()
 
 	slog.Debug("Retranslator stopped")

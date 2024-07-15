@@ -1,3 +1,4 @@
+// Package fakedata - создает фэйковые записи в БД
 package fakedata
 
 import (
@@ -10,6 +11,7 @@ import (
 	"time"
 )
 
+// Generate - создает count фэйковых записей в БД
 func Generate(count int, repo service.Repo) {
 	for i := 0; i < count; i++ {
 		id, err := repo.Create(context.Background(), model.Package{

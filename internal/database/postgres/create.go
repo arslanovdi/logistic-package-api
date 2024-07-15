@@ -10,8 +10,8 @@ import (
 	"log/slog"
 )
 
-// Create - create new package in Postgres
-func (r *repo) Create(ctx context.Context, pkg model.Package) (*uint64, error) {
+// Create - create new package in database
+func (r *Repo) Create(ctx context.Context, pkg model.Package) (*uint64, error) {
 
 	log := slog.With("func", "postgres.Create")
 
@@ -29,17 +29,15 @@ func (r *repo) Create(ctx context.Context, pkg model.Package) (*uint64, error) {
 	ctx = ctxutil.Detach(ctx)
 
 	err2 := pgx.BeginFunc(ctx, r.dbpool, func(tx pgx.Tx) error { // Запускаем транзакцию
-
-		err := r.dbpool.QueryRow(ctx, query, args...).Scan(&pkg.ID)
+		err := tx.QueryRow(ctx, query, args...).Scan(&pkg.ID)
+		//err := r.dbpool.QueryRow(ctx, query, args...).Scan(&pkg.ID)
 		if err != nil {
 			return err
 		}
-
 		pkgJSON, err := json.Marshal(pkg)
 		if err != nil {
 			return err
 		}
-
 		queryEvent, argsEvent, err := psql.Insert("package_events").
 			Columns("package_id", "type", "payload").
 			Values(pkg.ID, model.Created, pkgJSON).
@@ -50,7 +48,8 @@ func (r *repo) Create(ctx context.Context, pkg model.Package) (*uint64, error) {
 
 		log.Debug("queryEvent", slog.String("query", queryEvent), slog.Any("args", argsEvent))
 
-		_, err = r.dbpool.Exec(ctx, queryEvent, argsEvent...)
+		_, err = tx.Exec(ctx, queryEvent, argsEvent...)
+		//_, err = r.dbpool.Exec(ctx, queryEvent, argsEvent...)
 		if err != nil {
 			return err
 		}

@@ -1,3 +1,4 @@
+// Package database - contains all database functions
 package database
 
 import (
@@ -29,6 +30,7 @@ func MustGetPgxPool(ctx context.Context) *pgxpool.Pool {
 	return dbpool
 }
 
+// NewPgxPool create new pgxpool of connections to postgres
 func NewPgxPool(ctx context.Context) (*pgxpool.Pool, error) {
 
 	log := slog.With("func", "database.NewPgxPool")
@@ -56,7 +58,7 @@ func NewPgxPool(ctx context.Context) (*pgxpool.Pool, error) {
 		return nil, fmt.Errorf("database.NewPgxPool: %w", err)
 	}
 
-	pgxConfig.ConnConfig.Tracer = otelpgx.NewTracer() // Добавляем OpenTelemtry таррировку для PostgreSQL
+	pgxConfig.ConnConfig.Tracer = otelpgx.NewTracer() // Добавляем OpenTelemtry трассировку для PostgreSQL
 
 	dbpool, err1 := pgxpool.NewWithConfig(ctx, pgxConfig) //pgxpool.New(ctx, dsn)
 	if err1 != nil {

@@ -1,3 +1,4 @@
+// Package api имплементация grpc сервера
 package api
 
 import (
@@ -5,8 +6,6 @@ import (
 	"errors"
 	"github.com/arslanovdi/logistic-package-api/internal/model"
 	"github.com/arslanovdi/logistic-package-api/internal/service"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -15,39 +14,33 @@ import (
 	pb "github.com/arslanovdi/logistic-package-api/pkg/logistic-package-api"
 )
 
-var (
-	totalTemplateNotFound = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "omp_template_api_template_not_found_total",
-		Help: "Total number of templates that were not found",
-	})
-)
-
-// packageAPI имплементация grpc сервера
-type packageAPI struct {
+// PackageAPI имплементация grpc сервера
+type PackageAPI struct {
 	pb.UnimplementedLogisticPackageApiServiceServer
 	packageService *service.PackageService
 }
 
-func (p *packageAPI) CreateV1(ctx context.Context, req *pb.CreateRequestV1) (*pb.CreateResponseV1, error) {
+// CreateV1 grpc ручка создания пакета
+func (p *PackageAPI) CreateV1(ctx context.Context, req *pb.CreateRequestV1) (*pb.CreateResponseV1, error) {
 
 	log := slog.With("func", "api.CreateV1")
 
-	if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
+	if span := trace.SpanContextFromContext(ctx); span.IsSampled() { // вытягиваем span из контекста и пробрасываем в лог
 		log = log.With("trace_id", span.TraceID().String())
 	}
 
-	if err1 := req.Validate(); err1 != nil {
-		log.Error("CreateV1 - invalid argument", slog.String("error", err1.Error()))
-		return nil, status.Error(codes.InvalidArgument, err1.Error())
+	if err := req.Validate(); err != nil {
+		log.Error("CreateV1 - invalid argument", slog.String("error", err.Error()))
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	pkg := model.Package{}
 	pkg.FromProto(req.Value)
 
-	id, err2 := p.packageService.Create(ctx, pkg)
-	if err2 != nil {
-		log.Error("CreateV1 - failed", slog.String("error", err2.Error()))
-		return nil, status.Error(codes.Internal, err2.Error())
+	id, err1 := p.packageService.Create(ctx, pkg)
+	if err1 != nil {
+		log.Error("CreateV1 - failed", slog.String("error", err1.Error()))
+		return nil, status.Error(codes.Internal, err1.Error())
 	}
 
 	log.Debug("CreateV1 - created", slog.Uint64("id", *id))
@@ -56,27 +49,28 @@ func (p *packageAPI) CreateV1(ctx context.Context, req *pb.CreateRequestV1) (*pb
 		status.New(codes.OK, "").Err()
 }
 
-func (p *packageAPI) DeleteV1(ctx context.Context, req *pb.DeleteV1Request) (*pb.DeleteV1Response, error) {
+// DeleteV1 grpc ручка удаления пакета
+func (p *PackageAPI) DeleteV1(ctx context.Context, req *pb.DeleteV1Request) (*pb.DeleteV1Response, error) {
 
 	log := slog.With("func", "api.DeleteV1")
 
-	if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
+	if span := trace.SpanContextFromContext(ctx); span.IsSampled() { // вытягиваем span из контекста и пробрасываем в лог
 		log = log.With("trace_id", span.TraceID().String())
 	}
 
-	if err1 := req.Validate(); err1 != nil {
-		log.Error("DeleteV1 - invalid argument", slog.String("error", err1.Error()))
-		return nil, status.Error(codes.InvalidArgument, err1.Error())
+	if err := req.Validate(); err != nil {
+		log.Error("DeleteV1 - invalid argument", slog.String("error", err.Error()))
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	err2 := p.packageService.Delete(ctx, req.PackageId)
-	if err2 != nil {
-		log.Error("DeleteV1 - failed", slog.String("error", err2.Error()))
+	err1 := p.packageService.Delete(ctx, req.PackageId)
+	if err1 != nil {
+		log.Error("DeleteV1 - failed", slog.String("error", err1.Error()))
 
-		if errors.Is(err2, model.ErrNotFound) {
-			return nil, status.Error(codes.NotFound, err2.Error())
+		if errors.Is(err1, model.ErrNotFound) {
+			return nil, status.Error(codes.NotFound, err1.Error())
 		}
-		return nil, status.Error(codes.Internal, err2.Error())
+		return nil, status.Error(codes.Internal, err1.Error())
 	}
 
 	log.Debug("DeleteV1 - deleted", slog.Uint64("id", req.PackageId))
@@ -85,27 +79,28 @@ func (p *packageAPI) DeleteV1(ctx context.Context, req *pb.DeleteV1Request) (*pb
 
 }
 
-func (p *packageAPI) GetV1(ctx context.Context, req *pb.GetV1Request) (*pb.GetV1Response, error) {
+// GetV1 grpc ручка получения пакета
+func (p *PackageAPI) GetV1(ctx context.Context, req *pb.GetV1Request) (*pb.GetV1Response, error) {
 
 	log := slog.With("func", "api.GetV1")
 
-	if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
+	if span := trace.SpanContextFromContext(ctx); span.IsSampled() { // вытягиваем span из контекста и пробрасываем в лог
 		log = log.With("trace_id", span.TraceID().String())
 	}
 
-	if err1 := req.Validate(); err1 != nil {
-		log.Error("GetV1 - invalid argument", slog.String("error", err1.Error()))
-		return nil, status.Error(codes.InvalidArgument, err1.Error())
+	if err := req.Validate(); err != nil {
+		log.Error("GetV1 - invalid argument", slog.String("error", err.Error()))
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	pkg, err2 := p.packageService.Get(ctx, req.PackageId)
-	if err2 != nil {
-		if errors.Is(err2, model.ErrNotFound) {
+	pkg, err1 := p.packageService.Get(ctx, req.PackageId)
+	if err1 != nil {
+		if errors.Is(err1, model.ErrNotFound) {
 			log.Debug("not found", slog.Uint64("id", req.PackageId))
 			return nil, status.Error(codes.NotFound, "")
 		}
-		log.Error("failed", slog.String("error", err2.Error()))
-		return nil, status.Error(codes.Internal, err2.Error())
+		log.Error("failed", slog.String("error", err1.Error()))
+		return nil, status.Error(codes.Internal, err1.Error())
 	}
 
 	return &pb.GetV1Response{
@@ -114,23 +109,24 @@ func (p *packageAPI) GetV1(ctx context.Context, req *pb.GetV1Request) (*pb.GetV1
 		status.New(codes.OK, "").Err()
 }
 
-func (p *packageAPI) ListV1(ctx context.Context, req *pb.ListV1Request) (*pb.ListV1Response, error) {
+// ListV1 grpc ручка получения списка пакетов
+func (p *PackageAPI) ListV1(ctx context.Context, req *pb.ListV1Request) (*pb.ListV1Response, error) {
 
 	log := slog.With("func", "api.ListV1")
 
-	if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
+	if span := trace.SpanContextFromContext(ctx); span.IsSampled() { // вытягиваем span из контекста и пробрасываем в лог
 		log = log.With("trace_id", span.TraceID().String())
 	}
 
-	if err1 := req.Validate(); err1 != nil {
-		log.Error("ListV1 - invalid argument", slog.String("error", err1.Error()))
-		return nil, status.Error(codes.InvalidArgument, err1.Error())
+	if err := req.Validate(); err != nil {
+		log.Error("ListV1 - invalid argument", slog.String("error", err.Error()))
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	packages, err2 := p.packageService.List(ctx, req.Offset, req.Limit)
-	if err2 != nil {
-		log.Error("ListV1 - failed", slog.String("error", err2.Error()))
-		return nil, status.Error(codes.Internal, err2.Error())
+	packages, err1 := p.packageService.List(ctx, req.Offset, req.Limit)
+	if err1 != nil {
+		log.Error("ListV1 - failed", slog.String("error", err1.Error()))
+		return nil, status.Error(codes.Internal, err1.Error())
 	}
 
 	if len(packages) == 0 {
@@ -151,30 +147,31 @@ func (p *packageAPI) ListV1(ctx context.Context, req *pb.ListV1Request) (*pb.Lis
 		status.New(codes.OK, "").Err()
 }
 
-func (p *packageAPI) UpdateV1(ctx context.Context, req *pb.UpdateV1Request) (*pb.UpdateV1Response, error) {
+// UpdateV1 grpc ручка изменения пакета
+func (p *PackageAPI) UpdateV1(ctx context.Context, req *pb.UpdateV1Request) (*pb.UpdateV1Response, error) {
 
 	log := slog.With("func", "api.UpdateV1")
 
-	if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
+	if span := trace.SpanContextFromContext(ctx); span.IsSampled() { // вытягиваем span из контекста и пробрасываем в лог
 		log = log.With("trace_id", span.TraceID().String())
 	}
 
-	if err1 := req.Validate(); err1 != nil {
-		log.Error("UpdateV1 - invalid argument", slog.String("error", err1.Error()))
-		return nil, status.Error(codes.InvalidArgument, err1.Error())
+	if err := req.Validate(); err != nil {
+		log.Error("UpdateV1 - invalid argument", slog.String("error", err.Error()))
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	pkg := model.Package{}
 	pkg.FromProto(req.Value)
 
-	err2 := p.packageService.Update(ctx, pkg)
-	if err2 != nil {
-		if errors.Is(err2, model.ErrNotFound) {
+	err1 := p.packageService.Update(ctx, pkg)
+	if err1 != nil {
+		if errors.Is(err1, model.ErrNotFound) {
 			log.Debug("package not found", slog.Uint64("id", pkg.ID))
 			return nil, status.Error(codes.NotFound, "")
 		}
-		log.Error("failed", slog.String("error", err2.Error()))
-		return nil, status.Error(codes.Internal, err2.Error())
+		log.Error("failed", slog.String("error", err1.Error()))
+		return nil, status.Error(codes.Internal, err1.Error())
 	}
 
 	log.Debug("UpdateV1 - updated", slog.Any("package", pkg))
@@ -184,8 +181,8 @@ func (p *packageAPI) UpdateV1(ctx context.Context, req *pb.UpdateV1Request) (*pb
 }
 
 // NewPackageAPI returns api of logistic-package-api service
-func NewPackageAPI(packageService *service.PackageService) *packageAPI {
-	return &packageAPI{
+func NewPackageAPI(packageService *service.PackageService) *PackageAPI {
+	return &PackageAPI{
 		packageService: packageService,
 	}
 }

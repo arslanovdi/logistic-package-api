@@ -1,0 +1,45 @@
+name: golangci-lint
+
+on:
+  pull_request:
+    branches:
+      - "main"
+      - "master"
+  push:
+    branches:
+      - "main"
+      - "master"
+
+env:
+  GO_VERSION: '1.22'
+  GOLANGCI_LINT_VERSION: v1.59
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: go.sum
+      - name: Build
+        run: go build -o ./bin/ -v ./...
+      - name: Test
+        run: go test -v ./...
+
+  linter:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+      - name: Golangci-lint
+        uses: golangci/golangci-lint-action@v6.0.1
+        with:
+          version: ${{ env.GOLANGCI_LINT_VERSION }}
+          args: --timeout=30m --config=.golangci.yml --issues-exit-code=0

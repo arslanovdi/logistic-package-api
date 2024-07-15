@@ -1,3 +1,4 @@
+// Package service - слой бизнес-логики
 package service
 
 import (
@@ -22,6 +23,7 @@ type PackageService struct {
 	repo   Repo
 }
 
+// Create - создание нового пакета
 func (p *PackageService) Create(ctx context.Context, pkg model.Package) (*uint64, error) {
 
 	id, err := p.repo.Create(ctx, pkg)
@@ -32,6 +34,7 @@ func (p *PackageService) Create(ctx context.Context, pkg model.Package) (*uint64
 	return id, nil
 }
 
+// Delete - удаление пакета
 func (p *PackageService) Delete(ctx context.Context, id uint64) error {
 
 	err := p.repo.Delete(ctx, id)
@@ -42,6 +45,7 @@ func (p *PackageService) Delete(ctx context.Context, id uint64) error {
 	return nil
 }
 
+// Get - получение пакета
 func (p *PackageService) Get(ctx context.Context, id uint64) (*model.Package, error) {
 
 	pkg, err := p.repo.Get(ctx, id)
@@ -51,6 +55,7 @@ func (p *PackageService) Get(ctx context.Context, id uint64) (*model.Package, er
 	return pkg, nil
 }
 
+// List - получение списка пакетов
 func (p *PackageService) List(ctx context.Context, offset uint64, limit uint64) ([]model.Package, error) {
 
 	packages, err := p.repo.List(ctx, offset, limit)
@@ -60,6 +65,7 @@ func (p *PackageService) List(ctx context.Context, offset uint64, limit uint64) 
 	return packages, nil
 }
 
+// Update - изменение пакета
 func (p *PackageService) Update(ctx context.Context, pkg model.Package) error {
 
 	err := p.repo.Update(ctx, pkg)
@@ -69,6 +75,7 @@ func (p *PackageService) Update(ctx context.Context, pkg model.Package) error {
 	return nil
 }
 
+// NewPackageService - конструктор
 func NewPackageService(dbpool *pgxpool.Pool, repo Repo) *PackageService {
 	return &PackageService{
 		dbpool: dbpool,

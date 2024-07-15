@@ -11,7 +11,8 @@ import (
 	"time"
 )
 
-func (r *repo) Lock(ctx context.Context, n uint64) ([]model.PackageEvent, error) {
+// Lock заблокировать в БД n записей событий
+func (r *Repo) Lock(ctx context.Context, n uint64) ([]model.PackageEvent, error) {
 
 	log := slog.With("func", "postgres.Lock")
 
@@ -41,7 +42,8 @@ func (r *repo) Lock(ctx context.Context, n uint64) ([]model.PackageEvent, error)
 
 	err2 := pgx.BeginTxFunc(ctx, r.dbpool, pgx.TxOptions{IsoLevel: "serializable"}, func(tx pgx.Tx) error {
 
-		rows, _ := r.dbpool.Query(ctx, query, args...)
+		rows, _ := tx.Query(ctx, query, args...) // Ошибка игнорируется, так как она обрабатывается в CollectRows
+		//rows, _ := r.dbpool.Query(ctx, query, args...)
 		defer rows.Close()
 
 		var err error

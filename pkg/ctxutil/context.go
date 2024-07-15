@@ -1,3 +1,4 @@
+// Package ctxutil контекст с отключенным таймером
 package ctxutil
 
 import (

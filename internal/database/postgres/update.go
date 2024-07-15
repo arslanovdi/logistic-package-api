@@ -12,8 +12,8 @@ import (
 	"log/slog"
 )
 
-// Update - update package by id in Postgres
-func (r *repo) Update(ctx context.Context, pkg model.Package) error {
+// Update - update package by id in database
+func (r *Repo) Update(ctx context.Context, pkg model.Package) error {
 
 	log := slog.With("func", "postgres.Update")
 
@@ -57,7 +57,8 @@ func (r *repo) Update(ctx context.Context, pkg model.Package) error {
 
 		log.Debug("queryEvent", slog.String("query", queryEvent), slog.Any("args", argsEvent))
 
-		_, err = r.dbpool.Exec(ctx, queryEvent, argsEvent...)
+		_, err = tx.Exec(ctx, queryEvent, argsEvent...)
+		//_, err = r.dbpool.Exec(ctx, queryEvent, argsEvent...)
 		if err != nil {
 			return err
 		}

@@ -5,10 +5,12 @@ import (
 	"fmt"
 	sq "github.com/Masterminds/squirrel"
 	"github.com/arslanovdi/logistic-package-api/internal/model"
+	"github.com/arslanovdi/logistic-package-api/internal/server"
 	"log/slog"
 )
 
-func (r *repo) Unlock(ctx context.Context, eventID []uint64) error {
+// Unlock разблокировать в БД n записей событий
+func (r *Repo) Unlock(ctx context.Context, eventID []uint64) error {
 
 	log := slog.With("func", "postgres.Unlock")
 
@@ -31,6 +33,8 @@ func (r *repo) Unlock(ctx context.Context, eventID []uint64) error {
 	if tag.RowsAffected() == 0 {
 		return model.ErrNotFound
 	}
+
+	server.RetranslatorEvents.Sub(float64(len(eventID))) // метрика, кол-во обрабатываемых событий, убавляем счетчик
 
 	return nil
 }

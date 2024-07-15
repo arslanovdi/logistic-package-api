@@ -1,3 +1,4 @@
+// Package server - все http сервисы приложения
 package server
 
 import (
@@ -7,8 +8,10 @@ import (
 	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
 	"log/slog"
 	"net"
 	"time"
@@ -27,15 +30,20 @@ type GrpcServer struct {
 	batchSize uint
 }
 
-// grpcMiddleware Перехватчик унарных методов
-func grpcMiddleware(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+// grpcMiddleware Перехватчик унарных методов, считаем метрики
+func grpcMiddleware(ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 
 	d := time.Now()
 
 	m, err := handler(ctx, req)
 
-	GRPCCounter.Inc() // TODO похожу тут уже есть встроенный grpc_prometheus, этот удалить после теста
-	GRPC2.WithLabelValues(info.FullMethod).Observe(time.Since(d).Seconds())
+	GRPC2.Observe(time.Since(d).Seconds())
+
+	if status.Code(err) == codes.NotFound {
+		GRPCNotFoundCounter.Inc()
+	}
+
+	CRUDCounter.Inc()
 
 	return m, err
 }
@@ -56,7 +64,7 @@ func NewGrpcServer(packageService *service.PackageService, batchSize uint) *Grpc
 			MaxConnectionAge:  time.Duration(cfg.Grpc.MaxConnectionAge) * time.Minute,
 			Time:              time.Duration(cfg.Grpc.Timeout) * time.Minute,
 		}),
-		grpc.StatsHandler(otelgrpc.NewServerHandler()), // openTelemtry трассировка
+		grpc.StatsHandler(otelgrpc.NewServerHandler()), // openTelemetry трассировка
 		grpc.ChainUnaryInterceptor( // последовательное исполнение middleware, с общим контекстом
 			grpcMiddleware,
 			grpc_ctxtags.UnaryServerInterceptor(),
@@ -85,22 +93,23 @@ func (s *GrpcServer) Start(cancelFunc context.CancelFunc) {
 
 	grpcAddr := fmt.Sprintf("%s:%v", cfg.Grpc.Host, cfg.Grpc.Port)
 
-	var err error
-	s.lis, err = net.Listen("tcp", grpcAddr)
-	if err != nil {
-		log.Error("failed to listen", slog.String("error", err.Error()))
+	var err1 error
+	s.lis, err1 = net.Listen("tcp", grpcAddr)
+	if err1 != nil {
+		log.Error("failed to listen", slog.String("error", err1.Error()))
 		cancelFunc()
 	}
 
 	go func() {
 		log.Info("GRPC Server is listening", slog.String("address", grpcAddr))
-		if err := s.server.Serve(s.lis); err != nil {
-			log.Error("Failed running gRPC server", slog.String("error", err.Error()))
+		if err2 := s.server.Serve(s.lis); err2 != nil {
+			log.Error("Failed running gRPC server", slog.String("error", err2.Error()))
 			cancelFunc()
 		}
 	}()
 }
 
+// Stop - stop gRPC server
 func (s *GrpcServer) Stop() error {
 	s.server.GracefulStop()
 	err := s.lis.Close()

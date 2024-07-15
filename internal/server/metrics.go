@@ -8,31 +8,52 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/arslanovdi/logistic-package-api/internal/config"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-var GRPCCounter = promauto.NewCounter(prometheus.CounterOpts{ // Инициализируем счётчик gRPC вызовов в prometheus
+// GRPCNotFoundCounter - счетчик не найденных запросов
+var GRPCNotFoundCounter = promauto.NewCounter(prometheus.CounterOpts{
 	Namespace: "logistic",
 	Subsystem: "package_api",
-	Name:      "grpc_total",
-	Help:      "Total gRPC calls",
+	Name:      "grpc_not_found",
+	Help:      "Total gRPC not found calls",
 })
 
-var GRPC2 = promauto.NewSummaryVec(prometheus.SummaryOpts{
-	Namespace:  "logistic",
-	Subsystem:  "package",
-	Name:       "grpc2",
-	Objectives: map[float64]float64{0.5: 0.05, 0.9: 0.01, 0.99: 0.001}, // 0,5 медиана, 0,9 90%-й квантиль, 0,99 99%-й квантиль
-}, []string{"method"}, // метка для метрики, для каждой метки будет свой график
+// CRUDCounter - счетчик CRUD запросов
+var CRUDCounter = promauto.NewCounter(prometheus.CounterOpts{
+	Namespace: "logistic",
+	Subsystem: "package_api",
+	Name:      "crud",
+	Help:      "Total CRUD calls",
+})
+
+// GRPC2 - гистограмма времени выполнения gRPC запросов
+var GRPC2 = promauto.NewHistogram(prometheus.HistogramOpts{
+	Namespace: "logistic",
+	Subsystem: "package_api",
+	Name:      "grpc2",
+	Help:      "grpc2 calls",
+}, // []string{"method"}, // метка для метрики, для каждой метки будет свой график
 )
 
-type metricsServer struct {
+// RetranslatorEvents - счетчик событий которые сейчас отправляются в кафку
+var RetranslatorEvents = promauto.NewGauge(prometheus.GaugeOpts{
+	Namespace: "logistic",
+	Subsystem: "package_api",
+	Name:      "retranslator",
+	Help:      "Retranslator events in work",
+})
+
+// MetricsServer - http сервер для метрик
+type MetricsServer struct {
 	server *http.Server
 }
 
-func NewMetricsServer() *metricsServer {
+// NewMetricsServer returns http server for metrics
+func NewMetricsServer() *MetricsServer {
 
 	cfg := config.GetConfigInstance()
 
@@ -42,16 +63,18 @@ func NewMetricsServer() *metricsServer {
 	mux.Handle(cfg.Metrics.Path, promhttp.Handler())
 
 	metrics := &http.Server{
-		Addr:    addr,
-		Handler: mux,
+		Addr:              addr,
+		Handler:           mux,
+		ReadHeaderTimeout: time.Second * 5,
 	}
 
-	return &metricsServer{
+	return &MetricsServer{
 		server: metrics,
 	}
 }
 
-func (s *metricsServer) Start(cancelFunc context.CancelFunc) {
+// Start - запуск http сервера
+func (s *MetricsServer) Start(cancelFunc context.CancelFunc) {
 
 	log := slog.With("func", "MetricsServer.Start")
 
@@ -68,13 +91,14 @@ func (s *metricsServer) Start(cancelFunc context.CancelFunc) {
 	}()
 }
 
-func (s *metricsServer) Stop(ctx context.Context) {
+// Stop - остановка http сервера
+func (s *MetricsServer) Stop(ctx context.Context) {
 
 	log := slog.With("func", "MetricsServer.Stop")
 
 	if err := s.server.Shutdown(ctx); err != nil {
-		log.Error("metricsServer.Shutdown", slog.String("error", err.Error()))
+		log.Error("MetricsServer.Shutdown", slog.String("error", err.Error()))
 	} else {
-		log.Info("metricsServer shut down correctly")
+		log.Info("MetricsServer shut down correctly")
 	}
 }

@@ -15,6 +15,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 
 	pb "github.com/arslanovdi/logistic-package-api/pkg/logistic-package-api"
 )
@@ -26,12 +27,13 @@ var (
 	})
 )
 
-type gatewayServer struct {
+// GatewayServer is HTTP gRPC-gateway server
+type GatewayServer struct {
 	server *http.Server
 }
 
 // NewGatewayServer returns HTTP gRPC-gateway server
-func NewGatewayServer() *gatewayServer {
+func NewGatewayServer() *GatewayServer {
 
 	cfg := config.GetConfigInstance()
 	grpcAddr := fmt.Sprintf("%s:%v", cfg.Grpc.Host, cfg.Grpc.Port)
@@ -39,27 +41,31 @@ func NewGatewayServer() *gatewayServer {
 
 	log := slog.With("func", "server.NewGatewayServer")
 
-	conn, err := grpc.DialContext(
+	conn, err1 := grpc.NewClient(grpcAddr,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()), // openTelemtry трассировка grpc клиента
+	)
+	/*conn, err2 := grpc.DialContext(
 		context.Background(),
 		grpcAddr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithStatsHandler(otelgrpc.NewClientHandler()), // openTelemtry трассировка grpc клиента
-	)
-	if err != nil {
+	)*/
+	if err1 != nil {
 		log.Warn("Failed to dial gRPC server",
-			slog.String("error", err.Error()))
+			slog.String("error", err1.Error()))
 	}
 
 	rmux := runtime.NewServeMux()
-	if err := pb.RegisterLogisticPackageApiServiceHandler(context.Background(), rmux, conn); err != nil {
+	if err2 := pb.RegisterLogisticPackageApiServiceHandler(context.Background(), rmux, conn); err2 != nil {
 		log.Warn("Failed registration handler",
-			slog.String("error", err.Error()))
+			slog.String("error", err2.Error()))
 		os.Exit(1)
 	}
 
 	mux := http.NewServeMux()
 	mux.Handle("/",
-		httpMetricWrapper( // оборачиваем HTTP методы, подсчитываем метрики
+		httpMetricWrapper( // оборачиваем HTTP методы, подсчитываем метрики, установка уровня логирования для запроса
 			otelhttp.NewHandler(rmux, "grpc-gateway"), // Оборачиваем HTTP методы gRPC в openTelemtry трейсы
 		),
 	)
@@ -71,19 +77,21 @@ func NewGatewayServer() *gatewayServer {
 	mux.Handle("/swagger-ui/", http.StripPrefix("/swagger-ui/", http.FileServer(http.Dir("./swagger-ui/"))))
 
 	server := &http.Server{
-		Addr:    gatewayAddr,
-		Handler: mux,
+		Addr:              gatewayAddr,
+		Handler:           mux,
+		ReadHeaderTimeout: time.Second * 5,
 	}
 
-	return &gatewayServer{
+	return &GatewayServer{
 		server: server,
 	}
 }
 
-// Start
-// starts the gateway server and Swagger server
-// cancelFunc - функция отмены контекста, вызывается в случае ошибки запуска
-func (s *gatewayServer) Start(cancelFunc context.CancelFunc) {
+/*
+Start - starts the gateway server and Swagger server
+cancelFunc - функция отмены контекста, вызывается в случае ошибки запуска
+*/
+func (s *GatewayServer) Start(cancelFunc context.CancelFunc) {
 	log := slog.With("func", "GatewayServer.Start")
 
 	cfg := config.GetConfigInstance()
@@ -100,21 +108,23 @@ func (s *gatewayServer) Start(cancelFunc context.CancelFunc) {
 	}()
 }
 
-// Stop
-// stops the gateway server correctly
-func (s *gatewayServer) Stop(ctx context.Context) {
+/*
+Stop - stops the gateway server correctly
+*/
+func (s *GatewayServer) Stop(ctx context.Context) {
 	log := slog.With("func", "GatewayServer.Stop")
 
 	if err := s.server.Shutdown(ctx); err != nil {
-		log.Error("gatewayServer.Shutdown", slog.String("error", err.Error()))
+		log.Error("GatewayServer.Shutdown", slog.String("error", err.Error()))
 	} else {
-		log.Info("gatewayServer shut down correctly")
+		log.Info("GatewayServer shut down correctly")
 	}
 }
 
-// httpMetricWrapper
-// обертка для http запросов
-// подсчет метрик
+/*
+httpMetricWrapper - обертка для http запросов
+подсчет метрик
+*/
 func httpMetricWrapper(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 

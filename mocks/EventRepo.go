@@ -3,6 +3,8 @@
 package mocks
 
 import (
+	context "context"
+
 	model "github.com/arslanovdi/logistic-package-api/internal/model"
 	mock "github.com/stretchr/testify/mock"
 )
@@ -20,55 +22,9 @@ func (_m *EventRepo) EXPECT() *EventRepo_Expecter {
 	return &EventRepo_Expecter{mock: &_m.Mock}
 }
 
-// Add provides a mock function with given fields: event
-func (_m *EventRepo) Add(event []model.PackageEvent) error {
-	ret := _m.Called(event)
-
-	if len(ret) == 0 {
-		panic("no return value specified for Add")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func([]model.PackageEvent) error); ok {
-		r0 = rf(event)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// EventRepo_Add_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Add'
-type EventRepo_Add_Call struct {
-	*mock.Call
-}
-
-// Add is a helper method to define mock.On call
-//   - event []model.PackageEvent
-func (_e *EventRepo_Expecter) Add(event interface{}) *EventRepo_Add_Call {
-	return &EventRepo_Add_Call{Call: _e.mock.On("Add", event)}
-}
-
-func (_c *EventRepo_Add_Call) Run(run func(event []model.PackageEvent)) *EventRepo_Add_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].([]model.PackageEvent))
-	})
-	return _c
-}
-
-func (_c *EventRepo_Add_Call) Return(_a0 error) *EventRepo_Add_Call {
-	_c.Call.Return(_a0)
-	return _c
-}
-
-func (_c *EventRepo_Add_Call) RunAndReturn(run func([]model.PackageEvent) error) *EventRepo_Add_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// Lock provides a mock function with given fields: n
-func (_m *EventRepo) Lock(n uint64) ([]model.PackageEvent, error) {
-	ret := _m.Called(n)
+// Lock provides a mock function with given fields: ctx, n
+func (_m *EventRepo) Lock(ctx context.Context, n uint64) ([]model.PackageEvent, error) {
+	ret := _m.Called(ctx, n)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Lock")
@@ -76,19 +32,19 @@ func (_m *EventRepo) Lock(n uint64) ([]model.PackageEvent, error) {
 
 	var r0 []model.PackageEvent
 	var r1 error
-	if rf, ok := ret.Get(0).(func(uint64) ([]model.PackageEvent, error)); ok {
-		return rf(n)
+	if rf, ok := ret.Get(0).(func(context.Context, uint64) ([]model.PackageEvent, error)); ok {
+		return rf(ctx, n)
 	}
-	if rf, ok := ret.Get(0).(func(uint64) []model.PackageEvent); ok {
-		r0 = rf(n)
+	if rf, ok := ret.Get(0).(func(context.Context, uint64) []model.PackageEvent); ok {
+		r0 = rf(ctx, n)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]model.PackageEvent)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(uint64) error); ok {
-		r1 = rf(n)
+	if rf, ok := ret.Get(1).(func(context.Context, uint64) error); ok {
+		r1 = rf(ctx, n)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -102,14 +58,15 @@ type EventRepo_Lock_Call struct {
 }
 
 // Lock is a helper method to define mock.On call
+//   - ctx context.Context
 //   - n uint64
-func (_e *EventRepo_Expecter) Lock(n interface{}) *EventRepo_Lock_Call {
-	return &EventRepo_Lock_Call{Call: _e.mock.On("Lock", n)}
+func (_e *EventRepo_Expecter) Lock(ctx interface{}, n interface{}) *EventRepo_Lock_Call {
+	return &EventRepo_Lock_Call{Call: _e.mock.On("Lock", ctx, n)}
 }
 
-func (_c *EventRepo_Lock_Call) Run(run func(n uint64)) *EventRepo_Lock_Call {
+func (_c *EventRepo_Lock_Call) Run(run func(ctx context.Context, n uint64)) *EventRepo_Lock_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(uint64))
+		run(args[0].(context.Context), args[1].(uint64))
 	})
 	return _c
 }
@@ -119,22 +76,22 @@ func (_c *EventRepo_Lock_Call) Return(_a0 []model.PackageEvent, _a1 error) *Even
 	return _c
 }
 
-func (_c *EventRepo_Lock_Call) RunAndReturn(run func(uint64) ([]model.PackageEvent, error)) *EventRepo_Lock_Call {
+func (_c *EventRepo_Lock_Call) RunAndReturn(run func(context.Context, uint64) ([]model.PackageEvent, error)) *EventRepo_Lock_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// Remove provides a mock function with given fields: eventIDs
-func (_m *EventRepo) Remove(eventIDs []uint64) error {
-	ret := _m.Called(eventIDs)
+// Remove provides a mock function with given fields: ctx, eventIDs
+func (_m *EventRepo) Remove(ctx context.Context, eventIDs []uint64) error {
+	ret := _m.Called(ctx, eventIDs)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Remove")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func([]uint64) error); ok {
-		r0 = rf(eventIDs)
+	if rf, ok := ret.Get(0).(func(context.Context, []uint64) error); ok {
+		r0 = rf(ctx, eventIDs)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -148,14 +105,15 @@ type EventRepo_Remove_Call struct {
 }
 
 // Remove is a helper method to define mock.On call
+//   - ctx context.Context
 //   - eventIDs []uint64
-func (_e *EventRepo_Expecter) Remove(eventIDs interface{}) *EventRepo_Remove_Call {
-	return &EventRepo_Remove_Call{Call: _e.mock.On("Remove", eventIDs)}
+func (_e *EventRepo_Expecter) Remove(ctx interface{}, eventIDs interface{}) *EventRepo_Remove_Call {
+	return &EventRepo_Remove_Call{Call: _e.mock.On("Remove", ctx, eventIDs)}
 }
 
-func (_c *EventRepo_Remove_Call) Run(run func(eventIDs []uint64)) *EventRepo_Remove_Call {
+func (_c *EventRepo_Remove_Call) Run(run func(ctx context.Context, eventIDs []uint64)) *EventRepo_Remove_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].([]uint64))
+		run(args[0].(context.Context), args[1].([]uint64))
 	})
 	return _c
 }
@@ -165,22 +123,22 @@ func (_c *EventRepo_Remove_Call) Return(_a0 error) *EventRepo_Remove_Call {
 	return _c
 }
 
-func (_c *EventRepo_Remove_Call) RunAndReturn(run func([]uint64) error) *EventRepo_Remove_Call {
+func (_c *EventRepo_Remove_Call) RunAndReturn(run func(context.Context, []uint64) error) *EventRepo_Remove_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// Unlock provides a mock function with given fields: eventID
-func (_m *EventRepo) Unlock(eventID []uint64) error {
-	ret := _m.Called(eventID)
+// Unlock provides a mock function with given fields: ctx, eventID
+func (_m *EventRepo) Unlock(ctx context.Context, eventID []uint64) error {
+	ret := _m.Called(ctx, eventID)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Unlock")
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func([]uint64) error); ok {
-		r0 = rf(eventID)
+	if rf, ok := ret.Get(0).(func(context.Context, []uint64) error); ok {
+		r0 = rf(ctx, eventID)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -194,14 +152,15 @@ type EventRepo_Unlock_Call struct {
 }
 
 // Unlock is a helper method to define mock.On call
+//   - ctx context.Context
 //   - eventID []uint64
-func (_e *EventRepo_Expecter) Unlock(eventID interface{}) *EventRepo_Unlock_Call {
-	return &EventRepo_Unlock_Call{Call: _e.mock.On("Unlock", eventID)}
+func (_e *EventRepo_Expecter) Unlock(ctx interface{}, eventID interface{}) *EventRepo_Unlock_Call {
+	return &EventRepo_Unlock_Call{Call: _e.mock.On("Unlock", ctx, eventID)}
 }
 
-func (_c *EventRepo_Unlock_Call) Run(run func(eventID []uint64)) *EventRepo_Unlock_Call {
+func (_c *EventRepo_Unlock_Call) Run(run func(ctx context.Context, eventID []uint64)) *EventRepo_Unlock_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].([]uint64))
+		run(args[0].(context.Context), args[1].([]uint64))
 	})
 	return _c
 }
@@ -211,7 +170,7 @@ func (_c *EventRepo_Unlock_Call) Return(_a0 error) *EventRepo_Unlock_Call {
 	return _c
 }
 
-func (_c *EventRepo_Unlock_Call) RunAndReturn(run func([]uint64) error) *EventRepo_Unlock_Call {
+func (_c *EventRepo_Unlock_Call) RunAndReturn(run func(context.Context, []uint64) error) *EventRepo_Unlock_Call {
 	_c.Call.Return(run)
 	return _c
 }

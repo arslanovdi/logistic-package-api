@@ -1,3 +1,4 @@
+// Package logger provides logging functionality
 package logger
 
 import (
@@ -8,9 +9,10 @@ import (
 var options *slog.HandlerOptions
 var loglevel *slog.LevelVar
 
+// InitializeLogger initializes the slog logger
 func InitializeLogger() {
 
-	HidePassword := func(groups []string, a slog.Attr) slog.Attr {
+	HidePassword := func(_ []string, a slog.Attr) slog.Attr {
 		if a.Key == "password" {
 			return slog.String("password", "********")
 		}

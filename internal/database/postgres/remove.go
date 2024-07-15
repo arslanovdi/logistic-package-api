@@ -8,7 +8,8 @@ import (
 	"log/slog"
 )
 
-func (r *repo) Remove(ctx context.Context, eventIDs []uint64) error {
+// Remove удалить из БД n записей событий
+func (r *Repo) Remove(ctx context.Context, eventIDs []uint64) error {
 
 	log := slog.With("func", "postgres.Remove")
 

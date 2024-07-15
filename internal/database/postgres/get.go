@@ -11,7 +11,8 @@ import (
 	"log/slog"
 )
 
-func (r *repo) Get(ctx context.Context, id uint64) (*model.Package, error) {
+// Get - get package by id from database
+func (r *Repo) Get(ctx context.Context, id uint64) (*model.Package, error) {
 
 	log := slog.With("func", "postgres.Get")
 
@@ -28,7 +29,7 @@ func (r *repo) Get(ctx context.Context, id uint64) (*model.Package, error) {
 
 	ctx = ctxutil.Detach(ctx)
 
-	rows, _ := r.dbpool.Query(ctx, query, args...)
+	rows, _ := r.dbpool.Query(ctx, query, args...) // Ошибка игнорируется, так как она обрабатывается в CollectOneRow
 	defer rows.Close()
 
 	pkg, err2 := pgx.CollectOneRow(rows, pgx.RowToStructByName[model.Package])

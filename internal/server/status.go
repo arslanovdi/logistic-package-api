@@ -8,15 +8,18 @@ import (
 	"log/slog"
 	"net/http"
 	"sync/atomic"
+	"time"
 
 	"github.com/arslanovdi/logistic-package-api/internal/config"
 )
 
-type statusServer struct {
+// StatusServer - http сервер для мониторинга состояния приложения
+type StatusServer struct {
 	server *http.Server
 }
 
-func NewStatusServer(isReady *atomic.Value) *statusServer {
+// NewStatusServer - конструктор http сервера для мониторинга состояния приложения
+func NewStatusServer(isReady *atomic.Value) *StatusServer {
 
 	cfg := config.GetConfigInstance()
 
@@ -29,40 +32,43 @@ func NewStatusServer(isReady *atomic.Value) *statusServer {
 	mux.HandleFunc(cfg.Status.VersionPath, versionHandler(&cfg))
 
 	server := &http.Server{
-		Addr:    statusAddr,
-		Handler: mux,
+		Addr:              statusAddr,
+		Handler:           mux,
+		ReadHeaderTimeout: time.Second * 5,
 	}
 
-	return &statusServer{
+	return &StatusServer{
 		server: server,
 	}
 }
 
-func (s *statusServer) Start(cancelFunc context.CancelFunc) {
+// Start - запуск http сервера
+func (s *StatusServer) Start(cancelFunc context.CancelFunc) {
 
 	log := slog.With("func", "StatusServer.Start")
 
 	cfg := config.GetConfigInstance()
 
-	statusAdrr := fmt.Sprintf("%s:%v", cfg.Status.Host, cfg.Status.Port)
+	statusAddr := fmt.Sprintf("%s:%v", cfg.Status.Host, cfg.Status.Port)
 
 	go func() {
-		log.Info("Status server is running", slog.String("address", statusAdrr))
-		if err1 := s.server.ListenAndServe(); err1 != nil && !errors.Is(err1, http.ErrServerClosed) {
-			log.Error("Failed running status server", slog.String("error", err1.Error()))
+		log.Info("Status server is running", slog.String("address", statusAddr))
+		if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Error("Failed running status server", slog.String("error", err.Error()))
 			cancelFunc()
 		}
 	}()
 }
 
-func (s *statusServer) Stop(ctx context.Context) {
+// Stop - остановка http сервера
+func (s *StatusServer) Stop(ctx context.Context) {
 
 	log := slog.With("func", "StatusServer.Stop")
 
 	if err1 := s.server.Shutdown(ctx); err1 != nil {
-		log.Error("statusServer.Shutdown", slog.String("error", err1.Error()))
+		log.Error("StatusServer.Shutdown", slog.String("error", err1.Error()))
 	} else {
-		log.Info("statusServer shut down correctly")
+		log.Info("StatusServer shut down correctly")
 	}
 }
 

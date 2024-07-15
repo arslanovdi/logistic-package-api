@@ -10,7 +10,8 @@ import (
 	"log/slog"
 )
 
-func (r *repo) Delete(ctx context.Context, id uint64) error {
+// Delete - delete package by id in database
+func (r *Repo) Delete(ctx context.Context, id uint64) error {
 
 	log := slog.With("func", "postgres.Delete")
 
@@ -39,7 +40,8 @@ func (r *repo) Delete(ctx context.Context, id uint64) error {
 
 	err3 := pgx.BeginFunc(ctx, r.dbpool, func(tx pgx.Tx) error {
 
-		tag, err := r.dbpool.Exec(ctx, query, args...)
+		tag, err := tx.Exec(ctx, query, args...)
+		//tag, err := r.dbpool.Exec(ctx, query, args...)
 		if err != nil {
 			return err
 		}
@@ -48,7 +50,8 @@ func (r *repo) Delete(ctx context.Context, id uint64) error {
 			return model.ErrNotFound
 		}
 
-		_, err = r.dbpool.Exec(ctx, queryEvent, argsEvent...)
+		_, err = tx.Exec(ctx, queryEvent, argsEvent...)
+		//_, err = r.dbpool.Exec(ctx, queryEvent, argsEvent...)
 		if err != nil {
 			return err
 		}

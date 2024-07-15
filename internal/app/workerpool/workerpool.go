@@ -1,3 +1,4 @@
+// Package workerpool пул воркеров
 package workerpool
 
 import (
@@ -5,6 +6,7 @@ import (
 	"sync"
 )
 
+// WorkerPool пул воркеров, задачи передаются в канале анонимными функциями, параметры через замыкания
 type WorkerPool struct {
 	workerCount uint64
 	wg          *sync.WaitGroup

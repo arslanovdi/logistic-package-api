@@ -11,15 +11,17 @@ import (
 	"log/slog"
 )
 
-func (r *repo) List(ctx context.Context, offset uint64, limit uint64) ([]model.Package, error) {
+// List - Get packages from database. start index - offset, count - limit
+func (r *Repo) List(ctx context.Context, offset uint64, limit uint64) ([]model.Package, error) {
 
 	log := slog.With("func", "postgres.List")
 
 	query, args, err1 := psql.Select("*").
 		From("package").
 		Where(sq.GtOrEq{"id": offset}).
-		Where(sq.Lt{"id": offset + limit}).
+		//Where(sq.Lt{"id": offset + limit}).
 		OrderBy("id ASC").
+		Limit(limit).
 		ToSql()
 
 	if err1 != nil {

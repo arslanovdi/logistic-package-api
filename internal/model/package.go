@@ -1,3 +1,4 @@
+// Package model - структуры для работы с пакетами
 package model
 
 import (
@@ -10,7 +11,7 @@ import (
 	"time"
 )
 
-// Package сущность пакета
+// Package структура пакета
 type Package struct {
 	ID      uint64        `db:"id" json:"ID"`
 	Title   string        `db:"title" json:"title"`
@@ -20,23 +21,26 @@ type Package struct {
 	Removed sql.NullBool  `db:"removed" json:"removed,omitempty"`
 }
 
+// EventType тип события
 type EventType uint8
 
+// EventStatus статус события
 type EventStatus uint8
 
 const (
-	_ EventType = iota
-	Created
-	Updated
-	Removed
+	_       EventType = iota
+	Created           // Created - события создания пакета
+	Updated           // Updated - события изменения пакета
+	Removed           // Removed - события удаления пакета
 )
 
 const (
-	_ EventStatus = iota
-	Locked
-	Unlocked
+	_        EventStatus = iota
+	Locked               // Locked - событие заблокировано (отправляется в кафку)
+	Unlocked             // Unlocked - событие разблокировано (находится в очереди для отправки в кафку)
 )
 
+// PackageEvent структура события
 type PackageEvent struct {
 	ID        uint64       `db:"id"`
 	PackageID uint64       `db:"package_id"`
