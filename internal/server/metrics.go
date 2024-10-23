@@ -8,6 +8,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"log/slog"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/arslanovdi/logistic-package-api/internal/config"
@@ -74,7 +75,7 @@ func NewMetricsServer() *MetricsServer {
 }
 
 // Start - запуск http сервера
-func (s *MetricsServer) Start(cancelFunc context.CancelFunc) {
+func (s *MetricsServer) Start() { //(cancelFunc context.CancelFunc) {
 
 	log := slog.With("func", "MetricsServer.Start")
 
@@ -86,7 +87,8 @@ func (s *MetricsServer) Start(cancelFunc context.CancelFunc) {
 		log.Info("Metrics server is running", slog.String("address", metricsAddr))
 		if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Error("Failed running metrics server", slog.String("error", err.Error()))
-			cancelFunc()
+
+			os.Exit(1) // приложение завершается с ошибкой, при ошибке запуска сервера обрабатывающего запросы Prometheus
 		}
 	}()
 }

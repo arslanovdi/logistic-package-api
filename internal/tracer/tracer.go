@@ -10,7 +10,7 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
-	"go.opentelemetry.io/otel/semconv/v1.24.0"
+	"go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 // Tracer работа с трассировкой при помощи OpenTelemetry
@@ -53,7 +53,7 @@ func initOtel(ctx context.Context) (sdktrace.SpanExporter, *sdktrace.TracerProvi
 
 	cfg := config.GetConfigInstance()
 
-	exporter, err := otlptracegrpc.New(
+	exporter, err := otlptracegrpc.New( // grpc экспортер
 		ctx,
 		otlptracegrpc.WithInsecure(),
 		otlptracegrpc.WithEndpoint(cfg.Jaeger.Host+cfg.Jaeger.Port),

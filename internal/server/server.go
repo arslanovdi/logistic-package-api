@@ -5,29 +5,32 @@ import (
 	"context"
 	"fmt"
 	"github.com/arslanovdi/logistic-package-api/internal/service"
-	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
-	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
+	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
+	"github.com/prometheus/client_golang/prometheus"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 	"log/slog"
 	"net"
+	"os"
 	"time"
 
 	"github.com/arslanovdi/logistic-package-api/internal/api"
 	"github.com/arslanovdi/logistic-package-api/internal/config"
 	pb "github.com/arslanovdi/logistic-package-api/pkg/logistic-package-api"
-	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
+	grpcprom "github.com/grpc-ecosystem/go-grpc-middleware/providers/prometheus"
+	grpcPrometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"google.golang.org/grpc"
 )
 
 // GrpcServer is gRPC server
 type GrpcServer struct {
-	server    *grpc.Server
-	lis       net.Listener
-	batchSize uint
+	server *grpc.Server
+	lis    net.Listener
+	//batchSize uint
 }
 
 // grpcMiddleware Перехватчик унарных методов, считаем метрики
@@ -48,13 +51,26 @@ func grpcMiddleware(ctx context.Context, req interface{}, _ *grpc.UnaryServerInf
 	return m, err
 }
 
-// NewGrpcServer returns gRPC server with supporting of batch listing
-func NewGrpcServer(packageService *service.PackageService, batchSize uint) *GrpcServer {
+// NewGrpcServer returns gRPC server
+func NewGrpcServer(packageService *service.PackageService) *GrpcServer {
 
 	cfg := config.GetConfigInstance()
 
 	s := &GrpcServer{
-		batchSize: batchSize,
+		//batchSize: batchSize,
+	}
+
+	// дефолтные grpc метрики в прометеус
+	srvMetrics := grpcprom.NewServerMetrics(
+		grpcprom.WithServerHandlingTimeHistogram(
+			grpcprom.WithHistogramBuckets([]float64{0.001, 0.01, 0.1, 0.3, 0.6, 1, 3, 6, 9, 20, 30, 60, 90, 120})))
+	reg := prometheus.NewRegistry()
+	reg.MustRegister(srvMetrics)
+	exemplarFromContext := func(ctx context.Context) prometheus.Labels {
+		if span := trace.SpanContextFromContext(ctx); span.IsSampled() {
+			return prometheus.Labels{"traceID": span.TraceID().String()}
+		}
+		return nil
 	}
 
 	s.server = grpc.NewServer(
@@ -67,15 +83,15 @@ func NewGrpcServer(packageService *service.PackageService, batchSize uint) *Grpc
 		grpc.StatsHandler(otelgrpc.NewServerHandler()), // openTelemetry трассировка
 		grpc.ChainUnaryInterceptor( // последовательное исполнение middleware, с общим контекстом
 			grpcMiddleware,
-			grpc_ctxtags.UnaryServerInterceptor(),
-			grpc_prometheus.UnaryServerInterceptor,
-			grpcrecovery.UnaryServerInterceptor(),
+			srvMetrics.UnaryServerInterceptor(grpcprom.WithExemplarFromContext(exemplarFromContext)),
+			grpcrecovery.UnaryServerInterceptor(), // дефолтный перехватчик паник
 		),
 	)
 
 	pb.RegisterLogisticPackageApiServiceServer(s.server, api.NewPackageAPI(packageService)) // регистрируем имплементацию интерфейса в gRPC-сервере
-	grpc_prometheus.EnableHandlingTimeHistogram()
-	grpc_prometheus.Register(s.server)
+
+	grpcPrometheus.EnableHandlingTimeHistogram()
+	grpcPrometheus.Register(s.server)
 
 	if cfg.Project.Debug {
 		reflection.Register(s.server) // в дебаге регестрируем отражение методов gRPC-сервера: предоставляет сведения о публично доступных методах
@@ -85,7 +101,7 @@ func NewGrpcServer(packageService *service.PackageService, batchSize uint) *Grpc
 }
 
 // Start method runs server
-func (s *GrpcServer) Start(cancelFunc context.CancelFunc) {
+func (s *GrpcServer) Start() {
 
 	log := slog.With("func", "GrpcServer.Start")
 
@@ -97,14 +113,14 @@ func (s *GrpcServer) Start(cancelFunc context.CancelFunc) {
 	s.lis, err1 = net.Listen("tcp", grpcAddr)
 	if err1 != nil {
 		log.Error("failed to listen", slog.String("error", err1.Error()))
-		cancelFunc()
+		os.Exit(1)
 	}
 
 	go func() {
 		log.Info("GRPC Server is listening", slog.String("address", grpcAddr))
 		if err2 := s.server.Serve(s.lis); err2 != nil {
 			log.Error("Failed running gRPC server", slog.String("error", err2.Error()))
-			cancelFunc()
+			os.Exit(1)
 		}
 	}()
 }

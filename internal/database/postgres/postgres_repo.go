@@ -11,16 +11,16 @@ var psql = sq.StatementBuilder.PlaceholderFormat(sq.Dollar) // Плэйсхол�
 
 const stuckTimeout = 5 * time.Minute // время через которое залоченное событие считается зависшим и отправляется повторно
 
-// Repo - Postgres implementation of service.Repo
+// Repo - Postgres implementation of service.Repo and repo.EventRepo
 type Repo struct {
-	dbpool    *pgxpool.Pool
-	batchSize uint
+	dbpool *pgxpool.Pool
+	//batchSize uint
 }
 
 // NewPostgresRepo returns Postgres implementation of service.Repo and repo.EventRepo
-func NewPostgresRepo(dbpool *pgxpool.Pool, batchSize uint) *Repo {
+func NewPostgresRepo(dbpool *pgxpool.Pool) *Repo {
 	return &Repo{
-		dbpool:    dbpool,
-		batchSize: batchSize,
+		dbpool: dbpool,
+		//batchSize: batchSize,
 	}
 }

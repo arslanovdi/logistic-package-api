@@ -24,10 +24,6 @@ import (
 	"github.com/arslanovdi/logistic-package-api/internal/server"
 )
 
-var (
-	batchSize uint = 2
-)
-
 func main() {
 	logger.InitializeLogger()
 	log := slog.With("func", "grpc-server.main")
@@ -64,7 +60,7 @@ func main() {
 	dbpool := database.MustGetPgxPool(context.Background())
 	defer dbpool.Close()
 
-	repo := postgres.NewPostgresRepo(dbpool, batchSize)
+	repo := postgres.NewPostgresRepo(dbpool)
 	packageService := service.NewPackageService(dbpool, repo)
 
 	migration := flag.Bool("migration", true, "Defines the migration start option") // миграцию запускаем параметром из командной строки -migration
@@ -89,6 +85,8 @@ func main() {
 	}
 
 	ctxServer, cancelServer := context.WithCancel(context.Background()) // контекст запуска серверов, при ошибке в любом из серверов контекст отменяется
+	defer cancelServer()
+
 	isReady := &atomic.Value{}
 	isReady.Store(false)
 
@@ -98,17 +96,17 @@ func main() {
 		log.Info("The service is ready to accept requests")
 	}()
 
-	grpcServer := server.NewGrpcServer(packageService, batchSize)
-	grpcServer.Start(cancelServer)
+	grpcServer := server.NewGrpcServer(packageService)
+	grpcServer.Start()
 
 	metricsServer := server.NewMetricsServer()
-	metricsServer.Start(cancelServer)
+	metricsServer.Start()
 
 	statusServer := server.NewStatusServer(isReady)
-	statusServer.Start(cancelServer)
+	statusServer.Start()
 
 	gatewayServer := server.NewGatewayServer()
-	gatewayServer.Start(cancelServer)
+	gatewayServer.Start()
 
 	cancel() // отменяем контекст запуска приложения
 	stop := make(chan os.Signal, 1)

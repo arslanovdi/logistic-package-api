@@ -8,8 +8,8 @@ export GO111MODULE=on
 SERVICE_NAME=logistic-package-api
 SERVICE_PATH=arslanovdi/logistic-package-api
 
-PGV_VERSION:="v1.0.4"
-BUF_VERSION:="v1.30.0"
+PGV_VERSION:="v1.1.0"
+BUF_VERSION:="v1.45.0"
 
 OS_NAME=$(shell uname -s)
 OS_ARCH=$(shell uname -m)

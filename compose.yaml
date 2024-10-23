@@ -41,7 +41,6 @@ services:
       - ./config.yml:/root/config.yml
 
   postgres:
-    attach: true                      # контейнер можно отключить = false
     image: postgres:16.2
     labels:                           # добавление метаданных в контейнер
       logistic.package.api: postgres
@@ -116,7 +115,7 @@ services:
       - mongodb_configdb:/data/configdb
 
   opensearch-node:                                    # This is also the hostname of the container within the Docker network (i.e. https://opensearch-node1/)
-    image: opensearchproject/opensearch:2.12.0        # Specifying the latest available image - modify if you want a specific version
+    image: opensearchproject/opensearch:latest        # Specifying the latest available image - modify if you want a specific version
     container_name: opensearch-node
     environment:
       discovery.type: single-node
@@ -141,7 +140,7 @@ services:
       - ompnw         # All the containers will join the same Docker bridge network
 
   opensearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:2.12.0
+    image: opensearchproject/opensearch-dashboards:latest
     container_name: opensearch-dashboards
     restart: unless-stopped
     ports:
@@ -155,7 +154,7 @@ services:
       - ompnw
 
   graylog:
-    image: graylog/graylog:5.2.5
+    image: graylog/graylog:6.0.4
     restart: unless-stopped
     volumes:
       - graylog_data:/usr/share/graylog/data

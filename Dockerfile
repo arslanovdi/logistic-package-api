@@ -1,5 +1,5 @@
 #builder
-FROM golang:1.22-alpine as builder
+FROM golang:1.23.2-alpine as builder
 # качаем все что нужно для билда приложения
 RUN apk add --update make git protoc protobuf protobuf-dev curl
 

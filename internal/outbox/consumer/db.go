@@ -3,8 +3,8 @@ package consumer
 
 import (
 	"context"
-	"github.com/arslanovdi/logistic-package-api/internal/app/repo"
 	"github.com/arslanovdi/logistic-package-api/internal/model"
+	"github.com/arslanovdi/logistic-package-api/internal/outbox/repo"
 	"github.com/arslanovdi/logistic-package-api/internal/server"
 	"log/slog"
 	"sync"

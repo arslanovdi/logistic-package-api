@@ -91,7 +91,7 @@ func NewGatewayServer() *GatewayServer {
 Start - starts the gateway server and Swagger server
 cancelFunc - функция отмены контекста, вызывается в случае ошибки запуска
 */
-func (s *GatewayServer) Start(cancelFunc context.CancelFunc) {
+func (s *GatewayServer) Start() {
 	log := slog.With("func", "GatewayServer.Start")
 
 	cfg := config.GetConfigInstance()
@@ -103,7 +103,7 @@ func (s *GatewayServer) Start(cancelFunc context.CancelFunc) {
 		log.Info("Swagger server is running", slog.String("address", gatewayAddr+"/swagger-ui/"))
 		if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Error("Failed running gateway server", slog.String("error", err.Error()))
-			cancelFunc()
+			os.Exit(1) // приложение завершается с ошибкой, при ошибке запуска сервера
 		}
 	}()
 }

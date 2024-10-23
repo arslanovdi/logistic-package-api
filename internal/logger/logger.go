@@ -36,10 +36,13 @@ func InitializeLogger() {
 // SetLogLevel sets the level of the logger
 // В пакете slog нет установки уровня логирования в дефолтном логере
 func SetLogLevel(level slog.Level) {
+
+	log := slog.With("func", "SetLogLevel")
+
 	if options == nil {
 		InitializeLogger()
 	}
 
 	loglevel.Set(level)
-	slog.Info("SetLogLevel", slog.String("level", level.String()))
+	log.Info("SetLogLevel", slog.String("level", level.String()))
 }

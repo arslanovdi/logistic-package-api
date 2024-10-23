@@ -4,10 +4,10 @@ package main
 import (
 	"context"
 	"errors"
-	"github.com/arslanovdi/logistic-package-api/internal/app/retranslator"
 	"github.com/arslanovdi/logistic-package-api/internal/database"
 	"github.com/arslanovdi/logistic-package-api/internal/database/postgres"
 	"github.com/arslanovdi/logistic-package-api/internal/logger"
+	"github.com/arslanovdi/logistic-package-api/internal/outbox/retranslator"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -16,7 +16,7 @@ import (
 )
 
 const level = slog.LevelDebug // log level
-const batchsize = 10
+//const batchsize = 10
 
 func main() {
 	logger.SetLogLevel(level)
@@ -41,7 +41,7 @@ func main() {
 		ConsumeTimeout: 10 * time.Second,
 		ProducerCount:  28,
 		WorkerCount:    2,
-		Repo:           postgres.NewPostgresRepo(pool, batchsize),
+		Repo:           postgres.NewPostgresRepo(pool /*, batchsize*/),
 		Sender:         nil,
 	}
 
@@ -58,5 +58,4 @@ func main() {
 	kafkaRetranslator.Stop()
 	pool.Close()
 	slog.Info("Application stopped")
-
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"os"
 	"sync/atomic"
 	"time"
 
@@ -43,7 +44,7 @@ func NewStatusServer(isReady *atomic.Value) *StatusServer {
 }
 
 // Start - запуск http сервера
-func (s *StatusServer) Start(cancelFunc context.CancelFunc) {
+func (s *StatusServer) Start() {
 
 	log := slog.With("func", "StatusServer.Start")
 
@@ -55,7 +56,8 @@ func (s *StatusServer) Start(cancelFunc context.CancelFunc) {
 		log.Info("Status server is running", slog.String("address", statusAddr))
 		if err := s.server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Error("Failed running status server", slog.String("error", err.Error()))
-			cancelFunc()
+
+			os.Exit(1) // приложение завершается с ошибкой, при ошибке запуска сервера
 		}
 	}()
 }

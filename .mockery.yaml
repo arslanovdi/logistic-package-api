@@ -7,9 +7,9 @@ filename: "{{.MockName}}.go"  # имя файла
 outpkg: mocks # пакет со сгенерированными интерфейсами
 tags: "custom1"
 packages:
-  github.com/arslanovdi/logistic-package-api/internal/app/repo:
+  github.com/arslanovdi/logistic-package-api/internal/outbox/repo:
     interfaces:
       EventRepo:
-  github.com/arslanovdi/logistic-package-api/internal/app/sender:
+  github.com/arslanovdi/logistic-package-api/internal/outbox/sender:
     interfaces:
       EventSender:

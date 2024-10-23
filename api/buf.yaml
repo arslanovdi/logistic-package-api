@@ -152,7 +152,7 @@ breaking:
   # The union of the categories and ids will be used.
   #
   # As opposed to lint, where you may want to do more customization, with
-  # breaking is is generally better to only choose one of the following
+  # breaking is generally better to only choose one of the following
   # options:
   #
   # - [FILE]

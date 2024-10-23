@@ -2,12 +2,12 @@
 package retranslator
 
 import (
-	"github.com/arslanovdi/logistic-package-api/internal/app/consumer"
-	"github.com/arslanovdi/logistic-package-api/internal/app/producer"
-	"github.com/arslanovdi/logistic-package-api/internal/app/repo"
-	"github.com/arslanovdi/logistic-package-api/internal/app/sender"
-	"github.com/arslanovdi/logistic-package-api/internal/app/workerpool"
 	"github.com/arslanovdi/logistic-package-api/internal/model"
+	"github.com/arslanovdi/logistic-package-api/internal/outbox/consumer"
+	"github.com/arslanovdi/logistic-package-api/internal/outbox/producer"
+	"github.com/arslanovdi/logistic-package-api/internal/outbox/repo"
+	"github.com/arslanovdi/logistic-package-api/internal/outbox/sender"
+	"github.com/arslanovdi/logistic-package-api/internal/outbox/workerpool"
 	"log/slog"
 	"time"
 )

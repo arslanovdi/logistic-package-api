@@ -3,10 +3,10 @@ package producer
 
 import (
 	"context"
-	"github.com/arslanovdi/logistic-package-api/internal/app/repo"
-	"github.com/arslanovdi/logistic-package-api/internal/app/sender"
-	"github.com/arslanovdi/logistic-package-api/internal/app/workerpool"
 	"github.com/arslanovdi/logistic-package-api/internal/model"
+	"github.com/arslanovdi/logistic-package-api/internal/outbox/repo"
+	"github.com/arslanovdi/logistic-package-api/internal/outbox/sender"
+	"github.com/arslanovdi/logistic-package-api/internal/outbox/workerpool"
 	"log/slog"
 	"sync"
 	"time"
